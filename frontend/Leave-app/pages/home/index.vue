@@ -1,10 +1,10 @@
 <template>
     <div class="background">
         <div class="from-login mt-5">
-            <img class="logo" :src="data_user.pictureUrl" alt="">
+            <img class="logo" :src="profile.pictureUrl" alt="">
             <div class="card pt-4 pb-4 pl-5 pr-5">
                 <div class="p-canter">
-                    <p>{{data_user.name}}</p>
+                    <p>{{profile.displayName}}</p>
 
                     <div class="box">
                         <p>รหัสพนักงาน : WM59001C</p>
@@ -20,7 +20,7 @@
 export default {
     data() {
         return {
-            // profile: null, // displayName // pictureUrl // statusMessage // userId
+            profile: null, // displayName // pictureUrl // statusMessage // userId
             code_id: '',
             data_user: {}
 
