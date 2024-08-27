@@ -23,10 +23,15 @@ export default {
   css: [
   ],
 
+  generate: {
+    dir: 'public'
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/liff.js'
   ],
+
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
