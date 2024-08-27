@@ -1,0 +1,9 @@
+authtoken: 28EYhk82kFANmGQbrwFLLcOp9w2_5T1jeEM9h2U1GT2oZEjv8
+version: "2"
+tunnels:
+  app1:
+    proto: http
+    addr: 3000
+  app2:
+    proto: http
+    addr: 3001
