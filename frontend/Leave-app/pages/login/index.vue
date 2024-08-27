@@ -95,11 +95,13 @@ export default {
             // alert('ดึงข้อมูลเรียบร้อย'+id)
         },
         register(data_user) {
-            alert('ดึงข้อมูลเรียบร้อย ID ' + data_user.id)
+
+            this.$router.push('/home')
+            // alert('ดึงข้อมูลเรียบร้อย ID ' + data_user.id)
         }
     },
     mounted() {
-        // this.loginWithLINE()
+        this.loginWithLINE()
     }
 }
 </script>

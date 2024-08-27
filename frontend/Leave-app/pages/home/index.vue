@@ -1,10 +1,10 @@
 <template>
     <div class="background">
         <div class="from-login mt-5">
-            <img class="logo" src="../../static/login/logo.svg" alt="">
+            <img class="logo" :src="data_user.pictureUrl" alt="">
             <div class="card pt-4 pb-4 pl-5 pr-5">
                 <div class="p-canter">
-                    <p>นาย กานต์ธนิต ทรัพย์เขต (ฝุ่น)</p>
+                    <p>{{data_user.name}}</p>
 
                     <div class="box">
                         <p>รหัสพนักงาน : WM59001C</p>
@@ -65,7 +65,7 @@ export default {
         }
     },
     mounted() {
-        // this.loginWithLINE()
+        this.loginWithLINE()
     }
 }
 </script>
