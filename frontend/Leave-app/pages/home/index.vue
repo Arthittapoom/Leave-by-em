@@ -65,7 +65,7 @@ export default {
         }
     },
     mounted() {
-        this.loginWithLINE()
+        // this.loginWithLINE()
     }
 }
 </script>

@@ -75,6 +75,13 @@ export default {
         },
         getdata(id) {
 
+            // api
+            // axios.get('api/getdata/' + id).then((response) => {
+            //     console.log(response)
+            // }).catch((error) => {
+            //     console.log(error)
+            // })
+
             let data = {
                 id: id,
                 name: 'นาย ณัฐเศรษฐ เทพพิบูล',
@@ -87,7 +94,6 @@ export default {
                 workplace: 'BKK',
                 years: '1/11/2021 - 28/2/2022',
                 phone: 'เบอร์โทรศัพท์'
-
             }
 
             this.data_user = data
@@ -101,7 +107,7 @@ export default {
         }
     },
     mounted() {
-        this.loginWithLINE()
+        // this.loginWithLINE()
     }
 }
 </script>
