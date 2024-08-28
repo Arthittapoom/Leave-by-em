@@ -101,7 +101,7 @@ app.use(globalErrorHandler);
 require('./config/database').connect();
 
 // Run server
-const port = process.env.PORT || 3001;
-const server = app.listen(port, () => {
-  console.log(`Running on port ${port}...`);
+// const port = process.env.PORT || 3001;
+const server = app.listen(() => {
+  console.log(`Running on port ${server.address().port}...`);
 });
