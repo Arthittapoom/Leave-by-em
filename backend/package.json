@@ -14,7 +14,7 @@
   "dependencies": {
     "@withvoid/make-validation": "^1.0.5",
     "assert": "^2.1.0",
-    "axios": "^0.21.4",
+    "axios": "^1.7.5",
     "base64-stream": "^1.0.0",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
@@ -35,23 +35,24 @@
     "hpp": "^0.2.3",
     "http": "^0.0.1-security",
     "js-yaml": "^4.1.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
-    "mssql": "^10.0.1",
+    "mssql": "^11.0.1",
     "multer": "^1.4.4",
+    "node": "^22.7.0",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.5.0",
     "path": "^0.12.7",
     "pdfkit": "^0.13.0",
     "pug": "^3.0.2",
     "read-excel-file": "^5.7.1",
-    "sharp": "^0.30.7",
+    "sharp": "^0.33.5",
     "validator": "^13.5.2",
     "xss-clean": "^0.1.1"
   },
   "engines": {
-    "node": ">=16.0.0 < 17.0.0"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "mongoose": "^7.0.2",

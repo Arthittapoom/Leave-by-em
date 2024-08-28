@@ -7,50 +7,51 @@
                 <div class="p-canter">
                     <p>กรอกรหัสพนักงาน</p>
                 </div>
-                <input type="text" name="code_id" v-model="code_id"  id="">
-                <button @click="getdata(code_id)" >เรียกข้อมูลพนักงาน</button>
+                <input type="text" name="code_id" v-model="code_id" id="">
+                <button @click="getdata(code_id)">เรียกข้อมูลพนักงาน</button>
                 <div class="div-p-canter" v-if="!data_user.name == ''">
-                    <!-- ชื่อ-นามสกุล อยู่ตรงกลาง --> 
-                    <p class="mt-3" >ชื่อ-นามสกุล</p>
-                     <input type="text" name="" :value="data_user.name"  id="" readonly>
-    
-                     <!-- ชื่อเล่น -->
+                    <!-- ชื่อ-นามสกุล อยู่ตรงกลาง -->
+                    <p class="mt-3">ชื่อ-นามสกุล</p>
+                    <input type="text" name="" :value="data_user.name" id="" readonly>
+
+                    <!-- ชื่อเล่น -->
                     <p class="mt-1">ชื่อเล่น</p>
-                     <input type="text" name="" :value="data_user.nickname"  id="" readonly>
-    
-                     <!-- สังกัด -->
+                    <input type="text" name="" :value="data_user.nickname" id="" readonly>
+
+                    <!-- สังกัด -->
                     <p class="mt-1">สังกัด</p>
-                     <input type="text" name="" :value="data_user.department"  id="" readonly>
-                      <!-- รหัสพนักงาน -->
+                    <input type="text" name="" :value="data_user.department" id="" readonly>
+                    <!-- รหัสพนักงาน -->
                     <p class="mt-1">รหัสพนักงาน</p>
-                     <input type="text" name="" :value="data_user.code_id"  id="" readonly>
-                       <!-- ตำแหน่ง -->
+                    <input type="text" name="" :value="data_user.code_id" id="" readonly>
+                    <!-- ตำแหน่ง -->
                     <p class="mt-1">ตำแหน่ง</p>
-                     <input type="text" name="" :value="data_user.position"  id="" readonly>
-                        <!-- ประเภทพนักงาน -->
+                    <input type="text" name="" :value="data_user.position" id="" readonly>
+                    <!-- ประเภทพนักงาน -->
                     <p class="mt-1">ประเภทพนักงาน</p>
-                     <input type="text" name="" :value="data_user.type"  id="" readonly>
-                         <!-- ฝ่าย -->
+                    <input type="text" name="" :value="data_user.type" id="" readonly>
+                    <!-- ฝ่าย -->
                     <p class="mt-1">ฝ่าย</p>
-                     <input type="text" name="" :value="data_user.division"  id="" readonly>
-                          <!-- สถานที่ปฏิบัติงาน -->
+                    <input type="text" name="" :value="data_user.division" id="" readonly>
+                    <!-- สถานที่ปฏิบัติงาน -->
                     <p class="mt-1">สถานที่ปฏิบัติงาน</p>
-                     <input type="text" name="" :value="data_user.workplace"  id="" readonly>
-                          <!-- อายุงาน -->
+                    <input type="text" name="" :value="data_user.workplace" id="" readonly>
+                    <!-- อายุงาน -->
                     <p class="mt-1">อายุงาน</p>
-                     <input type="text" name="" :value="data_user.years"  id="" readonly>
-                           <!-- เบอร์โทรศัพท์ -->
+                    <input type="text" name="" :value="data_user.years" id="" readonly>
+                    <!-- เบอร์โทรศัพท์ -->
                     <p class="mt-1">เบอร์โทรศัพท์</p>
-                     <input type="text" name="" :value="data_user.phone"  id="" >
-    
-                    </div>
-                    <button v-if="!data_user.name == ''" @click="register(data_user)">ลงทะเบียน</button>
+                    <input type="text" name="" :value="data_user.phone" id="">
+
+                </div>
+                <button v-if="!data_user.name == ''" @click="register(data_user)">ลงทะเบียน</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -76,11 +77,20 @@ export default {
         getdata(id) {
 
             // api
-            // axios.get('api/getdata/' + id).then((response) => {
-            //     console.log(response)
-            // }).catch((error) => {
-            //     console.log(error)
-            // })
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/api/master/getWorkLocation',
+                headers: {}
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
 
             let data = {
                 id: id,
@@ -113,7 +123,6 @@ export default {
 </script>
 
 <style scoped>
-
 .background {
     /* สำหรับมือถือ */
     background-image: url("/login/bg.svg");
@@ -135,7 +144,7 @@ export default {
     align-items: center;
     padding-bottom: 50px;
 
-    img{
+    img {
         width: 200px;
     }
 
@@ -157,14 +166,14 @@ export default {
 
     }
 
-    .div-p-canter{
+    .div-p-canter {
         display: flex;
         flex-direction: column;
         align-items: start;
     }
 
-    p { 
-        
+    p {
+
         font-weight: 300;
         font-size: 20px;
     }
@@ -190,5 +199,4 @@ export default {
     }
 
 }
-
 </style>
