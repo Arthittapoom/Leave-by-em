@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-"scripts": {
-  "start": "node app.js", 
-  "dev": "nodemon app.js",
-  "start:prod": "NODE_ENV=production node app.js",
-  "debug": "nodemon --inspect app.js",
-  "build": "echo 'No build step required'"
-},
-
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "start:prod": "NODE_ENV=production node app.js",
+    "debug": "nodemon --inspect app.js",
+    "build": "echo 'No build step required'"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -48,13 +47,14 @@
     "path": "^0.12.7",
     "pdfkit": "^0.13.0",
     "pug": "^3.0.2",
+    "punycode": "^2.3.1",
     "read-excel-file": "^5.7.1",
     "sharp": "^0.33.5",
     "validator": "^13.5.2",
     "xss-clean": "^0.1.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.x"
   },
   "devDependencies": {
     "mongoose": "^7.0.2",
