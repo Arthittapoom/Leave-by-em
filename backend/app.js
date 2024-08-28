@@ -31,12 +31,10 @@ app.use('/img', express.static('img'));
 // Implement CORS
 
 //ทำให้เข้าได้ทุกโดเมน
-app.use(cors(
-  {
-    credentials: true,
-    origin: true
-  }
-));
+app.use(cors({
+  credentials: true,
+  origin: '*'
+}));
 
 // app.use(cors({
 //   credentials: true,
@@ -84,6 +82,10 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
 // api
 app.use('/api', require('./routes'));
