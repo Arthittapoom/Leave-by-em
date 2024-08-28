@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "scripts": {
-    "start": "npm i node && node app.js",
-    "dev": "nodemon app.js",
-    "start:prod": "NODE_ENV=production nodemon app.js",
-    "debug": "nodemon app.js"
-  },
+"scripts": {
+  "start": "node app.js", 
+  "dev": "nodemon app.js",
+  "start:prod": "NODE_ENV=production node app.js",
+  "debug": "nodemon --inspect app.js",
+  "build": "echo 'No build step required'"
+},
+
   "author": "",
   "license": "ISC",
   "dependencies": {
