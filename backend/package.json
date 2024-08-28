@@ -4,12 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-  "start": "node app.js",
-  "dev": "nodemon app.js",
-  "start:prod": "NODE_ENV=production node app.js",
-  "debug": "nodemon --inspect app.js"
-}
-
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "start:prod": "NODE_ENV=production node app.js",
+    "debug": "nodemon --inspect app.js"
   },
   "author": "",
   "license": "ISC",
