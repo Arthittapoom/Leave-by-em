@@ -8,7 +8,7 @@
     "dev": "nodemon app.js",
     "start:prod": "NODE_ENV=production node app.js",
     "debug": "nodemon --inspect app.js",
-    "build": "my-framework build --output public"
+    "build": "your-build-command --options"
   },
   "author": "",
   "license": "ISC",
