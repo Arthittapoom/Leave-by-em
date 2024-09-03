@@ -1,8 +1,9 @@
 // store/index.js
 export const state = () => ({
-    page: 'AdminManagementPage'
+    page: 'AdminManagementPage',
+
   });
-  
+
   export const mutations = {
     updatePage(state, newPage) {
       state.page = newPage;
