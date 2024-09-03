@@ -127,7 +127,7 @@ export default {
                 const response = await axios.request(config);
                 // console.log(response.data);
 
-                this.$router.push('/home')
+                this.$router.push('/home/home')
             } catch (error) {
                 console.error(error);
             }
