@@ -1,130 +1,143 @@
 <template>
     <div class="background">
-        <div class="from-login mt-5">
+        <div class="form-login mt-5">
             <img class="logo" src="../../static/login/logo.svg" alt="">
             <p>ลงทะเบียน</p>
             <div class="card pt-4 pb-4 pl-5 pr-5">
-                <div class="p-canter">
+                <div class="p-center">
                     <p>กรอกรหัสพนักงาน</p>
                 </div>
                 <input type="text" name="code_id" v-model="code_id" id="">
                 <button @click="getdata(code_id)">เรียกข้อมูลพนักงาน</button>
-                <div class="div-p-canter" v-if="!data_user.name == ''">
+                <div class="div-p-center" v-if="data_user.name">
                     <!-- ชื่อ-นามสกุล อยู่ตรงกลาง -->
                     <p class="mt-3">ชื่อ-นามสกุล</p>
-                    <input type="text" name="" :value="data_user.name" id="" readonly>
+                    <input type="text" name="" v-model="data_user.name" id="" readonly>
 
                     <!-- ชื่อเล่น -->
                     <p class="mt-1">ชื่อเล่น</p>
-                    <input type="text" name="" :value="data_user.nickname" id="" readonly>
+                    <input type="text" name="" v-model="data_user.nickname" id="" readonly>
 
                     <!-- สังกัด -->
                     <p class="mt-1">สังกัด</p>
-                    <input type="text" name="" :value="data_user.department" id="" readonly>
+                    <input type="text" name="" v-model="data_user.department" id="" readonly>
+
                     <!-- รหัสพนักงาน -->
                     <p class="mt-1">รหัสพนักงาน</p>
-                    <input type="text" name="" :value="data_user.code_id" id="" readonly>
+                    <input type="text" name="" v-model="data_user.code_id" id="" readonly>
+
                     <!-- ตำแหน่ง -->
                     <p class="mt-1">ตำแหน่ง</p>
-                    <input type="text" name="" :value="data_user.position" id="" readonly>
+                    <input type="text" name="" v-model="data_user.position" id="" readonly>
+
                     <!-- ประเภทพนักงาน -->
                     <p class="mt-1">ประเภทพนักงาน</p>
-                    <input type="text" name="" :value="data_user.type" id="" readonly>
+                    <input type="text" name="" v-model="data_user.type" id="" readonly>
+
                     <!-- ฝ่าย -->
                     <p class="mt-1">ฝ่าย</p>
-                    <input type="text" name="" :value="data_user.division" id="" readonly>
+                    <input type="text" name="" v-model="data_user.division" id="" readonly>
+
                     <!-- สถานที่ปฏิบัติงาน -->
                     <p class="mt-1">สถานที่ปฏิบัติงาน</p>
-                    <input type="text" name="" :value="data_user.workplace" id="" readonly>
+                    <input type="text" name="" v-model="data_user.workplace" id="" readonly>
+
                     <!-- อายุงาน -->
                     <p class="mt-1">อายุงาน</p>
-                    <input type="text" name="" :value="data_user.years" id="" readonly>
+                    <input type="text" name="" v-model="data_user.years" id="" readonly>
+
                     <!-- เบอร์โทรศัพท์ -->
                     <p class="mt-1">เบอร์โทรศัพท์</p>
-                    <input type="text" name="" :value="data_user.phone" id="">
-
+                    <input type="text" name="phone" v-model="newPhone" id="">
                 </div>
-                <button v-if="!data_user.name == ''" @click="register(data_user)">ลงทะเบียน</button>
+                <button v-if="data_user.name" @click="register(data_user)">ลงทะเบียน</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 export default {
     data() {
         return {
-            // profile: null, // displayName // pictureUrl // statusMessage // userId
             code_id: '',
-            data_user: {}
-
-        }
+            data_user: {},
+            newPhone: ''
+        };
     },
     methods: {
-        async loginWithLINE() {
-            if (!this.$liff.isLoggedIn()) {
-                this.$liff.login()
-            } else {
-                try {
-                    this.profile = await this.$liff.getProfile()
-                    // console.log('Profile:', this.profile)
-                } catch (error) {
-                    console.error('Error getting profile:', error)
+        async getdata(id) {
+            try {
+                let config = {
+                    method: 'get',
+                    url: `${process.env.API_URL}/users/getUsers`,
+                };
+
+                const response = await axios.request(config);
+
+                const filteredData = response.data.filter(item => item.code === this.code_id);
+
+                if (filteredData.length > 0) {
+                    this.data_user = {
+                        id: filteredData[0]._id,
+                        name: filteredData[0].name,
+                        nickname: filteredData[0].nickname,
+                        department: filteredData[0].department,
+                        code_id: filteredData[0].code,
+                        position: filteredData[0].position,
+                        type: filteredData[0].employeeType,
+                        division: filteredData[0].division,
+                        workplace: filteredData[0].workplace,
+                        years: `${filteredData[0].diffDays_days} วัน`,
+                        phone: filteredData[0].phone
+                    };
+                    this.newPhone = this.data_user.phone; // ตั้งค่าเบอร์โทรศัพท์ใหม่
+                } else {
+                    alert('ไม่พบข้อมูลในระบบ');
                 }
+            } catch (error) {
+                console.error(error);
             }
         },
-        getdata(id) {
+        async register(data_user) {
+            const profileData = localStorage.getItem('profile');
+            const line_id = profileData ? JSON.parse(profileData).userId : null;
 
-            // api
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: process.env.API_URL + '/api/master/getWorkLocation',
-                headers: {}
-            };
+            if (!this.newPhone) {
+                alert('กรุณากรอกเบอร์โทรศัพท์');
+                return;
+            }
 
-            axios.request(config)
-                .then((response) => {
-                    console.log(JSON.stringify(response.data));
-                })
-                .catch((error) => {
-                    console.log(error);
+            try {
+                let data = JSON.stringify({
+                    "lineId": line_id,
+                    "phone": this.newPhone
                 });
 
-            let data = {
-                id: id,
-                name: 'นาย ณัฐเศรษฐ เทพพิบูล',
-                nickname: 'แทค',
-                department: 'WM',
-                code_id: 'WM59001C',
-                position: 'Chief Executive Officer ',
-                type: 'พนักงานรายเดือน',
-                division: 'Committee',
-                workplace: 'BKK',
-                years: '1/11/2021 - 28/2/2022',
-                phone: 'เบอร์โทรศัพท์'
+                let config = {
+                    method: 'put',
+                    url: `${process.env.API_URL}/users/updateUser/${data_user.id}`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: data
+                };
+
+                const response = await axios.request(config);
+                // console.log(response.data);
+
+                this.$router.push('/home')
+            } catch (error) {
+                console.error(error);
             }
-
-            this.data_user = data
-
-            // alert('ดึงข้อมูลเรียบร้อย'+id)
-        },
-        register(data_user) {
-
-            this.$router.push('/home')
-            // alert('ดึงข้อมูลเรียบร้อย ID ' + data_user.id)
         }
-    },
-    mounted() {
-        // this.loginWithLINE()
     }
-}
+};
 </script>
 
 <style scoped>
 .background {
-    /* สำหรับมือถือ */
     background-image: url("/login/bg.svg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -136,9 +149,7 @@ export default {
     align-items: start;
 }
 
-
-
-.from-login {
+.form-login {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -153,27 +164,24 @@ export default {
         background: #FFFFFF;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         border-radius: 19px;
-        /* อยู่ตรงกลาง */
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    .p-canter {
+    .p-center {
         display: flex;
         flex-direction: column;
         align-items: center;
-
     }
 
-    .div-p-canter {
+    .div-p-center {
         display: flex;
         flex-direction: column;
         align-items: start;
     }
 
     p {
-
         font-weight: 300;
         font-size: 20px;
     }
@@ -182,7 +190,6 @@ export default {
         box-sizing: border-box;
         border: 1px solid #5C5C5C;
         border-radius: 30px;
-        box-sizing: border-box;
         width: 276.47px;
         height: 34px;
         margin-bottom: 10px;
@@ -197,6 +204,5 @@ export default {
         height: 31px;
         margin-top: 10px;
     }
-
 }
 </style>

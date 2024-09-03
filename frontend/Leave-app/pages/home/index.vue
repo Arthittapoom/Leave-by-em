@@ -1,14 +1,22 @@
 <template>
     <div class="background">
         <div class="from-login mt-5">
-            <img class="logo" src="../../static/login/logo.svg" alt="">
+            <p class="Profile-style">Profile</p>
+            <img class="logo" :src=profile.pictureUrl alt="">
             <div class="card pt-4 pb-4 pl-5 pr-5">
                 <div class="p-canter">
-                    <p>ชื่อ-นามสกุล : นาย ณัฐเศรษฐ เทพพิบูล</p>
+
+                    <p>ชื่อ-นามสกุล : {{ data_user.name }}</p>
 
                     <div class="box">
-                        <p>รหัสพนักงาน : WM59001C</p>
-                        <p>ตำแหน่ง : Chief Executive Officer</p>
+                        <p>รหัสพนักงาน : {{ data_user.code }}</p>
+                        <p>ตำแหน่ง : {{ data_user.position }}</p>
+                        <p>สังกัด : {{ data_user.department }}</p>
+                        <p>ประเภทพนักงาน : {{ data_user.type }}</p>
+                        <p>ฝ่าย : {{ data_user.division }}</p>
+                        <p>สถานที่ปฏิบัติงาน : {{ data_user.workplace }}</p>
+                        <p>อายุงาน : {{ data_user.years }}</p>
+                        <p>เบอร์โทรศัพท์ : {{ data_user.phone }}</p>
                     </div>
                 </div>
             </div>
@@ -17,55 +25,77 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
-            // profile: null, // displayName // pictureUrl // statusMessage // userId
-            code_id: '',
-            data_user: {}
+            data_user: {},
+
+            profile: {
+                displayName: '',
+                pictureUrl: '',
+                statusMessage: '',
+                userId: '',
+            }   
 
         }
     },
+   
     methods: {
-        async loginWithLINE() {
-            if (!this.$liff.isLoggedIn()) {
-                this.$liff.login()
-            } else {
-                try {
-                    this.profile = await this.$liff.getProfile()
-                    // console.log('Profile:', this.profile)
-                } catch (error) {
-                    console.error('Error getting profile:', error)
+        async getdata(id) {
+            try {
+                let config = {
+                    method: 'get',
+                    url: `${process.env.API_URL}/users/getUsers`,
+                };
+
+                const response = await axios.request(config);
+
+                const filteredData = response.data.filter(item => item.lineId === id);
+
+                if (filteredData.length > 0) {
+                    this.data_user = {
+                        id: filteredData[0]._id,
+                        name: filteredData[0].name,
+                        nickname: filteredData[0].nickname,
+                        department: filteredData[0].department,
+                        code_id: filteredData[0].code,
+                        position: filteredData[0].position,
+                        type: filteredData[0].employeeType,
+                        division: filteredData[0].division,
+                        workplace: filteredData[0].workplace,
+                        years: `${filteredData[0].diffDays_days} วัน`,
+                        phone: filteredData[0].phone,
+                        code: filteredData[0].code
+                    };
+                    this.newPhone = this.data_user.phone; // ตั้งค่าเบอร์โทรศัพท์ใหม่
+                } else {
+                    alert('ไม่พบข้อมูลในระบบ');
                 }
+            } catch (error) {
+                console.error(error);
             }
-        },
-        getdata(id) {
-
-            let data = {
-                id: id,
-                name: 'นาย ณัฐเศรษฐ เทพพิบูล',
-                nickname: 'แทค',
-                department: 'WM',
-                code_id: 'WM59001C',
-                position: 'Chief Executive Officer ',
-                type: 'พนักงานรายเดือน',
-                division: 'Committee',
-                workplace: 'BKK',
-                years: '1/11/2021 - 28/2/2022',
-                phone: 'เบอร์โทรศัพท์'
-
-            }
-
-            this.data_user = data
-
-            // alert('ดึงข้อมูลเรียบร้อย'+id)
         },
         register(data_user) {
             alert('ดึงข้อมูลเรียบร้อย ID ' + data_user.id)
         }
     },
     mounted() {
-        // this.loginWithLINE()
+
+        const profileData = localStorage.getItem('profile');
+        let profile = {};
+        if (profileData) {
+            const parsedData = JSON.parse(profileData);
+            profile = {
+                displayName: parsedData.displayName,
+                pictureUrl: parsedData.pictureUrl,
+                statusMessage: parsedData.statusMessage,
+                userId: parsedData.userId
+            };
+        }
+        this.profile = profile;
+        
+        this.getdata(this.profile.userId);
     }
 }
 </script>
@@ -134,7 +164,20 @@ export default {
         
     }
     
+    .logo{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #FFFFFF;
+        position: relative;
+        z-index: 1;
+        top : -10px;
+    }
 
+    .Profile-style{
+        font-weight: 300;
+        font-size: 24px;
+    }
 }
 
 </style>

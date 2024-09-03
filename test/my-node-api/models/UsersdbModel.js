@@ -37,7 +37,10 @@ const usersdbSchema = new mongoose.Schema({
     specialPersonalLeave: { type: String }, // ลากิจพิเศษ
     ordinationLeave: { type: String }, // ลาเพื่ออุปสมบท
     maternityLeave: { type: String }, // ลาคลอด
-    workInjuryLeave_days: { type: String } // ลาป่วย (เนื่องจากบาดเจ็บในงาน)/วัน
+    workInjuryLeave_days: { type: String }, // ลาป่วย (เนื่องจากบาดเจ็บในงาน)/วัน
+
+    lineId: { type: String , default: 'null'}, // Line ID
+    phone: { type: String , default: 'null'}, // โทรศัพท์
 });
 
 module.exports = mongoose.model('Users', usersdbSchema, 'usersdb');

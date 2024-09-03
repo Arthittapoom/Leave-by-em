@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- ไม่จำเป็นต้องมี UI ใด ๆ ที่นี่ก็ได้ -->
+  
   </div>
 </template>
 
@@ -13,15 +13,22 @@ export default {
   },
   methods: {
     async loginWithLINE() {
+      if (localStorage.getItem('profile')) {
+        this.profile = JSON.parse(localStorage.getItem('profile'))
+        await this.$router.push('/login')
+        return
+      }
       if (!this.$liff.isLoggedIn()) {
-        this.$liff.login()
+       await this.$liff.login()
       } else {
         try {
-          this.profile = await this.$liff.getProfile()
-          // แสดงข้อมูลผู้ใช้ (อาจใช้ในที่อื่น เช่น บนหน้าเว็บ)
-          console.log('Profile:', this.profile)
-          // ส่งไปที่หน้า '/login'
-          this.$router.push('/login')
+
+         this.profile = await this.$liff.getProfile()
+
+         await localStorage.setItem('profile', JSON.stringify(this.profile))
+
+         await this.$router.push('/login')
+      
         } catch (error) {
           console.error('Error getting profile:', error)
         }
@@ -29,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    this.loginWithLINE() // เรียกใช้งานฟังก์ชัน loginWithLINE เมื่อคอมโพเนนต์ถูกสร้างเสร็จ
+    this.loginWithLINE()
   }
 }
 </script>
