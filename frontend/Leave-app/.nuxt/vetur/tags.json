@@ -1,0 +1,41 @@
+{
+  "Menubar": {
+    "description": "Auto imported from components/Menubar.vue"
+  },
+  "NuxtLogo": {
+    "description": "Auto imported from components/NuxtLogo.vue"
+  },
+  "Tutorial": {
+    "description": "Auto imported from components/Tutorial.vue"
+  },
+  "HomePage": {
+    "description": "Auto imported from components/HomePages/HomePage.vue"
+  },
+  "HomePagesLeaveAbsence": {
+    "description": "Auto imported from components/HomePages/LeaveAbsence.vue"
+  },
+  "HomePagesLeaveOutside": {
+    "description": "Auto imported from components/HomePages/LeaveOutside.vue"
+  },
+  "HomePagesListRequests": {
+    "description": "Auto imported from components/HomePages/ListRequests.vue"
+  },
+  "HomePagesResignFromWork": {
+    "description": "Auto imported from components/HomePages/ResignFromWork.vue"
+  },
+  "MenuPagesAdminManagementPage": {
+    "description": "Auto imported from components/MenuPages/AdminManagementPage.vue"
+  },
+  "MenuPagesDashboardPage": {
+    "description": "Auto imported from components/MenuPages/DashboardPage.vue"
+  },
+  "MenuPagesLeaveDaySettingPage": {
+    "description": "Auto imported from components/MenuPages/LeaveDaySettingPage.vue"
+  },
+  "MenuPagesLeaveManagementPage": {
+    "description": "Auto imported from components/MenuPages/LeaveManagementPage.vue"
+  },
+  "MenuPagesUsersManagementPage": {
+    "description": "Auto imported from components/MenuPages/UsersManagementPage.vue"
+  }
+}
