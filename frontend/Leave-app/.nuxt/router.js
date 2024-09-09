@@ -9,6 +9,7 @@ const _2b79d629 = () => interopDefault(import('..\\pages\\leaveabsence\\index.vu
 const _38cf71c1 = () => interopDefault(import('..\\pages\\leaveoutside\\index.vue' /* webpackChunkName: "pages/leaveoutside/index" */))
 const _05d3fded = () => interopDefault(import('..\\pages\\listrequests\\index.vue' /* webpackChunkName: "pages/listrequests/index" */))
 const _13acde48 = () => interopDefault(import('..\\pages\\login\\index.vue' /* webpackChunkName: "pages/login/index" */))
+const _368e8848 = () => interopDefault(import('..\\pages\\profile\\index.vue' /* webpackChunkName: "pages/profile/index" */))
 const _19908f44 = () => interopDefault(import('..\\pages\\resignfromwork\\index.vue' /* webpackChunkName: "pages/resignfromwork/index" */))
 const _407e1c62 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 const _425766b8 = () => interopDefault(import('..\\pages\\home\\_id.vue' /* webpackChunkName: "pages/home/_id" */))
@@ -44,6 +45,10 @@ export const routerOptions = {
     path: "/login",
     component: _13acde48,
     name: "login"
+  }, {
+    path: "/profile",
+    component: _368e8848,
+    name: "profile"
   }, {
     path: "/resignfromwork",
     component: _19908f44,

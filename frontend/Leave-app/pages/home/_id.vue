@@ -36,13 +36,35 @@
             </div>
 
             <!-- Routes -->
-            <HomePage v-if="this.$route.params.id === 'home'"/>
-            <LeaveAbsence v-if="this.$route.params.id === 'leaveabsence'" />
-            <LeaveOutside v-if="this.$route.params.id === 'leaveoutside'" />
-            <ResignFromWork v-if="this.$route.params.id === 'resignfromwork'" />
-            <ListRequests v-if="this.$route.params.id === 'listrequests'" />
-            
-            
+            <HomePage v-if="pages === 'home'" />
+            <LeaveAbsence v-if="pages === 'leaveabsence'" :userData="data_user" />
+            <LeaveOutside v-if="pages === 'leaveoutside'" />
+            <ResignFromWork v-if="pages === 'resignfromwork'" />
+            <ListRequests v-if="pages === 'listrequests'" />
+
+            <div class="pt-5"></div>
+
+
+
+            <!-- footer -->
+            <div class="footer-home row">
+                <button @click="pages = 'leaveabsence'; page(1)" class="col-3 item-footer item-footer-active-1">
+                    <img class="img-menu-1" src="../../static/home/menu-1.png" alt="">
+                    <p>ลาหยุด</p>
+                </button>
+                <button @click="pages = 'leaveoutside'; page(2)" class="col-3 item-footer item-footer-active-2">
+                    <img class="img-menu-2" src="../../static/home/menu-2.png" alt="">
+                    <p>นอกสถานที่</p>
+                </button>
+                <button @click="pages = 'resignfromwork'; page(3)" class="col-3 item-footer item-footer-active-3">
+                    <img class="img-menu-3" src="../../static/home/menu-3.png" alt="">
+                    <p>ลาออก</p>
+                </button>
+                <button @click="pages = 'home'; page(4)" class="col-3 item-footer item-footer-active-4">
+                    <img class="img-menu-4" src="../../static/home/menu-4.png" alt="">
+                    <p>โปรไฟล</p>
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -71,7 +93,8 @@ export default {
                 statusMessage: '',
                 userId: '',
             },
-            pageuserDetail: false
+            pageuserDetail: false,
+            pages: 'home'
         }
     },
     methods: {
@@ -101,7 +124,29 @@ export default {
                         initialLeaveApprover: filteredData[0].initialLeaveApprover,
                         finalLeaveApprover: filteredData[0].finalLeaveApprover,
                         phone: filteredData[0].phone,
-                        code: filteredData[0].code
+                        code: filteredData[0].code,
+
+                        diffDays_days_exl: filteredData[0].diffDays_days_exl,
+                        sickLeave_days: filteredData[0].sickLeave_days,
+                        sickLeave_hours: filteredData[0].sickLeave_hours,
+                        totalSickLeave: filteredData[0].totalSickLeave,
+                        remainingSickLeave: filteredData[0].remainingSickLeave,
+                        personalLeave_days: filteredData[0].personalLeave_days,
+                        personalLeave_hours: filteredData[0].personalLeave_hours,
+                        totalPersonalLeave: filteredData[0].totalPersonalLeave,
+                        remainingPersonalLeave: filteredData[0].remainingPersonalLeave,
+                        vacationLeave_days: filteredData[0].vacationLeave_days,
+                        vacationLeave_hours: filteredData[0].vacationLeave_hours,
+                        totalVacationLeave: filteredData[0].totalVacationLeave,
+                        remainingVacationLeave: filteredData[0].remainingVacationLeave,
+                        grantedVacationLeave: filteredData[0].grantedVacationLeave,
+                        unpaidLeave_days: filteredData[0].unpaidLeave_days,
+                        unpaidLeave_hours: filteredData[0].unpaidLeave_hours,
+                        totalUnpaidLeave: filteredData[0].totalUnpaidLeave,
+                        specialPersonalLeave: filteredData[0].specialPersonalLeave,
+                        ordinationLeave: filteredData[0].ordinationLeave,
+                        maternityLeave: filteredData[0].maternityLeave,
+                        workInjuryLeave_days: filteredData[0].workInjuryLeave_days
                     };
                     this.newPhone = this.data_user.phone;
                 } else {
@@ -111,8 +156,32 @@ export default {
                 console.error(error);
             }
         }
+        ,
+        page(page) {
+            document.querySelector('.item-footer-active-1').style.backgroundColor = '#514EB3';
+            document.querySelector('.item-footer-active-2').style.backgroundColor = '#514EB3';
+            document.querySelector('.item-footer-active-3').style.backgroundColor = '#514EB3';
+            document.querySelector('.item-footer-active-4').style.backgroundColor = '#514EB3';
+
+            // ปรับสี footer
+            if (page === 1) {
+                document.querySelector('.item-footer-active-1').style.backgroundColor = '#9880F9';
+            }
+            if (page === 2) {
+                document.querySelector('.item-footer-active-2').style.backgroundColor = '#9880F9';
+            }
+            if (page === 3) {
+                document.querySelector('.item-footer-active-3').style.backgroundColor = '#9880F9';
+            }
+            if (page === 4) {
+                document.querySelector('.item-footer-active-4').style.backgroundColor = '#9880F9';
+            }
+        }
     },
     mounted() {
+
+        this.pages = this.$route.params.id
+
         const profileData = localStorage.getItem('profile');
         let profile = {};
         if (profileData) {
@@ -126,6 +195,8 @@ export default {
         }
         this.profile = profile;
         this.getdata(this.profile.userId);
+
+
     }
 }
 </script>
@@ -223,5 +294,77 @@ export default {
         font-weight: 300;
         font-size: 24px;
     }
+
+    .footer-home {
+        position: fixed;
+        bottom: 0;
+        left: 1;
+        z-index: 999;
+        height: 60px;
+
+        width: 100%;
+
+        .item-footer {
+            /* ลบขอบปุ่ม */
+            border: none;
+            background-color: #514EB3;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .item-footer-active-1 {
+            background-color: #514EB3;
+        }
+
+        .item-footer-active-2 {
+            background-color: #514EB3;
+        }
+
+        .item-footer-active-3 {
+            background-color: #514EB3;
+        }
+
+        .item-footer-active-4 {
+            background-color: #514EB3;
+        }
+
+        .img-menu-1 {
+            width: 100%;
+            margin-top: 5px;
+            width: auto;
+            height: 25px;
+        }
+
+        .img-menu-2 {
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            width: auto;
+            height: 20px;
+        }
+
+        .img-menu-3 {
+            width: 100%;
+            margin-top: 5px;
+            width: auto;
+            height: 25px;
+        }
+
+        .img-menu-4 {
+            width: 100%;
+            margin-top: 5px;
+            width: auto;
+            height: 25px;
+        }
+
+
+
+    }
+
 }
 </style>
