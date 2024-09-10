@@ -1,6 +1,7 @@
 export { default as Menubar } from '../..\\components\\Menubar.vue'
 export { default as NavbarAdmin } from '../..\\components\\NavbarAdmin.vue'
 export { default as NuxtLogo } from '../..\\components\\NuxtLogo.vue'
+export { default as PieChart } from '../..\\components\\PieChart.vue'
 export { default as Tutorial } from '../..\\components\\Tutorial.vue'
 export { default as HomePage } from '../..\\components\\HomePages\\HomePage.vue'
 export { default as HomePagesLeaveAbsence } from '../..\\components\\HomePages\\LeaveAbsence.vue'

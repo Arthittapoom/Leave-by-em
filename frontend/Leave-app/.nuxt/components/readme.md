@@ -9,6 +9,7 @@ You can directly use them in pages and other components without the need to impo
 - `<Menubar>` | `<menubar>` (components/Menubar.vue)
 - `<NavbarAdmin>` | `<navbar-admin>` (components/NavbarAdmin.vue)
 - `<NuxtLogo>` | `<nuxt-logo>` (components/NuxtLogo.vue)
+- `<PieChart>` | `<pie-chart>` (components/PieChart.vue)
 - `<Tutorial>` | `<tutorial>` (components/Tutorial.vue)
 - `<HomePage>` | `<home-page>` (components/HomePages/HomePage.vue)
 - `<HomePagesLeaveAbsence>` | `<home-pages-leave-absence>` (components/HomePages/LeaveAbsence.vue)
