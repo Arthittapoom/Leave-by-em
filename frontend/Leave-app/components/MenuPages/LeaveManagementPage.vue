@@ -1,41 +1,43 @@
 <template>
     <div>
-      <!-- <h1>Admin Management</h1> -->
+      <!-- <h1>Leave Management</h1> -->
       <table>
         <thead>
           <tr>
             <th>ลำดับ</th>
-            <th>ชื่อผู้ใช้</th>
-            <th>อีเมล</th>
-            <th>หน้าที่</th>
-            <th>วันที่สร้าง</th>
-            <th>เปิด-ปิดการใช้งาน</th>
+            <th>รหัสพนักงาน</th>
+            <th>ชื่อ-นามสกุล</th>
+            <th>ตำแหน่ง</th>
+            <th>วันที่ลาวันแรก</th>
+            <th>เวลาเริ่มต้น</th>
+            <th>วันที่ลาวันสุดท้าย</th>
+            <th>เวลาสิ้นสุด</th>
+            <th>สถานะคำขอ</th>
             <th>ปรับแต่ง</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="user.email + index" :class="{ activeRow: index === 0 }">
+            <tr v-for="(leave, index) in leaveRequests" :key="leave.employeeId + index">
+
             <td>{{ index + 1 }}</td>
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
-            <td>{{ user.createdAt }}</td>
+            <td>{{ leave.employeeId }}</td>
+            <td>{{ leave.fullName }}</td>
+            <td>{{ leave.position }}</td>
+            <td>{{ leave.startDate }}</td>
+            <td>{{ leave.startTime }}</td>
+            <td>{{ leave.endDate }}</td>
+            <td>{{ leave.endTime }}</td>
             <td>
-              <label class="switch">
-                <input type="checkbox" v-model="user.isActive" @change="toggleUserStatus(user)" />
-                <span class="slider"></span>
-              </label>
-              {{ user.isActive ? 'เปิด' : 'ปิด' }}
+              <span :class="{'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ'}">
+                {{ leave.status }}
+              </span>
             </td>
             <td class="action-buttons">
               <button class="view-btn"><img class="icon" src="../../static/admin/admin/icon-1.png" alt=""></button>
-              <button class="edit-btn"><img class="icon" src="../../static/admin/admin/icon-2.png" alt=""></button>
-              <button class="delete-btn"><img class="icon" src="../../static/admin/admin/icon-3.png" alt=""></button>
             </td>
           </tr>
         </tbody>
       </table>
-      <button @click="createUser('createAdmin')" class="create-btn">สร้างผู้ใช้และหน้าที่</button>
     </div>
   </template>
   
@@ -43,54 +45,40 @@
   export default {
     data() {
       return {
-        users: [
-          {
-            name: 'Gracezel',
-            email: 'gracezelewalin@gmail.com',
-            role: 'HR',
-            createdAt: 'xx/xx/xx',
-            isActive: true
-          },
-          {
-            name: 'Gracezel',
-            email: 'gracezelewalin@gmail.com',
-            role: 'Manager',
-            createdAt: 'xx/xx/xx',
-            isActive: true
-          },
-          {
-            name: 'Gracezel',
-            email: 'gracezelewalin@gmail.com',
-            role: 'Manager',
-            createdAt: 'xx/xx/xx',
-            isActive: true
-          },
-          {
-            name: 'Gracezel',
-            email: 'gracezelewalin@gmail.com',
-            role: 'Manager',
-            createdAt: 'xx/xx/xx',
-            isActive: false
-          },
-          {
-            name: 'Gracezel',
-            email: 'gracezelewalin@gmail.com',
-            role: 'Manager',
-            createdAt: 'xx/xx/xx',
-            isActive: false
-          }
-        ]
+        leaveRequests: [
+  {
+    employeeId: 'A123456',
+    fullName: 'Gracezel Lewalin',
+    position: 'Assistant PM',
+    startDate: 'xx/xx/xx',
+    startTime: 'xx:xx น.',
+    endDate: 'xx/xx/xx',
+    endTime: 'xx:xx น.',
+    status: 'อนุมัติ',
+  },
+  {
+    employeeId: 'B123456',
+    fullName: 'John Doe',
+    position: 'Assistant PM',
+    startDate: 'xx/xx/xx',
+    startTime: 'xx:xx น.',
+    endDate: 'xx/xx/xx',
+    endTime: 'xx:xx น.',
+    status: 'ไม่อนุมัติ',
+  },
+  {
+    employeeId: 'C123456',
+    fullName: 'Jane Doe',
+    position: 'Assistant PM',
+    startDate: 'xx/xx/xx',
+    startTime: 'xx:xx น.',
+    endDate: 'xx/xx/xx',
+    endTime: 'xx:xx น.',
+    status: 'รออนุมัติ',
+  },
+]
       };
     },
-    methods: {
-      createUser(page) {
-        this.$store.dispatch('updatePage', page);   
-      },
-      toggleUserStatus(user) {
-        alert(user.isActive ? 'เปิดการใช้งาน' : 'ปิดการใช้งาน');
-        user.isActive = !user.isActive;
-      }
-    }
   };
   </script>
   
@@ -103,23 +91,26 @@
     width: 100%;
     border-collapse: collapse;
     font-family: 'Arial', sans-serif;
-    /* ลบเส้นกรอบ */
     border-spacing: 0;
+    
   }
   
   th, td {
-    /* ลบเส้นกรอบ */
-    border-spacing: 0;
+    /* border: 1px solid #ddd; */
     padding: 10px;
     text-align: left;
+
+    border-spacing: 0;
   }
   
-  tr:hover {
-    background-color: #f4e7fa;
-  }
   
   th {
+    background-color: #ffffff;
     color: #5016a7;
+  }
+  
+  tbody tr:hover {
+    background-color: #f4e7fa;
   }
   
   .action-buttons {
@@ -129,7 +120,7 @@
   
   button {
     border: none;
-    padding: 8px;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
   }
@@ -139,75 +130,25 @@
     color: white;
   }
   
-  .edit-btn {
-    background-color: #EFD288;
-    color: black;
+  span.approved {
+    background-color: #c2f0e1;
+    color: #17a789;
+    padding: 5px 10px;
+    border-radius: 20px;
   }
   
-  .delete-btn {
-    background-color: #DF6565;
-    color: white;
+  span.rejected {
+    background-color: #f9d1d1;
+    color: #d9534f;
+    padding: 5px 10px;
+    border-radius: 20px;
   }
   
-  /* Switch styling */
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 34px;
-    height: 20px;
-  }
-  
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-  }
-  
-  input:checked + .slider {
-    background-color: #4CAF50;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(14px);
-  }
-  
-  /* Create user button */
-  .create-btn {
-    margin-top: 20px;
-    background-color: #c492d5;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .create-btn:hover {
-    background-color: #dacedd;
+  span.pending {
+    background-color: #e5e5e5;
+    color: #555;
+    padding: 5px 10px;
+    border-radius: 20px;
   }
   </style>
   
