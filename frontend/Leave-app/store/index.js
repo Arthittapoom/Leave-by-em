@@ -1,6 +1,6 @@
 // store/index.js
 export const state = () => ({
-    page: 'AdminManagementPage',
+    page: 'DashboardPage',
 
   });
 

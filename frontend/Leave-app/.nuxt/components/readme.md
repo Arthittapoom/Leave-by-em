@@ -19,3 +19,4 @@ You can directly use them in pages and other components without the need to impo
 - `<MenuPagesLeaveDaySettingPage>` | `<menu-pages-leave-day-setting-page>` (components/MenuPages/LeaveDaySettingPage.vue)
 - `<MenuPagesLeaveManagementPage>` | `<menu-pages-leave-management-page>` (components/MenuPages/LeaveManagementPage.vue)
 - `<MenuPagesUsersManagementPage>` | `<menu-pages-users-management-page>` (components/MenuPages/UsersManagementPage.vue)
+- `<MenuPagesCreate>` | `<menu-pages-create>` (components/MenuPages/createAdmin/create.vue)

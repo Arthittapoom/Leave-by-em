@@ -7,6 +7,9 @@
       <LeaveManagementPage v-if="page == 'LeaveManagementPage'" />
       <UsersManagementPage v-if="page == 'UsersManagementPage'" />
       <LeaveDaySettingPage v-if="page == 'LeaveDaySettingPage'" />
+
+      <createAdmin v-if="page == 'createAdmin'" />
+
     </div>
   </div>
 </template>
@@ -19,6 +22,8 @@ import LeaveDaySettingPage from '../../components/MenuPages/LeaveDaySettingPage.
 import UsersManagementPage from '../../components/MenuPages/UsersManagementPage.vue'
 import Menubar from '../../components/Menubar.vue'
 
+import createAdmin from '../../components/MenuPages/createAdmin/create.vue'
+
 export default {
   components: {
     AdminManagementPage,
@@ -26,7 +31,9 @@ export default {
     LeaveManagementPage,
     LeaveDaySettingPage,
     UsersManagementPage,
-    Menubar
+    Menubar,
+
+    createAdmin
   },
   data() {
     return {

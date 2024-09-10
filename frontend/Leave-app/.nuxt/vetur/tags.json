@@ -37,5 +37,8 @@
   },
   "MenuPagesUsersManagementPage": {
     "description": "Auto imported from components/MenuPages/UsersManagementPage.vue"
+  },
+  "MenuPagesCreate": {
+    "description": "Auto imported from components/MenuPages/createAdmin/create.vue"
   }
 }

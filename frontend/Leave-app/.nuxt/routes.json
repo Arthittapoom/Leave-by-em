@@ -3,54 +3,63 @@
     "name": "admin",
     "path": "/admin",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\admin\\\\index.vue",
-    "chunkName": "pages/admin/index"
+    "chunkName": "pages/admin/index",
+    "_name": "_98ab9d94"
   },
   {
     "name": "leaveabsence",
     "path": "/leaveabsence",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\leaveabsence\\\\index.vue",
-    "chunkName": "pages/leaveabsence/index"
+    "chunkName": "pages/leaveabsence/index",
+    "_name": "_2b79d629"
   },
   {
     "name": "leaveoutside",
     "path": "/leaveoutside",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\leaveoutside\\\\index.vue",
-    "chunkName": "pages/leaveoutside/index"
+    "chunkName": "pages/leaveoutside/index",
+    "_name": "_38cf71c1"
   },
   {
     "name": "listrequests",
     "path": "/listrequests",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\listrequests\\\\index.vue",
-    "chunkName": "pages/listrequests/index"
+    "chunkName": "pages/listrequests/index",
+    "_name": "_05d3fded"
   },
   {
     "name": "login",
     "path": "/login",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\login\\\\index.vue",
-    "chunkName": "pages/login/index"
+    "chunkName": "pages/login/index",
+    "_name": "_13acde48"
   },
   {
     "name": "profile",
     "path": "/profile",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\profile\\\\index.vue",
-    "chunkName": "pages/profile/index"
+    "chunkName": "pages/profile/index",
+    "_name": "_368e8848"
   },
   {
     "name": "resignfromwork",
     "path": "/resignfromwork",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\resignfromwork\\\\index.vue",
-    "chunkName": "pages/resignfromwork/index"
+    "chunkName": "pages/resignfromwork/index",
+    "_name": "_19908f44"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\index.vue",
-    "chunkName": "pages/index"
+    "chunkName": "pages/index",
+    "_name": "_407e1c62"
   },
   {
     "name": "home-id",
     "path": "/home/:id?",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\home\\\\_id.vue",
-    "chunkName": "pages/home/_id"
+    "chunkName": "pages/home/_id",
+    "_name": "_425766b8"
   }
 ]
