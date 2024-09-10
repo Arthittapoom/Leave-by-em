@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>Users Management</h1>
+      <!-- <h1>Users Management</h1> -->
   
       <!-- Users Table -->
       <table>

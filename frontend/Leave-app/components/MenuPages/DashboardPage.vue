@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h2>ภาพรวมการลาของพนักงาน</h2>
+    <!-- <h2>ภาพรวมการลาของพนักงาน</h2> -->
     <div class="chart-section">
       <!-- <pie-chart :chart-data="pieData" /> -->
-      <h1>pie-chart</h1>
+      <!-- <h1>pie-chart</h1> -->
     </div>
     <div class="stats-section">
       <div class="stat-box" v-for="(stat, index) in stats" :key="index">

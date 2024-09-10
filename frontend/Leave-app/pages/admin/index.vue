@@ -1,16 +1,20 @@
 <template>
   <div class="dashboard-container">
-    <Menubar />
-    <div class="main-content">
-      <AdminManagementPage v-if="page == 'AdminManagementPage'" />
-      <DashboardPage v-if="page == 'DashboardPage'" />
-      <LeaveManagementPage v-if="page == 'LeaveManagementPage'" />
-      <UsersManagementPage v-if="page == 'UsersManagementPage'" />
-      <LeaveDaySettingPage v-if="page == 'LeaveDaySettingPage'" />
+    <Menubar  />
+    <data class="main-section">
+      <NavbarAdmin :page="page" />
 
-      <createAdmin v-if="page == 'createAdmin'" />
-
-    </div>
+      <div class="main-content">
+        <AdminManagementPage v-if="page == 'AdminManagementPage'" />
+        <DashboardPage v-if="page == 'DashboardPage'" />
+        <LeaveManagementPage v-if="page == 'LeaveManagementPage'" />
+        <UsersManagementPage v-if="page == 'UsersManagementPage'" />
+        <LeaveDaySettingPage v-if="page == 'LeaveDaySettingPage'" />
+  
+        <createAdmin v-if="page == 'createAdmin'" />
+  
+      </div>
+    </data>
   </div>
 </template>
 
@@ -63,4 +67,9 @@ export default {
   flex-grow: 1;
   padding: 20px;
 }
+
+.main-section {
+  width: 100%;
+}
+
 </style>

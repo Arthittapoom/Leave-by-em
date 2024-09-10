@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2>Upload File</h2>
+      <!-- <h2>Upload File</h2> -->
       <input type="file" @change="handleFileUpload" />
       <button @click="uploadFile">Upload</button>
       <div v-if="uploadStatus">{{ uploadStatus }}</div>

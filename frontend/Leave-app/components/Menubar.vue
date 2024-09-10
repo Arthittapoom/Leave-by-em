@@ -37,6 +37,7 @@
 
 <script>
 export default {
+  
   data() {
     return {
       activePage: 'DashboardPage', // Default active page
@@ -72,7 +73,7 @@ export default {
   margin-top: 20px;
 
   img {
-    max-width: 60%;
+    max-width: 35%;
   }
 }
 

@@ -2,6 +2,9 @@
   "Menubar": {
     "description": "Auto imported from components/Menubar.vue"
   },
+  "NavbarAdmin": {
+    "description": "Auto imported from components/NavbarAdmin.vue"
+  },
   "NuxtLogo": {
     "description": "Auto imported from components/NuxtLogo.vue"
   },
