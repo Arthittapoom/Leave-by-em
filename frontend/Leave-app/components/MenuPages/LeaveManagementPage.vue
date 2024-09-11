@@ -1,7 +1,36 @@
 <template>
     <div>
+        
+        <!-- Filtering and Search Section -->
+        <div v-if="!selectedUser" class="filter-search">
+            <div>
+               แสดง 
+                <select class="mr-2"  v-model="itemsPerPage" @change="filterTable">
+                    <option v-for="num in [5, 10, 15, 20]" :key="num" :value="num">{{ num }}</option>
+                </select>
+                 รายการ
+            </div>
+            <div>
+                <select v-model="statusFilter" @change="filterTable">
+                    <option value="">สถานะ</option>
+                    <option value="อนุมัติ">อนุมัติ</option>
+                    <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
+                    <option value="รออนุมัติ">รออนุมัติ</option>
+                </select>
+                <select v-model="positionFilter" @change="filterTable">
+                    <option value="">พนักงานที่ลางาน</option>
+                    <option value="Assistant PM">Assistant PM</option>
+                    <option value="Manager">Manager</option>
+                    <!-- Add other positions as needed -->
+                </select>
+                <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
+            </div>
+        </div>
+
+        <!-- Table Section -->
         <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
         <table v-if="!selectedUser">
+            
             <thead>
                 <tr>
                     <th>ลำดับ</th>
@@ -17,7 +46,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(leave, index) in leaveRequests" :key="leave.employeeId + index">
+                <tr v-for="(leave, index) in filteredLeaveRequests.slice(0, itemsPerPage)" :key="leave.employeeId + index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ leave.employeeId }}</td>
                     <td>{{ leave.fullName }}</td>
@@ -27,14 +56,12 @@
                     <td>{{ leave.endDate }}</td>
                     <td>{{ leave.endTime }}</td>
                     <td>
-                        <span
-                            :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
+                        <span :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
                             {{ leave.status }}
                         </span>
                     </td>
                     <td class="action-buttons">
-                        <button @click="viewUser(leave)" class="view-btn"><img class="icon"
-                                src="../../static/admin/admin/icon-1.png" alt=""></button>
+                        <button @click="viewUser(leave)" class="view-btn"><img class="icon" src="../../static/admin/admin/icon-1.png" alt=""></button>
                     </td>
                 </tr>
             </tbody>
@@ -84,7 +111,23 @@ export default {
                 },
             ],
             selectedUser: null, // เก็บข้อมูลผู้ใช้ที่ถูกเลือก
+            searchQuery: '',
+            statusFilter: '',
+            positionFilter: '',
+            itemsPerPage: 10, // จำนวนรายการที่แสดงต่อหน้า
         };
+    },
+    computed: {
+        filteredLeaveRequests() {
+            return this.leaveRequests.filter((leave) => {
+                const matchesStatus = this.statusFilter === '' || leave.status === this.statusFilter;
+                const matchesPosition = this.positionFilter === '' || leave.position === this.positionFilter;
+                const matchesSearchQuery =
+                    leave.fullName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    leave.employeeId.toLowerCase().includes(this.searchQuery.toLowerCase());
+                return matchesStatus && matchesPosition && matchesSearchQuery;
+            });
+        },
     },
     methods: {
         viewUser(user) {
@@ -97,6 +140,9 @@ export default {
             // อัปเดตข้อมูลผู้ใช้ที่ถูกเลือก
             console.log('Updated user:', updatedUser);
         },
+        filterTable() {
+            // ฟังก์ชันกรองข้อมูลตาราง
+        }
     }
 };
 </script>
@@ -165,4 +211,31 @@ span.pending {
     padding: 5px 10px;
     border-radius: 20px;
 }
+
+/* Filter and Search styling */
+.filter-search {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.filter-search div {
+    display: flex;
+    align-items: center;
+}
+
+select,
+input {
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input[type="text"] {
+    width: 150px;
+}
+
 </style>

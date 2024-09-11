@@ -23,4 +23,5 @@ You can directly use them in pages and other components without the need to impo
 - `<MenuPagesUsersManagementPage>` | `<menu-pages-users-management-page>` (components/MenuPages/UsersManagementPage.vue)
 - `<MenuPagesCreate>` | `<menu-pages-create>` (components/MenuPages/createAdmin/create.vue)
 - `<MenuPagesLeaveDetails>` | `<menu-pages-leave-details>` (components/MenuPages/Leave/LeaveDetails.vue)
+- `<MenuPagesLeaveHistory>` | `<menu-pages-leave-history>` (components/MenuPages/Leave/LeaveHistory.vue)
 - `<MenuPagesUserDetails>` | `<menu-pages-user-details>` (components/MenuPages/User/UserDetails.vue)

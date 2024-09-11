@@ -1,7 +1,32 @@
 <template>
     <div>
-      <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
+      <!-- Filtering and Search Section -->
+      <div v-if="!selectedUser" class="filter-search">
+        <div>
+          แสดง
+          <select class="mr-2" v-model="itemsPerPage" @change="filterTable">
+            <option v-for="num in [5, 10, 15, 20]" :key="num" :value="num">{{ num }}</option>
+          </select>
+          รายการ
+        </div>
+        <div>
+          <select v-model="statusFilter" @change="filterTable">
+            <option value="">สถานะ</option>
+            <option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
+            <option value="สาขา">สาขา</option>
+            <!-- เพิ่มสถานที่ปฏิบัติงานเพิ่มเติม -->
+          </select>
+          <select v-model="positionFilter" @change="filterTable">
+            <option value="">พนักงานที่ลางาน</option>
+            <option value="UX/UI Designer">UX/UI Designer</option>
+            <!-- เพิ่มตำแหน่งอื่น ๆ ตามต้องการ -->
+          </select>
+          <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
+        </div>
+      </div>
   
+      <!-- Table Section -->
+      <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
       <table v-if="!selectedUser">
         <thead>
           <tr>
@@ -15,7 +40,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="index">
+          <tr v-for="(user, index) in filteredUsers.slice(0, itemsPerPage)" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ user.employeeId }}</td>
             <td>{{ user.username }}</td>
@@ -45,10 +70,29 @@
         users: [
           { employeeId: '1001', username: 'Clara1', fullName: 'Clara Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
           { employeeId: '1002', username: 'Clara2', fullName: 'Jane Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
-          // ข้อมูลผู้ใช้อื่นๆ
+          { employeeId: '1003', username: 'Clara3', fullName: 'John Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
+          { employeeId: '1004', username: 'Clara4', fullName: 'Sarah Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
+          { employeeId: '1005', username: 'Clara5', fullName: 'Mike Doe', position: 'frontend developer', workLocation: 'สำนักงานใหญ่' },
+          { employeeId: '1006', username: 'Clara6', fullName: 'Emily Doe', position: 'backend developer', workLocation: 'สำนักงานใหญ่' },
         ],
-        selectedUser: null
+        selectedUser: null,
+        searchQuery: '',
+        statusFilter: '',
+        positionFilter: '',
+        itemsPerPage: 10, // จำนวนรายการที่แสดงต่อหน้า
       };
+    },
+    computed: {
+      filteredUsers() {
+        return this.users.filter((user) => {
+          const matchesStatus = this.statusFilter === '' || user.workLocation === this.statusFilter;
+          const matchesPosition = this.positionFilter === '' || user.position === this.positionFilter;
+          const matchesSearchQuery =
+            user.fullName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            user.employeeId.toLowerCase().includes(this.searchQuery.toLowerCase());
+          return matchesStatus && matchesPosition && matchesSearchQuery;
+        });
+      },
     },
     methods: {
       viewUser(user) {
@@ -59,22 +103,25 @@
       },
       saveUser(updatedUser) {
         console.log('Updated user:', updatedUser);
-        // const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
-        // if (index !== -1) {
-        //   this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้
-        // }
-        this.selectedUser = null; // กลับไปที่รายการหลังจากบันทึก
+        const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
+        if (index !== -1) {
+          this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้ในตาราง
+        }
+        this.selectedUser = null; // กลับไปที่ตารางหลังจากบันทึก
+      },
+      filterTable() {
+        // ฟังก์ชันกรองข้อมูลตาราง
       }
     }
   };
   </script>
   
   <style scoped>
+  /* Table styling */
   .icon {
     width: 18px;
   }
   
-  /* Table styling */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -117,5 +164,32 @@
     width: 16px;
     height: 16px;
   }
+  
+  /* Filter and Search styling */
+  .filter-search {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .filter-search div {
+    display: flex;
+    align-items: center;
+  }
+  
+  select,
+  input {
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  input[type="text"] {
+    width: 150px;
+  }
+  
   </style>
   

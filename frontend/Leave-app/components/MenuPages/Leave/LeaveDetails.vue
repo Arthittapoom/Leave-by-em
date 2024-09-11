@@ -1,88 +1,106 @@
 <template>
-    <div class="profile-container scrollable-content">
-      <div class="profile-pic">
-        <div class="circle"></div>
-        <p>รหัสพนักงาน {{ user.employeeId }}</p>
-        <button class="view-history">ดูประวัติการลางาน</button>
-      </div>
-  
-      <div class="form">
-        <div class="form-row">
-          <div class="input-group">
-            <label>ชื่อผู้ใช้งาน</label>
-            <input type="text" v-model="user.username" disabled />
+    <div>
+        <LeaveHistory :user="user" @go-back-history="goBackHistory" v-if="history === true"/>
+        <div v-if="history === false" class="profile-container scrollable-content">
+          <div class="profile-pic">
+            <div class="circle"></div>
+            <p>รหัสพนักงาน {{ user.employeeId }}</p>
+            <button @click="viewHistory(user)" class="view-history">ดูประวัติการลางาน</button>
           </div>
-          <div class="input-group">
-            <label>ตำแหน่ง</label>
-            <input type="text" v-model="user.position" disabled />
+      
+          <div class="form">
+            <div class="form-row">
+              <div class="input-group">
+                <label>ชื่อผู้ใช้งาน</label>
+                <input type="text" v-model="user.username" disabled />
+              </div>
+              <div class="input-group">
+                <label>ตำแหน่ง</label>
+                <input type="text" v-model="user.position" disabled />
+              </div>
+            </div>
+      
+            <div class="form-row">
+              <div class="input-group">
+                <label>ชื่อ - นามสกุล</label>
+                <input type="text" v-model="user.fullName" disabled />
+              </div>
+              <div class="input-group">
+                <label>อีเมล</label>
+                <input type="email" v-model="user.email" disabled />
+              </div>
+            </div>
+      
+            <div class="form-row">
+              <div class="input-group">
+                <label>เบอร์โทร</label>
+                <input type="text" v-model="user.phone" disabled />
+              </div>
+              <div class="input-group">
+                <label>แผนก</label>
+                <input type="text" v-model="user.department" disabled />
+              </div>
+            </div>
+      
+            <div class="form-row">
+              <div class="input-group">
+                <label>ประเภทการลา</label>
+                <input type="text" v-model="user.leaveType" disabled />
+              </div>
+              <div class="input-group">
+                <label>เหตุผลการลา</label>
+                <input type="text" v-model="user.leaveReason" disabled />
+              </div>
+            </div>
+      
+            <div class="form-row">
+              <label>สถานะคำขอ</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" value="อนุมัติ" v-model="user.status" /> อนุมัติ
+                </label>
+                <label class="radio-option">
+                  <input type="radio" value="ไม่อนุมัติ" v-model="user.status" /> ไม่อนุมัติ
+                </label>
+              </div>
+            </div>
+      
+            <div class="form-row">
+              <label>เหตุผล *</label>
+              <textarea v-model="user.reasonText" disabled></textarea>
+            </div>
+      
+            <div class="form-row buttons">
+              <button class="cancel-btn" @click="goBack">ยกเลิก</button>
+              <button class="save-btn" @click="save">บันทึก</button>
+            </div>
           </div>
         </div>
-  
-        <div class="form-row">
-          <div class="input-group">
-            <label>ชื่อ - นามสกุล</label>
-            <input type="text" v-model="user.fullName" disabled />
-          </div>
-          <div class="input-group">
-            <label>อีเมล</label>
-            <input type="email" v-model="user.email" disabled />
-          </div>
-        </div>
-  
-        <div class="form-row">
-          <div class="input-group">
-            <label>เบอร์โทร</label>
-            <input type="text" v-model="user.phone" disabled />
-          </div>
-          <div class="input-group">
-            <label>แผนก</label>
-            <input type="text" v-model="user.department" disabled />
-          </div>
-        </div>
-  
-        <div class="form-row">
-          <div class="input-group">
-            <label>ประเภทการลา</label>
-            <input type="text" v-model="user.leaveType" disabled />
-          </div>
-          <div class="input-group">
-            <label>เหตุผลการลา</label>
-            <input type="text" v-model="user.leaveReason" disabled />
-          </div>
-        </div>
-  
-        <div class="form-row">
-          <label>สถานะคำขอ</label>
-          <div class="radio-group">
-            <label class="radio-option">
-              <input type="radio" value="อนุมัติ" v-model="user.status" /> อนุมัติ
-            </label>
-            <label class="radio-option">
-              <input type="radio" value="ไม่อนุมัติ" v-model="user.status" /> ไม่อนุมัติ
-            </label>
-          </div>
-        </div>
-  
-        <div class="form-row">
-          <label>เหตุผล *</label>
-          <textarea v-model="user.reasonText" disabled></textarea>
-        </div>
-  
-        <div class="form-row buttons">
-          <button class="cancel-btn" @click="goBack">ยกเลิก</button>
-          <button class="save-btn" @click="save">บันทึก</button>
-        </div>
-      </div>
     </div>
   </template>
   
   <script>
+  import LeaveHistory from '../Leave/LeaveHistory.vue';
   export default {
+    components: {
+      LeaveHistory    
+    },
+    data() {
+      return {
+        history: false,
+      };
+    },
     props: ['user'], // รับข้อมูลผู้ใช้ที่ถูกเลือกจาก parent
     methods: {
+        viewHistory() {
+          this.history = true;
+        },
       goBack() {
         this.$emit('go-back'); // ส่งเหตุการณ์ย้อนกลับไปยัง parent component
       },
+      goBackHistory() {
+         this.history = false;
+        },
       save() {
         // Save logic here
         this.$emit('save', this.user);
