@@ -50,6 +50,7 @@ export default {
     },
     signOut() {
       // Add sign-out logic
+      this.$router.push('/login-admin');
     }
   }
 };

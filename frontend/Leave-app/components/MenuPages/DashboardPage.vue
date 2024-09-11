@@ -1,27 +1,66 @@
 <template>
   <div>
-    <div class="scrollable-content row">
-      <!-- Pie Chart Section -->
-      <div class="chart-container col" v-if="pieData">
-        <PieChart :chart-data="pieData" />
-      </div>
-      
-      <!-- Statistics Section -->
-      <div class="stats-container col">
-        <div class="stat-box" v-for="(stat, index) in stats" :key="index" :style="{ backgroundColor: stat.color }">
-          <span class="stat-value">{{ stat.value }}</span>
-          <small>{{ stat.label }}</small>
+
+    <div class="row">
+      <div class="col box-left">
+        <!-- Pie Chart Section -->
+        <div class="chart-container" v-if="pieData">
+
+          <PieChart class="pie-chart" :chart-data="pieData" />
+
+          
+          
+        </div>
+        <!-- Loading Section -->
+        <div class="chart-container" v-else>
+          <div class="loading text-center">
+            <div class="spinner-grow text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Summary Section -->
-        <div class="summary-container">
-          <div class="summary-item">
-            <p>จำนวนพนักงาน</p>
-            <div class="summary-value">25 คน</div>
+        <div class="approval-container">
+            <div class="approval-item">
+              <p>อนุมัติ</p>
+              <div class="approval-value">150</div>
+            </div>
+            <div class="approval-item">
+              <p>ไม่อนุมัติ</p>
+              <div class="approval-value">50</div>
+            </div>
+            <div class="approval-item">
+              <p>รออนุมัติ</p>
+              <div class="approval-value">150</div>
+            </div>
           </div>
-          <div class="summary-item">
-            <p>พนักงานลาออก</p>
-            <div class="summary-value">5 คน</div>
+
+      </div>
+      <div class="col box-right">
+        <div class="stats-container">
+
+          <div class="row stats">
+            <div class="stat-box col-4" v-for="(stat, index) in stats" :key="index"
+              :style="{ backgroundColor: stat.color }">
+              <span class="stat-value">{{ stat.value }}</span>
+              <small>{{ stat.label }}</small>
+            </div>
+          </div>
+
+
+          <!-- Summary Section -->
+          <div class="summary-container">
+            <div class="summary-item">
+              <p>จำนวนพนักงาน</p>
+              <div class="summary-value">25</div>
+              <span class="summary-unit">คน</span>
+            </div>
+            <div class="summary-item">
+              <p>พนักงานลาออก</p>
+              <div class="summary-value">5</div>
+              <span class="summary-unit">คน</span>
+              <button @click="updatePage('UsersManagementPage')" class="employee-info-btn">ข้อมูลพนักงาน</button>
+            </div>
           </div>
         </div>
       </div>
@@ -52,6 +91,7 @@ export default {
     };
   },
   mounted() {
+    
     // Simulate data loading
     setTimeout(() => {
       this.pieData = {
@@ -64,44 +104,65 @@ export default {
         ]
       };
     }, 1000);
+  },
+  methods: {
+    updatePage(page) {
+      this.$store.dispatch('updatePage', page);
+    }
   }
 }
 </script>
 
 <style scoped>
-/* Main container */
-.main-container {
-  display: flex;
+.box-left {
   width: 100%;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
+  height: 80vh;
+  /* background-color: #e57373; */
+}
+
+.box-right {
+  width: 100%;
+  height: 80vh;
+  /* background-color: #762828; */
 }
 
 /* Chart container */
 .chart-container {
-  width: 40%;
+  width: 100%;
+  height: 80%;
+
+  .pie-chart {
+    width: 70%;
+    height: 70%;
+    margin: 0 auto;
+  }
+}
+
+/* Loading section */
+.loading {
+  font-size: 18px;
+  text-align: center;
+  padding: 50px;
+  color: #666666;
+  width: 100%;
+  height: 100%;
 }
 
 /* Stats container */
 .stats-container {
-  width: 20%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
 }
 
 /* Stat box styling */
 .stat-box {
   margin: 10px;
-  padding: 15px;
+  padding: 20px;
   text-align: center;
   border-radius: 10px;
   color: white;
-  font-size: 15px;
+  font-size: 18px;
   width: 100px;
-  height: 100px;
+  height: 93px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -110,59 +171,90 @@ export default {
 
 /* Stat value styling */
 .stat-value {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-/* Summary container */
 .summary-container {
+  padding: 10px;
+
   margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  height: 200px;
 }
 
-/* Summary item styling */
 .summary-item {
-  background-color: #ffe6e6;
-  padding: 15px;
-  border-radius: 10px;
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 18px;
+  border: 2px solid #e57373;
+  border-radius: 20px;
+  padding: 20px;
+  width: 70%;
+  height: 50px;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Summary value styling */
+.summary-item p {
+  font-size: 16px;
+  color: #e57373;
+  margin: 0;
+}
+
 .summary-value {
-  background-color: #ff6666;
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
   font-size: 20px;
+  color: #e57373;
   font-weight: bold;
+  margin: 10px;
 }
 
-/* Scrollable content */
-.scrollable-content {
-  width: 100%;
-  height: 85vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
+.summary-unit {
+  font-size: 16px;
+  color: #e57373;
+}
+
+.employee-info-btn {
+  background-color: #e57373;
+  color: white;
+  border: none;
+  margin-left: 10px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  /* margin-top: 10px; */
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  height: 40px;
+}
+
+/* Approval container */
+.approval-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.approval-item {
+  text-align: center;
+  width: 30%;
+  background-color: #f2f2f2;
+  border-radius: 10px;
   padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Custom scrollbar */
-.scrollable-content::-webkit-scrollbar {
-  width: 8px;
+.approval-item p {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
 }
 
-.scrollable-content::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
-  border-radius: 4px;
-}
-
-.scrollable-content::-webkit-scrollbar-thumb:hover {
-  background-color: #ffffff;
+.approval-value {
+  font-size: 36px;
+  color: #333;
+  font-weight: bold;
+  margin-top: 5px;
 }
 </style>

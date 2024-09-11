@@ -35,6 +35,13 @@
     "_name": "_13acde48"
   },
   {
+    "name": "login-admin",
+    "path": "/login-admin",
+    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\login-admin\\\\index.vue",
+    "chunkName": "pages/login-admin/index",
+    "_name": "_ecca024c"
+  },
+  {
     "name": "profile",
     "path": "/profile",
     "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\Leave-by-em\\\\frontend\\\\Leave-app\\\\pages\\\\profile\\\\index.vue",

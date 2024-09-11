@@ -19,7 +19,7 @@ export default {
         // console.log("ตรวจสอบว่าเปิดในคอมพิวเตอร์หรือไม่")
           // ตรวจสอบว่าเปิดในคอมพิวเตอร์หรือไม่
           if (navigator.userAgent.indexOf('Mobile') === -1) {
-            await this.$router.push('/admin')
+            await this.$router.push('/login-admin')
             // console.log("อยู่ในคอมพิวเตอร์")
           } else {
             await this.$router.push('/login')

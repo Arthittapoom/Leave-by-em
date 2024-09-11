@@ -64,7 +64,7 @@ export default {
 }
 
 .main-content {
-  flex-grow: 1;
+  /* flex-grow: 1; */
   padding: 20px;
 }
 
