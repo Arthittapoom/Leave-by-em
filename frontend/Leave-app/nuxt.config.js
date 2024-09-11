@@ -1,10 +1,13 @@
+import { url } from "inspector/promises";
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Leave-app',
+    // url
+    title: 'Leave Manager',
     htmlAttrs: {
       lang: 'en'
     },
@@ -15,7 +18,8 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      // { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/admin/logo.png' }
     ]
   },
 
