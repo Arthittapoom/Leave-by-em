@@ -13,9 +13,9 @@ export { default as MenuPagesDashboardPage } from '../..\\components\\MenuPages\
 export { default as MenuPagesLeaveDaySettingPage } from '../..\\components\\MenuPages\\LeaveDaySettingPage.vue'
 export { default as MenuPagesLeaveManagementPage } from '../..\\components\\MenuPages\\LeaveManagementPage.vue'
 export { default as MenuPagesUsersManagementPage } from '../..\\components\\MenuPages\\UsersManagementPage.vue'
+export { default as MenuPagesCreate } from '../..\\components\\MenuPages\\createAdmin\\create.vue'
 export { default as MenuPagesLeaveDetails } from '../..\\components\\MenuPages\\Leave\\LeaveDetails.vue'
 export { default as MenuPagesLeaveHistory } from '../..\\components\\MenuPages\\Leave\\LeaveHistory.vue'
-export { default as MenuPagesCreate } from '../..\\components\\MenuPages\\createAdmin\\create.vue'
 export { default as MenuPagesUserDetails } from '../..\\components\\MenuPages\\User\\UserDetails.vue'
 
 // nuxt/nuxt.js#8607
