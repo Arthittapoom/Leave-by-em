@@ -46,5 +46,11 @@
   },
   "MenuPagesCreate": {
     "description": "Auto imported from components/MenuPages/createAdmin/create.vue"
+  },
+  "MenuPagesLeaveDetails": {
+    "description": "Auto imported from components/MenuPages/Leave/LeaveDetails.vue"
+  },
+  "MenuPagesUserDetails": {
+    "description": "Auto imported from components/MenuPages/User/UserDetails.vue"
   }
 }

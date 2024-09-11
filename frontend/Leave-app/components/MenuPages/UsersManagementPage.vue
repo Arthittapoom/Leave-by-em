@@ -1,9 +1,8 @@
 <template>
     <div>
-      <!-- <h1>Users Management</h1> -->
+      <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
   
-      <!-- Users Table -->
-      <table>
+      <table v-if="!selectedUser">
         <thead>
           <tr>
             <th>ลำดับ</th>
@@ -16,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="index"> <!-- Fixed key -->
+          <tr v-for="(user, index) in users" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ user.employeeId }}</td>
             <td>{{ user.username }}</td>
@@ -24,7 +23,7 @@
             <td>{{ user.position }}</td>
             <td>{{ user.workLocation }}</td>
             <td class="action-buttons">
-              <button class="view-btn">
+              <button @click="viewUser(user)" class="view-btn">
                 <img class="icon" src="../../static/admin/admin/icon-1.png" alt="view">
               </button>
             </td>
@@ -35,17 +34,38 @@
   </template>
   
   <script>
+  import LeaveDetails from '../../components/MenuPages/User/UserDetails.vue';
+  
   export default {
+    components: {
+      LeaveDetails
+    },
     data() {
       return {
         users: [
-          { employeeId: 'xxxxxxx', username: 'Clara', fullName: 'xxxxxxx', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
-          { employeeId: 'xxxxxxx', username: 'Clara', fullName: 'xxxxxxx', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
-          { employeeId: 'xxxxxxx', username: 'Clara', fullName: 'xxxxxxx', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
-          { employeeId: 'xxxxxxx', username: 'Clara', fullName: 'xxxxxxx', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
-        ]
+          { employeeId: '1001', username: 'Clara1', fullName: 'Clara Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
+          { employeeId: '1002', username: 'Clara2', fullName: 'Jane Doe', position: 'UX/UI Designer', workLocation: 'สำนักงานใหญ่' },
+          // ข้อมูลผู้ใช้อื่นๆ
+        ],
+        selectedUser: null
       };
     },
+    methods: {
+      viewUser(user) {
+        this.selectedUser = user; // เลือกผู้ใช้ที่ต้องการดูรายละเอียด
+      },
+      goBack() {
+        this.selectedUser = null; // ย้อนกลับไปยังรายการผู้ใช้
+      },
+      saveUser(updatedUser) {
+        console.log('Updated user:', updatedUser);
+        // const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
+        // if (index !== -1) {
+        //   this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้
+        // }
+        this.selectedUser = null; // กลับไปที่รายการหลังจากบันทึก
+      }
+    }
   };
   </script>
   
