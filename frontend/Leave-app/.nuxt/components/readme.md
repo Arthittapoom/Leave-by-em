@@ -21,7 +21,7 @@ You can directly use them in pages and other components without the need to impo
 - `<MenuPagesLeaveDaySettingPage>` | `<menu-pages-leave-day-setting-page>` (components/MenuPages/LeaveDaySettingPage.vue)
 - `<MenuPagesLeaveManagementPage>` | `<menu-pages-leave-management-page>` (components/MenuPages/LeaveManagementPage.vue)
 - `<MenuPagesUsersManagementPage>` | `<menu-pages-users-management-page>` (components/MenuPages/UsersManagementPage.vue)
-- `<MenuPagesCreate>` | `<menu-pages-create>` (components/MenuPages/createAdmin/create.vue)
 - `<MenuPagesLeaveDetails>` | `<menu-pages-leave-details>` (components/MenuPages/Leave/LeaveDetails.vue)
 - `<MenuPagesLeaveHistory>` | `<menu-pages-leave-history>` (components/MenuPages/Leave/LeaveHistory.vue)
+- `<MenuPagesCreate>` | `<menu-pages-create>` (components/MenuPages/createAdmin/create.vue)
 - `<MenuPagesUserDetails>` | `<menu-pages-user-details>` (components/MenuPages/User/UserDetails.vue)
