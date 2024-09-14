@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[32],{482:function(n,o,t){"use strict";t.r(o);var e={mounted:function(){this.$router.push("/home/resignfromwork")}},r=t(87),component=Object(r.a)(e,(function(){return(0,this._self._c)("div")}),[],!1,null,"0fc3a773",null);o.default=component.exports}}]);
