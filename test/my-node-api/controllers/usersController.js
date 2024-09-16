@@ -3,7 +3,7 @@ const readXlsxFile = require('read-excel-file/node');
 const { Readable } = require('stream');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const User = require('../models/UserModel');
+const User = require('../models/AdminModel');
 const UsersdbModel = require('../models/UsersdbModel');
 const Usersdb = require('../models/UsersdbModel');
 

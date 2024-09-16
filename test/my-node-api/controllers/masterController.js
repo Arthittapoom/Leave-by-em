@@ -3,11 +3,11 @@ const readXlsxFile = require('read-excel-file/node');
 const { Readable } = require('stream');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const User = require('../models/UserModel');
+const AdminUser = require('../models/AdminModel');
 const UsersdbModel = require('../models/UsersdbModel');
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({});
+        const users = await AdminUser.find({});
         res.json(users);
     } catch (err) {
         res.status(500).send('Server error');
@@ -16,7 +16,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.listUsers = async (req, res) => {
     try {
-        const users = await User.find({});
+        const users = await AdminUser.find({});
         res.json(users);
     } catch (err) {
         res.status(500).send('Server error');

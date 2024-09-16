@@ -30,14 +30,16 @@
       </div>
     </div>
     <div class="signout-section">
-      <button class="signout-btn" @click="signOut"> <img class="icon-1" src="/admin/icon-6.png" alt=""> ออกจากระบบ</button>
+      <button class="signout-btn" @click="signOut"> <img class="icon-1" src="/admin/icon-6.png" alt="">
+        ออกจากระบบ</button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  
+
   data() {
     return {
       activePage: 'DashboardPage', // Default active page
@@ -48,9 +50,34 @@ export default {
       this.activePage = page;
       this.$store.dispatch('updatePage', page);
     },
+
     signOut() {
-      // Add sign-out logic
-      this.$router.push('/login-admin');
+
+      const token = localStorage.getItem('token');
+
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL+'/auth/logout',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+
+      axios.request(config)
+        .then((response) => {
+          if(response.status == 200) {
+            localStorage.removeItem('token');
+            this.$router.push('/login-admin');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+
+      // this.$router.push('/login-admin');
     }
   }
 };
@@ -145,7 +172,7 @@ export default {
   background-color: #f4e3fe;
 }
 
-.icon-1{
+.icon-1 {
   margin-right: 10px;
   width: 20px;
   height: 20px;
