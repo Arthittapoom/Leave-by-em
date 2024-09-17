@@ -26,7 +26,7 @@ import LeaveDaySettingPage from '../../components/MenuPages/LeaveDaySettingPage.
 import UsersManagementPage from '../../components/MenuPages/UsersManagementPage.vue'
 import Menubar from '../../components/Menubar.vue'
 
-import createAdmin from '../../components/MenuPages/createAdmin/create.vue'
+import createAdmin from '../../components/MenuPages/Admin/create.vue'
 
 export default {
   components: {
