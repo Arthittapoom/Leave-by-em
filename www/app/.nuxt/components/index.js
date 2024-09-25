@@ -15,9 +15,9 @@ export { default as MenuPagesLeaveManagementPage } from '../..\\components\\Menu
 export { default as MenuPagesUsersManagementPage } from '../..\\components\\MenuPages\\UsersManagementPage.vue'
 export { default as MenuPagesAdminCreate } from '../..\\components\\MenuPages\\Admin\\create.vue'
 export { default as MenuPagesAdminViewUserAdmin } from '../..\\components\\MenuPages\\Admin\\viewUserAdmin.vue'
+export { default as MenuPagesUserDetails } from '../..\\components\\MenuPages\\User\\UserDetails.vue'
 export { default as MenuPagesLeaveDetails } from '../..\\components\\MenuPages\\Leave\\LeaveDetails.vue'
 export { default as MenuPagesLeaveHistory } from '../..\\components\\MenuPages\\Leave\\LeaveHistory.vue'
-export { default as MenuPagesUserDetails } from '../..\\components\\MenuPages\\User\\UserDetails.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

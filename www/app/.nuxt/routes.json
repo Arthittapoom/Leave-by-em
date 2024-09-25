@@ -2,71 +2,71 @@
   {
     "name": "admin",
     "path": "/admin",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
     "chunkName": "pages/admin/index",
-    "_name": "_03c6bf5d"
+    "_name": "_5de2e2df"
   },
   {
     "name": "leaveabsence",
     "path": "/leaveabsence",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
     "chunkName": "pages/leaveabsence/index",
-    "_name": "_7e0f5e22"
+    "_name": "_55eea460"
   },
   {
     "name": "leaveoutside",
     "path": "/leaveoutside",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
     "chunkName": "pages/leaveoutside/index",
-    "_name": "_e9360c8c"
+    "_name": "_63443ff8"
   },
   {
     "name": "listrequests",
     "path": "/listrequests",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
     "chunkName": "pages/listrequests/index",
-    "_name": "_586985e6"
+    "_name": "_3048cc24"
   },
   {
     "name": "login",
     "path": "/login",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
     "chunkName": "pages/login/index",
-    "_name": "_46461f03"
+    "_name": "_bf3b7af6"
   },
   {
     "name": "login-admin",
     "path": "/login-admin",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
     "chunkName": "pages/login-admin/index",
-    "_name": "_18a813c1"
+    "_name": "_766fe47a"
   },
   {
     "name": "profile",
     "path": "/profile",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
     "chunkName": "pages/profile/index",
-    "_name": "_c02b477a"
+    "_name": "_38e8b176"
   },
   {
     "name": "resignfromwork",
     "path": "/resignfromwork",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
     "chunkName": "pages/resignfromwork/index",
-    "_name": "_1ce3fcfd"
+    "_name": "_7a0aabbb"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\index.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
     "chunkName": "pages/index",
-    "_name": "_2230f188"
+    "_name": "_eb4e4774"
   },
   {
     "name": "home-id",
     "path": "/home/:id?",
-    "component": "C:\\\\Users\\\\Arthi\\\\OneDrive\\\\เดสก์ท็อป\\\\ฝึกงาน\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
+    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
     "chunkName": "pages/home/_id",
-    "_name": "_6e423c1e"
+    "_name": "_9d1184a2"
   }
 ]

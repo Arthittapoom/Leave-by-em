@@ -4,16 +4,16 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _03c6bf5d = () => interopDefault(import('..\\pages\\admin\\index.vue' /* webpackChunkName: "pages/admin/index" */))
-const _7e0f5e22 = () => interopDefault(import('..\\pages\\leaveabsence\\index.vue' /* webpackChunkName: "pages/leaveabsence/index" */))
-const _e9360c8c = () => interopDefault(import('..\\pages\\leaveoutside\\index.vue' /* webpackChunkName: "pages/leaveoutside/index" */))
-const _586985e6 = () => interopDefault(import('..\\pages\\listrequests\\index.vue' /* webpackChunkName: "pages/listrequests/index" */))
-const _46461f03 = () => interopDefault(import('..\\pages\\login\\index.vue' /* webpackChunkName: "pages/login/index" */))
-const _18a813c1 = () => interopDefault(import('..\\pages\\login-admin\\index.vue' /* webpackChunkName: "pages/login-admin/index" */))
-const _c02b477a = () => interopDefault(import('..\\pages\\profile\\index.vue' /* webpackChunkName: "pages/profile/index" */))
-const _1ce3fcfd = () => interopDefault(import('..\\pages\\resignfromwork\\index.vue' /* webpackChunkName: "pages/resignfromwork/index" */))
-const _2230f188 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
-const _6e423c1e = () => interopDefault(import('..\\pages\\home\\_id.vue' /* webpackChunkName: "pages/home/_id" */))
+const _5de2e2df = () => interopDefault(import('..\\pages\\admin\\index.vue' /* webpackChunkName: "pages/admin/index" */))
+const _55eea460 = () => interopDefault(import('..\\pages\\leaveabsence\\index.vue' /* webpackChunkName: "pages/leaveabsence/index" */))
+const _63443ff8 = () => interopDefault(import('..\\pages\\leaveoutside\\index.vue' /* webpackChunkName: "pages/leaveoutside/index" */))
+const _3048cc24 = () => interopDefault(import('..\\pages\\listrequests\\index.vue' /* webpackChunkName: "pages/listrequests/index" */))
+const _bf3b7af6 = () => interopDefault(import('..\\pages\\login\\index.vue' /* webpackChunkName: "pages/login/index" */))
+const _766fe47a = () => interopDefault(import('..\\pages\\login-admin\\index.vue' /* webpackChunkName: "pages/login-admin/index" */))
+const _38e8b176 = () => interopDefault(import('..\\pages\\profile\\index.vue' /* webpackChunkName: "pages/profile/index" */))
+const _7a0aabbb = () => interopDefault(import('..\\pages\\resignfromwork\\index.vue' /* webpackChunkName: "pages/resignfromwork/index" */))
+const _eb4e4774 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
+const _9d1184a2 = () => interopDefault(import('..\\pages\\home\\_id.vue' /* webpackChunkName: "pages/home/_id" */))
 
 const emptyFn = () => {}
 
@@ -28,43 +28,43 @@ export const routerOptions = {
 
   routes: [{
     path: "/admin",
-    component: _03c6bf5d,
+    component: _5de2e2df,
     name: "admin"
   }, {
     path: "/leaveabsence",
-    component: _7e0f5e22,
+    component: _55eea460,
     name: "leaveabsence"
   }, {
     path: "/leaveoutside",
-    component: _e9360c8c,
+    component: _63443ff8,
     name: "leaveoutside"
   }, {
     path: "/listrequests",
-    component: _586985e6,
+    component: _3048cc24,
     name: "listrequests"
   }, {
     path: "/login",
-    component: _46461f03,
+    component: _bf3b7af6,
     name: "login"
   }, {
     path: "/login-admin",
-    component: _18a813c1,
+    component: _766fe47a,
     name: "login-admin"
   }, {
     path: "/profile",
-    component: _c02b477a,
+    component: _38e8b176,
     name: "profile"
   }, {
     path: "/resignfromwork",
-    component: _1ce3fcfd,
+    component: _7a0aabbb,
     name: "resignfromwork"
   }, {
     path: "/",
-    component: _2230f188,
+    component: _eb4e4774,
     name: "index"
   }, {
     path: "/home/:id?",
-    component: _6e423c1e,
+    component: _9d1184a2,
     name: "home-id"
   }],
 
