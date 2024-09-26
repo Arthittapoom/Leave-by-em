@@ -15,6 +15,11 @@ app.use(cors());
 // ตั้งค่า static file สำหรับการเข้าถึงไฟล์ที่อัปโหลด
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// index
+app.get('/', (req, res) => {
+    res.send('version 1.0.0');
+});
+
 // นำเข้าเส้นทางทั้งหมดจาก routes/index.js
 const allRoutes = require('./routes');
 
