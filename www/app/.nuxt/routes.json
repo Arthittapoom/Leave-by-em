@@ -2,71 +2,71 @@
   {
     "name": "admin",
     "path": "/admin",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
     "chunkName": "pages/admin/index",
-    "_name": "_5de2e2df"
+    "_name": "_5d8dc199"
   },
   {
     "name": "leaveabsence",
     "path": "/leaveabsence",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
     "chunkName": "pages/leaveabsence/index",
-    "_name": "_55eea460"
+    "_name": "_0188a066"
   },
   {
     "name": "leaveoutside",
     "path": "/leaveoutside",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
     "chunkName": "pages/leaveoutside/index",
-    "_name": "_63443ff8"
+    "_name": "_0ede3bfe"
   },
   {
     "name": "listrequests",
     "path": "/listrequests",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
     "chunkName": "pages/listrequests/index",
-    "_name": "_3048cc24"
+    "_name": "_483a6fac"
   },
   {
     "name": "login",
     "path": "/login",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
     "chunkName": "pages/login/index",
-    "_name": "_bf3b7af6"
+    "_name": "_bfe5bd82"
   },
   {
     "name": "login-admin",
     "path": "/login-admin",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
     "chunkName": "pages/login-admin/index",
-    "_name": "_766fe47a"
+    "_name": "_18c90e06"
   },
   {
     "name": "profile",
     "path": "/profile",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
     "chunkName": "pages/profile/index",
-    "_name": "_38e8b176"
+    "_name": "_b80c8102"
   },
   {
     "name": "resignfromwork",
     "path": "/resignfromwork",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
     "chunkName": "pages/resignfromwork/index",
-    "_name": "_7a0aabbb"
+    "_name": "_b1d4837e"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
     "chunkName": "pages/index",
-    "_name": "_eb4e4774"
+    "_name": "_30148a68"
   },
   {
     "name": "home-id",
     "path": "/home/:id?",
-    "component": "C:\\\\Users\\\\Arthi\\\\Documents\\\\GitHub\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
+    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
     "chunkName": "pages/home/_id",
-    "_name": "_9d1184a2"
+    "_name": "_20d56935"
   }
 ]

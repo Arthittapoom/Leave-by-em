@@ -48,21 +48,31 @@
 
             <!-- footer -->
             <div class="footer-home row">
-                <button @click="pages = 'leaveabsence'; page(1)" class="col-3 item-footer item-footer-active-1">
+                <button @click="pages = 'leaveabsence'; page(1)" class="col item-footer item-footer-active-1">
                     <img class="img-menu-1" src="../../static/home/menu-1.png" alt="">
-                    <p>ลาหยุด</p>
+                    <p v-if="role !== 'admin'">ลาหยุด</p>
+                    <p class="p-admin" v-if="role === 'admin'">ลาหยุด</p>
                 </button>
-                <button @click="pages = 'leaveoutside'; page(2)" class="col-3 item-footer item-footer-active-2">
+                <button @click="pages = 'leaveoutside'; page(2)" class="col item-footer item-footer-active-2">
                     <img class="img-menu-2" src="../../static/home/menu-2.png" alt="">
-                    <p>นอกสถานที่</p>
+                    <p v-if="role !== 'admin'">นอกสถานที่</p>
+                    <p class="p-admin" v-if="role === 'admin'">นอกสถานที่</p>
                 </button>
-                <button @click="pages = 'resignfromwork'; page(3)" class="col-3 item-footer item-footer-active-3">
+                <button @click="pages = 'resignfromwork'; page(3)" class="col item-footer item-footer-active-3">
                     <img class="img-menu-3" src="../../static/home/menu-3.png" alt="">
-                    <p>ลาออก</p>
+                    <p v-if="role !== 'admin'">ลาออก</p>
+                    <p class="p-admin" v-if="role === 'admin'">ลาออก</p>
                 </button>
-                <button @click="pages = 'home'; page(4)" class="col-3 item-footer item-footer-active-4">
+                <button v-if="role === 'admin'" @click="pages = 'listrequests'; page(5)"
+                    class="col item-footer item-footer-active-5">
+                    <img class="img-menu-5" src="../../static/home/menu-5.png" alt="">
+                    <p v-if="role !== 'admin'">คำขอ</p>
+                    <p class="p-admin" v-if="role === 'admin'">คำขอ</p>
+                </button>
+                <button @click="pages = 'home'; page(4)" class="col item-footer item-footer-active-4">
                     <img class="img-menu-4" src="../../static/home/menu-4.png" alt="">
-                    <p>โปรไฟล</p>
+                    <p v-if="role !== 'admin'">โปรไฟล</p>
+                    <p class="p-admin" v-if="role === 'admin'">โปรไฟล</p>
                 </button>
             </div>
         </div>
@@ -94,7 +104,10 @@ export default {
                 userId: '',
             },
             pageuserDetail: false,
-            pages: 'home'
+            pages: 'home',
+
+            // กำหนดสิทธิ์
+            role: 'admin',
         }
     },
     methods: {
@@ -158,25 +171,37 @@ export default {
         }
         ,
         page(page) {
-            document.querySelector('.item-footer-active-1').style.backgroundColor = '#514EB3';
-            document.querySelector('.item-footer-active-2').style.backgroundColor = '#514EB3';
-            document.querySelector('.item-footer-active-3').style.backgroundColor = '#514EB3';
-            document.querySelector('.item-footer-active-4').style.backgroundColor = '#514EB3';
+            const itemFooter1 = document.querySelector('.item-footer-active-1');
+            const itemFooter2 = document.querySelector('.item-footer-active-2');
+            const itemFooter3 = document.querySelector('.item-footer-active-3');
+            const itemFooter4 = document.querySelector('.item-footer-active-4');
+            const itemFooter5 = document.querySelector('.item-footer-active-5');
 
-            // ปรับสี footer
-            if (page === 1) {
-                document.querySelector('.item-footer-active-1').style.backgroundColor = '#9880F9';
+            // ตรวจสอบว่า element แต่ละอันไม่เป็น null ก่อนที่จะทำการเปลี่ยนสี
+            if (itemFooter1) itemFooter1.style.backgroundColor = '#514EB3';
+            if (itemFooter2) itemFooter2.style.backgroundColor = '#514EB3';
+            if (itemFooter3) itemFooter3.style.backgroundColor = '#514EB3';
+            if (itemFooter4) itemFooter4.style.backgroundColor = '#514EB3';
+            if (itemFooter5) itemFooter5.style.backgroundColor = '#514EB3';
+
+            // ปรับสี footer ตาม page ที่เลือก
+            if (page === 1 && itemFooter1) {
+                itemFooter1.style.backgroundColor = '#9880F9';
             }
-            if (page === 2) {
-                document.querySelector('.item-footer-active-2').style.backgroundColor = '#9880F9';
+            if (page === 2 && itemFooter2) {
+                itemFooter2.style.backgroundColor = '#9880F9';
             }
-            if (page === 3) {
-                document.querySelector('.item-footer-active-3').style.backgroundColor = '#9880F9';
+            if (page === 3 && itemFooter3) {
+                itemFooter3.style.backgroundColor = '#9880F9';
             }
-            if (page === 4) {
-                document.querySelector('.item-footer-active-4').style.backgroundColor = '#9880F9';
+            if (page === 4 && itemFooter4) {
+                itemFooter4.style.backgroundColor = '#9880F9';
+            }
+            if (page === 5 && itemFooter5) {
+                itemFooter5.style.backgroundColor = '#9880F9';
             }
         }
+
     },
     mounted() {
 
@@ -333,6 +358,10 @@ export default {
             background-color: #514EB3;
         }
 
+        .item-footer-active-5 {
+            background-color: #514EB3;
+        }
+
         .img-menu-1 {
             width: 100%;
             margin-top: 5px;
@@ -362,8 +391,19 @@ export default {
             height: 25px;
         }
 
+        .img-menu-5 {
+            width: 100%;
+            margin-top: 5px;
+            width: auto;
+            height: 25px;
+        }
 
 
+
+    }
+
+    .p-admin {
+        font-size: 11px;
     }
 
 }
