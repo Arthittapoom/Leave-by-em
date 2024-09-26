@@ -14,32 +14,36 @@
     </div>
 
     <!-- Modal -->
-    <div v-if="selectedRequest" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h3>รายละเอียดคำขอ</h3>
-        <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
-        <p><strong>รหัสพนักงาน:</strong> WM64007H</p>
-        <p><strong>ตำแหน่ง:</strong> Human Resource Officer</p>
-        <p><strong>สังกัด:</strong> Workmotion</p>
-        <p><strong>ประเภทพนักงาน:</strong> พนักงานรายเดือน</p>
-        <p><strong>ฝ่าย:</strong> Human Resource</p>
-        <p><strong>สถานที่ปฏิบัติงาน:</strong> BKK</p>
-        <p><strong>อายุงาน:</strong> 000-000000</p>
-        <p><strong>เบอร์โทรศัพท์:</strong> 000-00000000</p>
-        <p><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason }}</p>
-        <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> XX/XX/XXXX - XX/XX/XXXX</p>
-        <p><strong>เวลา ที่ต้องการลา:</strong> 22:00 - 23:00</p>
-        <div class="approval">
-          <label><input type="radio" name="approval" value="approved" /> อนุมัติ</label>
-          <label><input type="radio" name="approval" value="not-approved" /> ไม่อนุมัติ</label>
-        </div>
-        <label for="remark">หมายเหตุ:</label>
-        <textarea id="remark" rows="4"></textarea>
-        <button class="submit-button">ยืนยัน</button>
-        <div class="submit-button-b"> </div>
-      </div>
+
+<div v-if="selectedRequest" class="modal">
+  <div class="modal-content">
+    <span class="close" @click="closeModal">&times;</span>
+    <h3>รายละเอียดคำขอ</h3>
+    <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
+    <p><strong>รหัสพนักงาน:</strong> WM64007H</p>
+    <p><strong>ตำแหน่ง:</strong> Human Resource Officer</p>
+    <div class="flex-container">
+      <p><strong>สังกัด:</strong> Workmotion</p>
+      <p><strong>สถานที่ปฏิบัติงาน:</strong> BKK</p>
     </div>
+    <div class="flex-container">
+      <p><strong>อายุงาน:</strong> 000-000000</p>
+      <p><strong>เบอร์โทรศัพท์:</strong> 000-00000000</p>
+    </div>
+    <p><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason }}</p>
+    <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> XX/XX/XXXX - XX/XX/XXXX</p>
+    <p><strong>เวลา ที่ต้องการลา:</strong> 22:00 - 23:00</p>
+    <div class="approval">
+      <label><input type="radio" name="approval" value="approved" /> อนุมัติ</label>
+      <label><input type="radio" name="approval" value="not-approved" /> ไม่อนุมัติ</label>
+    </div>
+    <label for="remark">หมายเหตุ:</label>
+    <textarea id="remark" rows="4"></textarea>
+    <button class="submit-button">ยืนยัน</button>
+    <div class="submit-button-b"> </div>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -217,4 +221,18 @@ textarea {
 .submit-button:hover {
   background-color: #3700b3;
 }
+
+/* Add this to your existing CSS */
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.flex-container p {
+  flex: 1;
+  margin-right: 20px;
+  white-space: nowrap;
+}
+
 </style>

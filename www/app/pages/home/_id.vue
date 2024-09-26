@@ -268,15 +268,11 @@ export default {
 
 /*  */
 .background {
-    background-image: url("/login/bg.svg");
-    background-repeat: no-repeat;
+    background-image: url("/login/bg2.png");
     background-size: cover;
-    background-position: center;
-    height: 100vh;
+    height: 200vh;
     width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: start;
+    
 }
 
 .from-login {

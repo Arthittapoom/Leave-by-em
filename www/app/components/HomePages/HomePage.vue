@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="statusLeave == 'ส่งคำขอสำเร็จ'" class="card-2 mt-4 pt-4 pb-4 pl-4 pr-4">
+        <div v-if="statusLeave == 'ส่งคำขอสำเร็จ'" class="card-2 mt-4 pt-4 pb-4">
             <img class="logo-status" src="../../static/home/status.png" alt="">
             <div class="row text-center" style="width: 100%;">
                 <div class="col">ส่งคำขอสำเร็จ</div>
@@ -238,7 +238,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 350px;
+        width: 355px;
         position: relative;
         z-index: 0;
         top: -50px;

@@ -8,7 +8,7 @@
                     <p>กรอกรหัสพนักงาน</p>
                 </div>
                 <input type="text" name="code_id" v-model="code_id" id="">
-                <button @click="getdata(code_id)">เรียกข้อมูลพนักงาน</button>
+                <button @click="getdata(code_id)">เรียกข้อมูล</button>
                 <div class="div-p-center" v-if="data_user.name">
                     <!-- ชื่อ-นามสกุล อยู่ตรงกลาง -->
                     <p class="mt-3">ชื่อ-นามสกุล</p>
