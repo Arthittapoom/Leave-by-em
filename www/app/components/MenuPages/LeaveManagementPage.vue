@@ -1,14 +1,14 @@
 <template>
     <div>
-        
+
         <!-- Filtering and Search Section -->
         <div v-if="!selectedUser" class="filter-search">
             <div>
-               แสดง 
-                <select class="mr-2"  v-model="itemsPerPage" @change="filterTable">
+                แสดง
+                <select class="mr-2" v-model="itemsPerPage" @change="filterTable">
                     <option v-for="num in [5, 10, 15, 20]" :key="num" :value="num">{{ num }}</option>
                 </select>
-                 รายการ
+                รายการ
             </div>
             <div>
                 <select v-model="statusFilter" @change="filterTable">
@@ -30,7 +30,7 @@
         <!-- Table Section -->
         <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
         <table v-if="!selectedUser">
-            
+
             <thead>
                 <tr>
                     <th>ลำดับ</th>
@@ -46,7 +46,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(leave, index) in filteredLeaveRequests.slice(0, itemsPerPage)" :key="leave.employeeId + index">
+                <tr v-for="(leave, index) in filteredLeaveRequests.slice(0, itemsPerPage)"
+                    :key="leave.employeeId + index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ leave.employeeId }}</td>
                     <td>{{ leave.fullName }}</td>
@@ -56,12 +57,15 @@
                     <td>{{ leave.endDate }}</td>
                     <td>{{ leave.endTime }}</td>
                     <td>
-                        <span :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
+                        <span
+                            :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
                             {{ leave.status }}
                         </span>
                     </td>
                     <td class="action-buttons">
-                        <button @click="viewUser(leave)" class="view-btn"><img class="icon" src="../../static/admin/admin/icon-1.png" alt=""></button>
+                        <button @click="viewUser(leave)" class="view-btn">
+                            <img class="icon" src="../../static/admin/admin/icon-1.png" alt="">
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -78,38 +82,7 @@ export default {
     },
     data() {
         return {
-            leaveRequests: [
-                {
-                    employeeId: 'A123456',
-                    fullName: 'Gracezel Lewalin',
-                    position: 'Assistant PM',
-                    startDate: 'xx/xx/xx',
-                    startTime: 'xx:xx น.',
-                    endDate: 'xx/xx/xx',
-                    endTime: 'xx:xx น.',
-                    status: 'อนุมัติ',
-                },
-                {
-                    employeeId: 'B123456',
-                    fullName: 'John Doe',
-                    position: 'Assistant PM',
-                    startDate: 'xx/xx/xx',
-                    startTime: 'xx:xx น.',
-                    endDate: 'xx/xx/xx',
-                    endTime: 'xx:xx น.',
-                    status: 'ไม่อนุมัติ',
-                },
-                {
-                    employeeId: 'C123456',
-                    fullName: 'Jane Doe',
-                    position: 'Assistant PM',
-                    startDate: 'xx/xx/xx',
-                    startTime: 'xx:xx น.',
-                    endDate: 'xx/xx/xx',
-                    endTime: 'xx:xx น.',
-                    status: 'รออนุมัติ',
-                },
-            ],
+            leaveRequests: [],
             selectedUser: null, // เก็บข้อมูลผู้ใช้ที่ถูกเลือก
             searchQuery: '',
             statusFilter: '',
@@ -129,7 +102,42 @@ export default {
             });
         },
     },
+    mounted() {
+        this.getLeave();
+    },
     methods: {
+        // ดึงข้อมูลผู้ใช้ลา
+        getLeave() {
+            const axios = require('axios');
+
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/leave/getLeaves',
+                headers: {}
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    // สมมุติข้อมูลที่ได้รับ
+                    this.leaveRequests = response.data.map(leave => ({
+                        // employeeId: leave.lineId, // ใช้ lineId แทน employeeId
+                        employeeId: "A123456",
+                        fullName: leave.reason, // ใช้ reason แทน fullName (ต้องปรับตามข้อมูลจริง)
+                        position: leave.type, // ใช้ type แทน position (ต้องปรับตามข้อมูลจริง)
+                        startDate: leave.startDate,
+                        startTime: leave.startTime,
+                        endDate: leave.endDate,
+                        endTime: leave.endTime,
+                        status: leave.status || 'รออนุมัติ', // ถ้าไม่มี status ให้กำหนดเป็น 'รออนุมัติ'
+                    }));
+
+                    console.log(this.leaveRequests);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         viewUser(user) {
             this.selectedUser = user; // ตั้งค่าผู้ใช้ที่ถูกเลือกเมื่อกดปุ่มดูรายละเอียด
         },
@@ -237,5 +245,4 @@ input {
 input[type="text"] {
     width: 150px;
 }
-
 </style>

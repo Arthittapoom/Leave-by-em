@@ -270,7 +270,8 @@ export default {
 .background {
     background-image: url("/login/bg2.png");
     background-size: cover;
-    height: 200vh;
+    /* height: 200vh; */
+    height: auto;
     width: 100vw;
     
 }

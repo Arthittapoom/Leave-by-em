@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       leaveCredits: [
-        { label: 'สิทธิ์ลาป่วย', remaining: this.userData.totalSickLeave,  total: this.userData.remainingSickLeave, class: 'sick-leave' },
+        { label: 'สิทธิ์ลาป่วย', remaining: this.userData.totalSickLeave, total: this.userData.remainingSickLeave, class: 'sick-leave' },
         { label: 'สิทธิ์ลากิจ', remaining: this.userData.totalPersonalLeave, total: this.userData.remainingPersonalLeave, class: 'business-leave' },
         { label: 'สิทธิ์ลาพักร้อน', remaining: this.userData.remainingVacationLeave, total: this.userData.grantedVacationLeave, class: 'vacation-leave' },
       ],
@@ -74,15 +74,52 @@ export default {
   },
   methods: {
     submitLeaveRequest() {
+
       // Implement submission logic here
-      console.log('Leave request submitted:', {
-        type: this.selectedLeaveType,
-        reason: this.leaveReason,
-        startDate: this.startDate,
-        endDate: this.endDate,
-        startTime: this.startTime,
-        endTime: this.endTime,
+      // console.log('Leave request submitted:', {
+      //   type: this.selectedLeaveType,
+      //   reason: this.leaveReason,
+      //   startDate: this.startDate,
+      //   endDate: this.endDate,
+      //   startTime: this.startTime,
+      //   endTime: this.endTime,
+      //   sendDate: new Date(),
+      //   lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
+      // });
+
+      const axios = require('axios');
+      let data = JSON.stringify({
+        "type": this.selectedLeaveType,
+        "reason": this.leaveReason,
+        "startDate": this.startDate,
+        "endDate": this.endDate,
+        "startTime": this.startTime,
+        "endTime": this.endTime,
+        "sendDate": new Date(),
+        "lineId": localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
+        "status": "รออนุมัติ"
       });
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL+'/leave/createLeave',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: data
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(JSON.stringify(response.data));
+          alert('ส่งคำขอลาเรียบร้อย');
+          this.$router.push('/');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
     }
   }
 };

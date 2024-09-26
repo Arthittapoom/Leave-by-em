@@ -5,14 +5,14 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const protectedRoutes = require('./protectedRoutes');
 const masterRoutes = require('./masterRoutes');
-
+const leaveRoutes = require('./leave');
 const users = require('./users');
 
 // ใช้เส้นทางต่าง ๆ
 router.use('/auth', authRoutes);
 router.use('/protected', protectedRoutes);
 router.use('/master', masterRoutes);
-
 router.use('/users', users);
+router.use('/leave', leaveRoutes);
 
 module.exports = router;
