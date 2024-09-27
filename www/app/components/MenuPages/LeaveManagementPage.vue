@@ -1,14 +1,17 @@
 <template>
     <div>
-
         <!-- Filtering and Search Section -->
         <div v-if="!selectedUser" class="filter-search">
             <div>
-                แสดง
-                <select class="mr-2" v-model="itemsPerPage" @change="filterTable">
-                    <option v-for="num in [5, 10, 15, 20]" :key="num" :value="num">{{ num }}</option>
-                </select>
-                รายการ
+                <div class="custom-pagination">
+                    <!-- ปรับปรุงให้คล้ายกับ pagination -->
+                    <button @click="prevPage" :disabled="currentPage === 1">◀</button>
+                    <button v-for="page in totalPages" :key="page" @click="changePage(page)"
+                        :class="{ 'active-page': page === currentPage }">
+                        {{ page }}
+                    </button>
+                    <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
+                </div>
             </div>
             <div>
                 <select v-model="statusFilter" @change="filterTable">
@@ -30,7 +33,6 @@
         <!-- Table Section -->
         <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
         <table v-if="!selectedUser">
-
             <thead>
                 <tr>
                     <th>ลำดับ</th>
@@ -46,8 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(leave, index) in filteredLeaveRequests.slice(0, itemsPerPage)"
-                    :key="leave.employeeId + index">
+                <tr v-for="(leave, index) in paginatedLeaveRequests" :key="leave.employeeId + index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ leave.employeeId }}</td>
                     <td>{{ leave.fullName }}</td>
@@ -88,6 +89,7 @@ export default {
             statusFilter: '',
             positionFilter: '',
             itemsPerPage: 10, // จำนวนรายการที่แสดงต่อหน้า
+            currentPage: 1,  // Initialize to page 1
         };
     },
     computed: {
@@ -101,12 +103,19 @@ export default {
                 return matchesStatus && matchesPosition && matchesSearchQuery;
             });
         },
+        paginatedLeaveRequests() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.filteredLeaveRequests.slice(start, end);
+        },
+        totalPages() {
+            return Math.ceil(this.filteredLeaveRequests.length / this.itemsPerPage);
+        }
     },
     mounted() {
         this.getLeave();
     },
     methods: {
-        // ดึงข้อมูลผู้ใช้ลา
         async getLeave() {
             const axios = require('axios');
 
@@ -136,7 +145,6 @@ export default {
                         dataUser: userData  // นำข้อมูล userData ที่ดึงมาได้มาประกอบ
                     };
                 }));
-                // console.log(this.leaveRequests);
             } catch (error) {
                 console.log(error);
             }
@@ -173,7 +181,20 @@ export default {
         },
         filterTable() {
             // ฟังก์ชันกรองข้อมูลตาราง
-        }
+        },
+        changePage(page) {
+            this.currentPage = page;
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
     }
 };
 </script>
@@ -267,5 +288,38 @@ input {
 
 input[type="text"] {
     width: 150px;
+}
+
+/* Custom pagination styling */
+.custom-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.custom-pagination button.active-page {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.custom-pagination button {
+    background-color: white;
+    border: 1px solid #ddd;
+    color: #333;
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+}
+
+.custom-pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.custom-pagination button.active-page {
+    background-color: #5a2d9c;
+    color: white;
 }
 </style>
