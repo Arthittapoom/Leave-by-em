@@ -5,7 +5,7 @@
     <button @click="uploadFile">Upload</button>
     <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
 
-    <div class="leave-container">
+    <!-- <div class="leave-container">
       <h3>Leave Details</h3>
       <div v-for="(leaveType, index) in leaveData" :key="index" class="leave-item">
         <span class="leave-label">{{ leaveType.label }}:</span>
@@ -15,7 +15,7 @@
         <input type="number" v-model="leaveType.extraDays" class="leave-input" />
         <span>วัน/ปี</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

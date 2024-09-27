@@ -122,6 +122,8 @@ export default {
                 this.leaveRequests = await Promise.all(response.data.map(async leave => {
                     const userData = await this.getUserByLineId(leave.lineId);
                     return {
+                        leaveType: leave.type,
+                        leaveReason: leave.reason,
                         employeeId: userData.code,
                         fullName: userData.name,
                         position: userData.position,
@@ -134,7 +136,7 @@ export default {
                         dataUser: userData  // นำข้อมูล userData ที่ดึงมาได้มาประกอบ
                     };
                 }));
-                console.log(this.leaveRequests);
+                // console.log(this.leaveRequests);
             } catch (error) {
                 console.log(error);
             }

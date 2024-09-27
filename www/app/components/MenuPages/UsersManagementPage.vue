@@ -141,7 +141,7 @@ export default {
             this.selectedUser = null; // ย้อนกลับไปยังรายการผู้ใช้
         },
         saveUser(updatedUser) {
-            console.log('Updated user:', updatedUser);
+            // console.log('Updated user:', updatedUser);
             const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
             if (index !== -1) {
                 this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้ในตาราง
@@ -211,7 +211,7 @@ export default {
 
                     }
 
-                    console.log(this.users)
+                    // console.log(this.users)
                 })
                 .catch((error) => {
                     console.log(error);
