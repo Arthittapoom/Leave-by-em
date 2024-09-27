@@ -107,7 +107,7 @@ export default {
     },
     methods: {
         // ดึงข้อมูลผู้ใช้ลา
-        getLeave() {
+        async getLeave() {
             const axios = require('axios');
 
             let config = {
@@ -117,27 +117,48 @@ export default {
                 headers: {}
             };
 
-            axios.request(config)
-                .then((response) => {
-                    // สมมุติข้อมูลที่ได้รับ
-                    this.leaveRequests = response.data.map(leave => ({
-                        // employeeId: leave.lineId, // ใช้ lineId แทน employeeId
-                        employeeId: "A123456",
-                        fullName: leave.reason, // ใช้ reason แทน fullName (ต้องปรับตามข้อมูลจริง)
-                        position: leave.type, // ใช้ type แทน position (ต้องปรับตามข้อมูลจริง)
+            try {
+                const response = await axios.request(config);
+                this.leaveRequests = await Promise.all(response.data.map(async leave => {
+                    const userData = await this.getUserByLineId(leave.lineId);
+                    return {
+                        employeeId: userData.code,
+                        fullName: userData.name,
+                        position: userData.position,
                         startDate: leave.startDate,
                         startTime: leave.startTime,
                         endDate: leave.endDate,
                         endTime: leave.endTime,
-                        status: leave.status || 'รออนุมัติ', // ถ้าไม่มี status ให้กำหนดเป็น 'รออนุมัติ'
-                    }));
-
-                    console.log(this.leaveRequests);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+                        status: leave.status || 'รออนุมัติ',
+                        lineId: leave.lineId,
+                        dataUser: userData  // นำข้อมูล userData ที่ดึงมาได้มาประกอบ
+                    };
+                }));
+                console.log(this.leaveRequests);
+            } catch (error) {
+                console.log(error);
+            }
         },
+
+        async getUserByLineId(lineId) {
+            const axios = require('axios');
+
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/users/getUserByLineId/' + lineId,
+                headers: {}
+            };
+
+            try {
+                const response = await axios.request(config);
+                return response.data;
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
+        },
+
         viewUser(user) {
             this.selectedUser = user; // ตั้งค่าผู้ใช้ที่ถูกเลือกเมื่อกดปุ่มดูรายละเอียด
         },

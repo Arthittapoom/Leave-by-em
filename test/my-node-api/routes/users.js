@@ -9,6 +9,12 @@ const usersController = require('../controllers/usersController');
 // Route สำหรับดึงข้อมูลผู้ใช้ทั้งหมด
 router.get('/getUsers', usersController.getAllUsers);
 
+// route สำหรับดึงข้อมูลผู้ใช้ ด้วย id
+router.get('/getUser/:id', usersController.getUser);
+
+// Route สำหรับดึงข้อมูล ด้วย lineId
+router.get('/getUserByLineId/:lineId', usersController.getUserByLineId);
+
 // Route สำหรับ update ข้อมูลผู้ใช้
 router.put('/updateUser/:id', usersController.updateUser);
 

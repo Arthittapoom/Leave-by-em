@@ -53,13 +53,13 @@
   "MenuPagesAdminViewUserAdmin": {
     "description": "Auto imported from components/MenuPages/Admin/viewUserAdmin.vue"
   },
-  "MenuPagesUserDetails": {
-    "description": "Auto imported from components/MenuPages/User/UserDetails.vue"
-  },
   "MenuPagesLeaveDetails": {
     "description": "Auto imported from components/MenuPages/Leave/LeaveDetails.vue"
   },
   "MenuPagesLeaveHistory": {
     "description": "Auto imported from components/MenuPages/Leave/LeaveHistory.vue"
+  },
+  "MenuPagesUserDetails": {
+    "description": "Auto imported from components/MenuPages/User/UserDetails.vue"
   }
 }

@@ -17,6 +17,32 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+// สำหรับดูข้อมูล ด้วย ID
+exports.getUser = async (req, res) => {
+    try {
+        const user = await Usersdb.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
+// สำหรับดูข้อมูล ด้วย lineId
+exports.getUserByLineId = async (req, res) => {
+    try {
+        const user = await Usersdb.findOne({ lineId: req.params.lineId });
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
 // สำหรับอัพเดตข้อมูล ด้วย ID
 exports.updateUser = async (req, res) => {
     try {
