@@ -131,6 +131,7 @@ export default {
                 this.leaveRequests = await Promise.all(response.data.map(async leave => {
                     const userData = await this.getUserByLineId(leave.lineId);
                     return {
+                        id: leave._id,
                         leaveType: leave.type,
                         leaveReason: leave.reason,
                         employeeId: userData.code,
@@ -177,7 +178,36 @@ export default {
         },
         saveUser(updatedUser) {
             // อัปเดตข้อมูลผู้ใช้ที่ถูกเลือก
-            console.log('Updated user:', updatedUser);
+
+            // console.log('Updated user:', updatedUser);
+
+            const axios = require('axios');
+            let data = JSON.stringify({
+                "status": updatedUser.status,
+                "reasonText": updatedUser.reasonText || null
+            });
+
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/leave/updateLeave/' + updatedUser.id,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    // console.log(JSON.stringify(response.data));
+                    alert('บันทึกสําเร็จ');
+                    this.selectedUser = null;
+
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
         },
         filterTable() {
             // ฟังก์ชันกรองข้อมูลตาราง

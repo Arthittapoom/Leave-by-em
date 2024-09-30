@@ -11,6 +11,7 @@ const leaveSchema = new mongoose.Schema({
     sendDate: { type: Date, required: true },
     lineId: { type: String, required: true },
     status: { type: String, required: true },
+    reasonText: { type: String, required: true },
 
 });
 

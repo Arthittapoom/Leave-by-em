@@ -2,61 +2,71 @@
   {
     "name": "admin",
     "path": "/admin",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
-    "chunkName": "pages/admin/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
+    "chunkName": "pages/admin/index",
+    "_name": "_9cfce9e6"
   },
   {
     "name": "leaveabsence",
     "path": "/leaveabsence",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
-    "chunkName": "pages/leaveabsence/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
+    "chunkName": "pages/leaveabsence/index",
+    "_name": "_770de71c"
   },
   {
     "name": "leaveoutside",
     "path": "/leaveoutside",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
-    "chunkName": "pages/leaveoutside/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
+    "chunkName": "pages/leaveoutside/index",
+    "_name": "_5c62afec"
   },
   {
     "name": "listrequests",
     "path": "/listrequests",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
-    "chunkName": "pages/listrequests/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
+    "chunkName": "pages/listrequests/index",
+    "_name": "_c2599794"
   },
   {
     "name": "login",
     "path": "/login",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
-    "chunkName": "pages/login/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
+    "chunkName": "pages/login/index",
+    "_name": "_17fe2a9a"
   },
   {
     "name": "login-admin",
     "path": "/login-admin",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
-    "chunkName": "pages/login-admin/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
+    "chunkName": "pages/login-admin/index",
+    "_name": "_02275b71"
   },
   {
     "name": "profile",
     "path": "/profile",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
-    "chunkName": "pages/profile/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
+    "chunkName": "pages/profile/index",
+    "_name": "_6bbe081a"
   },
   {
     "name": "resignfromwork",
     "path": "/resignfromwork",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
-    "chunkName": "pages/resignfromwork/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
+    "chunkName": "pages/resignfromwork/index",
+    "_name": "_6f9b574d"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
-    "chunkName": "pages/index"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_b1f22850"
   },
   {
     "name": "home-id",
     "path": "/home/:id?",
-    "component": "D:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
-    "chunkName": "pages/home/_id"
+    "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
+    "chunkName": "pages/home/_id",
+    "_name": "_bae1977e"
   }
 ]

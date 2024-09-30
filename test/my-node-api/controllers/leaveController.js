@@ -59,3 +59,20 @@ exports.updateLeave = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+// // สำหรับ update status ด้วย ID
+// exports.updateStatusLeave = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const leave = await Leaves.findById(id);
+//         if (!leave) {
+//             return res.status(404).json({ msg: 'Leave not found' });
+//         }
+//         const updatedLeave = await Leaves.findByIdAndUpdate(id, req.body, {
+//             new: true
+//         });
+//         res.json(updatedLeave);
+//     } catch (err) {
+//         res.status(500).send('Server error');
+//     }
+// };

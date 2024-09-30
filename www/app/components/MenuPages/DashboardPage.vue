@@ -75,6 +75,7 @@ export default {
   components: {
     PieChart
   },
+
   data() {
     return {
       pieData: null,
@@ -234,6 +235,7 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  
 }
 
 .approval-item {
