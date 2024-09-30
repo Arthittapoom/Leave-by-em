@@ -2,10 +2,12 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const bcrypt = require('bcryptjs');
 const AdminsModel = require('../models/admins.js');
+const moment = require('moment');
 
 exports.getMe = (req, res, next) => {
   req.params.id = req.user._id;
   next();
+  
 };
 
 exports.setIsActive = catchAsync(async (req, res, next) => {

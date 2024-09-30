@@ -9,6 +9,7 @@ const WorkLocation = require('../models/mas_worklocation');
 const UsersModel = require('../models/users');
 const AdminsModel = require('../models/admins.js');
 
+
 exports.getPeriodTime = catchAsync(async (req, res, next) => {
   const periodTimes = await PeriodTime.find();
   res.status(200).json({
