@@ -75,18 +75,6 @@ export default {
   methods: {
     submitLeaveRequest() {
 
-      // Implement submission logic here
-      // console.log('Leave request submitted:', {
-      //   type: this.selectedLeaveType,
-      //   reason: this.leaveReason,
-      //   startDate: this.startDate,
-      //   endDate: this.endDate,
-      //   startTime: this.startTime,
-      //   endTime: this.endTime,
-      //   sendDate: new Date(),
-      //   lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
-      // });
-
       const axios = require('axios');
       let data = JSON.stringify({
 
@@ -100,13 +88,12 @@ export default {
         "lineId": localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
         "status": "รออนุมัติ",
         "reasonText": " ",
-
       });
 
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: process.env.API_URL+'/leave/createLeave',
+        url: process.env.API_URL + '/leave/createLeave',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -115,15 +102,38 @@ export default {
 
       axios.request(config)
         .then((response) => {
-          // console.log(JSON.stringify(response.data));
-          alert('ส่งคำขอลาเรียบร้อย');
-          this.$router.push('/');
+          // เมื่อบันทึกสำเร็จแล้ว แสดง alert ก่อน
+          
+          // หลังจาก alert ให้ส่งข้อมูลผ่าน axios ไปยัง API อื่น
+          let sendImageConfig = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: process.env.API_URL + '/lineApi/sendImage/' + response.data.lineId,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+              "message": "รออนุมัติ"
+            })
+          };
+
+          axios.request(sendImageConfig)
+            .then((response) => {
+              
+              alert('บันทึกสำเร็จ');
+              this.$router.push('/');
+
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
         })
         .catch((error) => {
           console.log(error);
         });
-
     }
+
   }
 };
 </script>
