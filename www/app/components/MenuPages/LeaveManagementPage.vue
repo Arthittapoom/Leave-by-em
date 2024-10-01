@@ -199,8 +199,59 @@ export default {
 
             axios.request(config)
                 .then((response) => {
-                    // console.log(JSON.stringify(response.data));
+                    console.log(response.data);
                     alert('บันทึกสําเร็จ');
+                    const status = response.data.status
+                    if (status === 'อนุมัติ') {
+                        const axios = require('axios');
+                        let data = JSON.stringify({
+                            "message": "อนุมัติ"
+                        });
+
+                        let config = {
+                            method: 'post',
+                            maxBodyLength: Infinity,
+                            url: process.env.API_URL + '/lineApi/sendImage/' + updatedUser.lineId,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: data
+                        };
+
+                        axios.request(config)
+                            .then((response) => {
+                                console.log(JSON.stringify(response.data));
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+
+                    }
+                    if (status === 'ไม่อนุมัติ') {
+                        const axios = require('axios');
+                        let data = JSON.stringify({
+                            "message": "ไม่อนุมัติ"
+                        });
+
+                        let config = {
+                            method: 'post',
+                            maxBodyLength: Infinity,
+                            url: process.env.API_URL + '/lineApi/sendImage/' + updatedUser.lineId,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: data
+                        };
+
+                        axios.request(config)
+                            .then((response) => {
+                                console.log(JSON.stringify(response.data));
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    }
+
                     this.selectedUser = null;
 
                 })

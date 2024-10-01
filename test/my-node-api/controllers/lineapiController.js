@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const lineAccessToken = 'bZMOg6OHWjZkeBUfcgoAH8f1XSDMPwgWBDQpXZanWwW1kYqcXjfRtOlWfmEVJYA6NsvQ69NBH7E4tlEDSQLj0oy3kLSZQlZco5nbbnkJT9ds7OdfXHUMBV7+uG8gx4Z5m9xgjnqxWhMoX1l80yqsgQdB04t89/1O/w1cDnyilFU=';
 // ฟังก์ชันจัดการ Webhook สำหรับ LINE
 exports.handleWebhook = async (req, res) => {
     const events = req.body.events;
@@ -45,7 +45,6 @@ exports.handleWebhook = async (req, res) => {
 
 // ฟังก์ชันส่งข้อความกลับไปยัง LINE
 const replyMessage = (replyToken, message) => {
-    const lineAccessToken = 'bZMOg6OHWjZkeBUfcgoAH8f1XSDMPwgWBDQpXZanWwW1kYqcXjfRtOlWfmEVJYA6NsvQ69NBH7E4tlEDSQLj0oy3kLSZQlZco5nbbnkJT9ds7OdfXHUMBV7+uG8gx4Z5m9xgjnqxWhMoX1l80yqsgQdB04t89/1O/w1cDnyilFU=';
     const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${lineAccessToken}`,
@@ -73,7 +72,6 @@ const replyMessage = (replyToken, message) => {
 
 // ฟังก์ชันส่งข้อความไปยัง LINE โดยใช้ userId
 exports.sendText = async (req, res) => {
-    const lineAccessToken = 'bZMOg6OHWjZkeBUfcgoAH8f1XSDMPwgWBDQpXZanWwW1kYqcXjfRtOlWfmEVJYA6NsvQ69NBH7E4tlEDSQLj0oy3kLSZQlZco5nbbnkJT9ds7OdfXHUMBV7+uG8gx4Z5m9xgjnqxWhMoX1l80yqsgQdB04t89/1O/w1cDnyilFU=';
     const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${lineAccessToken}`,
@@ -103,3 +101,100 @@ exports.sendText = async (req, res) => {
     }
 };
 
+//ส่งรูปภาพ ไป line ด้วย idline
+
+exports.sendImage = async (req, res) => {
+    const lineID = req.params.lineId;
+    const message = req.body.message;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${lineAccessToken}`,
+    };
+
+    let payload = null;
+
+    if (message === 'รออนุมัติ') {
+        payload = {
+            to: lineID,
+            messages: [
+                {
+                    type: 'image',
+                    originalContentUrl: 'https://img2.pic.in.th/pic/-114a813f82c500e64.png',
+                    previewImageUrl: 'https://img2.pic.in.th/pic/-114a813f82c500e64.png',
+                },
+            ],
+        };
+    } else if (message === 'อนุมัติ') {
+        payload = {
+            to: lineID,
+            messages: [
+                {
+                    type: 'image',
+                    originalContentUrl: 'https://img2.pic.in.th/pic/-25faa8a2f822cc6ee.png',
+                    previewImageUrl: 'https://img2.pic.in.th/pic/-25faa8a2f822cc6ee.png',
+                },
+            ],
+        };
+    } else if (message === 'ไม่อนุมัติ') {
+        payload = {
+            to: lineID,
+            messages: [
+                {
+                    type: 'image',
+                    originalContentUrl: 'https://img5.pic.in.th/file/secure-sv1/34b86919a2bfbd6cf.png',
+                    previewImageUrl: 'https://img5.pic.in.th/file/secure-sv1/34b86919a2bfbd6cf.png',
+                },
+            ],
+        };
+    } else if (message === 'ยกเลิกคำขอ') {
+        payload = {
+            to: lineID,
+            messages: [
+                {
+                    type: 'image',
+                    originalContentUrl: 'https://img5.pic.in.th/file/secure-sv1/-3ed33aa5bb064eaf9.png',
+                    previewImageUrl: 'https://img5.pic.in.th/file/secure-sv1/-3ed33aa5bb064eaf9.png',
+                },
+            ],
+        };
+    } else if (message === 'มีคำขอใหม่') {
+        payload = {
+            to: lineID,
+            messages: [
+                {  "type": "template",  
+                    "altText": "this is a buttons template",  
+                    "template": 
+                    {
+                        "type": "buttons",    
+                        "thumbnailImageUrl": "https://img2.pic.in.th/pic/-4a0fc4d5955b244a1.png",
+                        "imageAspectRatio": "rectangle",
+                        "imageSize": "cover",    "imageBackgroundColor": "#FFFFFF",
+                        "title": "       อนุมัติการลา      ",    
+                        "text": "       มีคำขอการลาเพิ่ม   ",    
+                        "actions": 
+                        [
+                            {
+                                "type": "uri",        
+                                "label": "ดูคำขอใหม่",
+                                "uri": "https://chatgpt.com/c/66e7aa73-7e10-800a-a776-c0f359fed3b3"
+                            }
+                        ]  
+                    }
+                }
+            ],
+        };
+    }
+
+    if (payload) {
+        try {
+            const response = await axios.post('https://api.line.me/v2/bot/message/push', payload, { headers });
+            res.status(200).send({ message: 'Message sent successfully', data: response.data });
+        } catch (error) {
+            console.error('Error sending message:', error);
+            res.status(500).send({ message: 'Error sending message', error: error.message });
+        }
+    } else {
+        res.status(400).send({ message: 'Invalid message type' });
+    }
+};
