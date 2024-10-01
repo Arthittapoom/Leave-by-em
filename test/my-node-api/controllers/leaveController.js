@@ -60,19 +60,12 @@ exports.updateLeave = async (req, res) => {
     }
 };
 
-// // สำหรับ update status ด้วย ID
-// exports.updateStatusLeave = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const leave = await Leaves.findById(id);
-//         if (!leave) {
-//             return res.status(404).json({ msg: 'Leave not found' });
-//         }
-//         const updatedLeave = await Leaves.findByIdAndUpdate(id, req.body, {
-//             new: true
-//         });
-//         res.json(updatedLeave);
-//     } catch (err) {
-//         res.status(500).send('Server error');
-//     }
-// };
+// Route สำหรับดึงข้อมูล ด้วย lineId ทั้งหมด
+exports.getLeavesByLineId = async (req, res) => {
+    try {
+        const Leavesdb = await Leaves.find({ lineId: req.params.lineId });
+        res.json(Leavesdb);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};

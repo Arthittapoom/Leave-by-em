@@ -14,4 +14,7 @@ router.get('/getLeave/:id', leaveController.getLeave);
 // Route สำหรับอัพเดตข้อมูล
 router.put('/updateLeave/:id', leaveController.updateLeave);
 
+// Route สำหรับดึงข้อมูล ด้วย lineId
+router.get('/getLeavesByLineId/:lineId', leaveController.getLeavesByLineId);
+
 module.exports = router;

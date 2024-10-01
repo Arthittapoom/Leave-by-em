@@ -89,6 +89,7 @@ export default {
 
       const axios = require('axios');
       let data = JSON.stringify({
+
         "type": this.selectedLeaveType,
         "reason": this.leaveReason,
         "startDate": this.startDate,
@@ -97,7 +98,9 @@ export default {
         "endTime": this.endTime,
         "sendDate": new Date(),
         "lineId": localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
-        "status": "รออนุมัติ"
+        "status": "รออนุมัติ",
+        "reasonText": " ",
+
       });
 
       let config = {
