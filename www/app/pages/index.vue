@@ -12,7 +12,33 @@ export default {
     }
   },
   methods: {
-    async loginWithLINE() {
+    async login() {
+
+      const userId = (localStorage.getItem('profile')) ? JSON.parse(localStorage.getItem('profile')).userId : null
+
+      const axios = require('axios');
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url:  process.env.API_URL + '/users/getUserByLineId/' + userId,
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          console.log("พบข้อมูลผู้ใช้งาน");
+          this.loginWithLINE(true)
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log("ไม่พบข้อมูลผู้ใช้งาน");
+          localStorage.removeItem('profile')
+          this.loginWithLINE(false)
+        });
+    },
+    async loginWithLINE(s) {
       if (localStorage.getItem('profile')) {
         this.profile = JSON.parse(localStorage.getItem('profile'))
 
@@ -55,7 +81,7 @@ export default {
     }
   },
   mounted() {
-    this.loginWithLINE()
+    this.login()
   }
 }
 </script>

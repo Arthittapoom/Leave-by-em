@@ -17,7 +17,8 @@
                     </div>
                     <div class="form-group">
                         <label for="leaveReason">เหตุผลการลา :</label>
-                        <input type="text" id="leaveReason" class="form-control" v-model="leaveDetails.reason" disabled />
+                        <input type="text" id="leaveReason" class="form-control" v-model="leaveDetails.reason"
+                            disabled />
                     </div>
                     <div class="form-group">
                         <label for="leaveDate">วัน/เดือน/ปี ที่ต้องการลา :</label>
@@ -60,7 +61,8 @@
                 </div>
                 <div class="leave-actions">
                     <a v-if="leave.hasEvidence" :href="leave.evidenceLink">{{ leave.evidenceText }}</a>
-                    <a @click.prevent="openModal(leave)" href="#">{{ leave.showDetail ? 'ซ่อนรายละเอียด' : 'รายละเอียด' }}</a>
+                    <a @click.prevent="openModal(leave)" href="#">{{ leave.showDetail ? 'ซ่อนรายละเอียด' : 'รายละเอียด'
+                        }}</a>
                 </div>
             </div>
         </div>
@@ -135,7 +137,10 @@ export default {
         async getLeavesByLineId(id) {
             try {
                 const response = await axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
-                this.leaveItems = response.data.map(leave => ({ ...leave, showDetail: false }));
+                // จัดเรียงรายการ leave ตามวันที่ส่ง (sendDate) โดยเรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
+                this.leaveItems = response.data
+                    .map(leave => ({ ...leave, showDetail: false }))
+                    .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
             } catch (error) {
                 console.error("Error fetching leave data:", error);
             }
@@ -165,10 +170,12 @@ export default {
 .fade-leave-active {
     transition: opacity 0.5s;
 }
+
 .fade-enter,
 .fade-leave-to {
     opacity: 0;
 }
+
 .button-cancel {
     background: #FF515B;
     border-radius: 25px;
@@ -179,6 +186,7 @@ export default {
     padding: 10px;
     font-size: 16px;
 }
+
 .logo-status {
     width: 250px;
     align-self: center;
@@ -186,6 +194,7 @@ export default {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
 .button-detail,
 .button-detail-2 {
     background: rgba(255, 255, 255, 0);
@@ -199,6 +208,7 @@ export default {
     padding: 10px;
     font-size: 30px;
 }
+
 .card-2 {
     box-sizing: border-box;
     background: #E5D2FF;
@@ -212,10 +222,12 @@ export default {
     z-index: 0;
     top: -50px;
 }
+
 .card-3 {
     align-items: start;
     text-align: start;
 }
+
 .leave-item {
     display: flex;
     justify-content: space-between;
@@ -223,20 +235,24 @@ export default {
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
 }
+
 .leave-icon img {
     width: auto;
     height: 30px;
 }
+
 .leave-info p {
     margin: 0;
     font-size: 14px;
 }
+
 .leave-actions a {
     margin-right: 10px;
     font-size: 14px;
     color: #007BFF;
     text-decoration: none;
 }
+
 .leave-actions a:hover {
     text-decoration: underline;
 }
@@ -253,6 +269,7 @@ export default {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
 }
+
 .modal-content {
     background-color: #fefefe;
     margin: 15% auto;
@@ -262,12 +279,14 @@ export default {
     max-width: 500px;
     border-radius: 8px;
 }
+
 .close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
+
 .close:hover,
 .close:focus {
     color: black;

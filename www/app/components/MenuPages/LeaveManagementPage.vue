@@ -1,76 +1,92 @@
 <template>
     <div>
-        <!-- Filtering and Search Section -->
-        <div v-if="!selectedUser" class="filter-search">
-            <div>
-                <div class="custom-pagination">
-                    <!-- ปรับปรุงให้คล้ายกับ pagination -->
-                    <button @click="prevPage" :disabled="currentPage === 1">◀</button>
-                    <button v-for="page in totalPages" :key="page" @click="changePage(page)"
-                        :class="{ 'active-page': page === currentPage }">
-                        {{ page }}
-                    </button>
-                    <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
-                </div>
-            </div>
-            <div>
-                <select v-model="statusFilter" @change="filterTable">
-                    <option value="">สถานะ</option>
-                    <option value="อนุมัติ">อนุมัติ</option>
-                    <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
-                    <option value="รออนุมัติ">รออนุมัติ</option>
-                </select>
-                <select v-model="positionFilter" @change="filterTable">
-                    <option value="">พนักงานที่ลางาน</option>
-                    <option value="Assistant PM">Assistant PM</option>
-                    <option value="Manager">Manager</option>
-                    <!-- Add other positions as needed -->
-                </select>
-                <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
-            </div>
+        <!-- แสดง UI โหลดเมื่อกำลังดึงข้อมูล -->
+        <div v-if="isLoading" class="loading-container">
+            <div class="spinner"></div>
+            <p>กำลังโหลดข้อมูล...</p>
         </div>
 
-        <!-- Table Section -->
-        <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
-        <table v-if="!selectedUser">
-            <thead>
-                <tr>
-                    <th>ลำดับ</th>
-                    <th>รหัสพนักงาน</th>
-                    <th>ชื่อ-นามสกุล</th>
-                    <th>ตำแหน่ง</th>
-                    <th>วันที่ลาวันแรก</th>
-                    <th>เวลาเริ่มต้น</th>
-                    <th>วันที่ลาวันสุดท้าย</th>
-                    <th>เวลาสิ้นสุด</th>
-                    <th>สถานะคำขอ</th>
-                    <th>ปรับแต่ง</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(leave, index) in paginatedLeaveRequests" :key="leave.employeeId + index">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ leave.employeeId }}</td>
-                    <td>{{ leave.fullName }}</td>
-                    <td>{{ leave.position }}</td>
-                    <td>{{ leave.startDate }}</td>
-                    <td>{{ leave.startTime }}</td>
-                    <td>{{ leave.endDate }}</td>
-                    <td>{{ leave.endTime }}</td>
-                    <td>
-                        <span
-                            :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
-                            {{ leave.status }}
-                        </span>
-                    </td>
-                    <td class="action-buttons">
-                        <button @click="viewUser(leave)" class="view-btn">
-                            <img class="icon" src="../../static/admin/admin/icon-1.png" alt="">
+        <!-- เมื่อโหลดข้อมูลเสร็จแล้ว -->
+        <div v-else>
+            <!-- Filtering and Search Section -->
+
+            <!-- ส่วนกรองและค้นหา -->
+            <!-- Filtering and Search Section -->
+            <div v-if="!selectedUser" class="filter-search">
+                <div>
+                    <div class="custom-pagination">
+                        <!-- ปรับปรุงให้คล้ายกับ pagination -->
+                        <button @click="prevPage" :disabled="currentPage === 1">◀</button>
+                        <button v-for="page in totalPages" :key="page" @click="changePage(page)"
+                            :class="{ 'active-page': page === currentPage }">
+                            {{ page }}
                         </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
+                    </div>
+                </div>
+                <div>
+                    <select v-model="statusFilter" @change="filterTable">
+                        <option value="">สถานะ</option>
+                        <option value="อนุมัติ">อนุมัติ</option>
+                        <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
+                        <option value="รออนุมัติ">รออนุมัติ</option>
+                    </select>
+                    <select v-model="positionFilter" @change="filterTable">
+                        <option value="">พนักงานที่ลางาน</option>
+                        <option v-for="position in uniquePositions" :key="position" :value="position">
+                            {{ position }}
+                        </option>
+                    </select>
+
+                    <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
+                </div>
+            </div>
+
+
+            <!-- Table Section -->
+            <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
+            <table v-if="!selectedUser">
+                <!-- ตารางข้อมูล -->
+                <!-- Table Section -->
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>รหัสพนักงาน</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>ตำแหน่ง</th>
+                        <th>วันที่ลาวันแรก</th>
+                        <th>เวลาเริ่มต้น</th>
+                        <th>วันที่ลาวันสุดท้าย</th>
+                        <th>เวลาสิ้นสุด</th>
+                        <th>สถานะคำขอ</th>
+                        <th>ปรับแต่ง</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(leave, index) in paginatedLeaveRequests" :key="leave.employeeId + index">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ leave.employeeId }}</td>
+                        <td>{{ leave.fullName }}</td>
+                        <td>{{ leave.position }}</td>
+                        <td>{{ leave.startDate }}</td>
+                        <td>{{ leave.startTime }}</td>
+                        <td>{{ leave.endDate }}</td>
+                        <td>{{ leave.endTime }}</td>
+                        <td>
+                            <span
+                                :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
+                                {{ leave.status }}
+                            </span>
+                        </td>
+                        <td class="action-buttons">
+                            <button @click="viewUser(leave)" class="view-btn">
+                                <img class="icon" src="../../static/admin/admin/icon-1.png" alt="">
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -90,9 +106,15 @@ export default {
             positionFilter: '',
             itemsPerPage: 10, // จำนวนรายการที่แสดงต่อหน้า
             currentPage: 1,  // Initialize to page 1
+            isLoading: false  // เก็บสถานะการโหลด
         };
     },
     computed: {
+        uniquePositions() {
+            // ดึงตำแหน่งงานที่ไม่ซ้ำกันจาก leaveRequests
+            const positions = this.leaveRequests.map(leave => leave.position);
+            return [...new Set(positions)]; // ใช้ Set เพื่อให้ได้ข้อมูลที่ไม่ซ้ำกัน
+        },
         filteredLeaveRequests() {
             return this.leaveRequests.filter((leave) => {
                 const matchesStatus = this.statusFilter === '' || leave.status === this.statusFilter;
@@ -118,6 +140,7 @@ export default {
     methods: {
         async getLeave() {
             const axios = require('axios');
+            this.isLoading = true;
 
             let config = {
                 method: 'get',
@@ -134,22 +157,30 @@ export default {
                         id: leave._id,
                         leaveType: leave.type,
                         leaveReason: leave.reason,
-                        employeeId: userData.code,
-                        fullName: userData.name,
-                        position: userData.position,
+                        employeeId: userData ? userData.code : 'N/A',
+                        fullName: userData ? userData.name : 'ไม่พบข้อมูล',
+                        position: userData ? userData.position : 'ไม่พบข้อมูล',
                         startDate: leave.startDate,
                         startTime: leave.startTime,
                         endDate: leave.endDate,
                         endTime: leave.endTime,
                         status: leave.status || 'รออนุมัติ',
                         lineId: leave.lineId,
-                        dataUser: userData  // นำข้อมูล userData ที่ดึงมาได้มาประกอบ
+                        dataUser: userData,
+                        sendDate: leave.sendDate // ต้องมี sendDate ในข้อมูล
                     };
                 }));
+
+                // เรียงลำดับจาก sendDate ใหม่ไปเก่า
+                this.leaveRequests.sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
             } catch (error) {
                 console.log(error);
+            } finally {
+                this.isLoading = false;
             }
-        },
+        }
+        ,
+
 
         async getUserByLineId(lineId) {
             const axios = require('axios');
@@ -281,6 +312,34 @@ export default {
 </script>
 
 <style scoped>
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100px;
+    /* ปรับตามความต้องการ */
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #4f46e5;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 /* Table styling and buttons */
 .icon {
     width: 18px;

@@ -1,82 +1,97 @@
 <template>
     <div class="scrollable-content">
-        <!-- Filtering and Search Section -->
-        <div v-if="!selectedUser" class="filter-search">
-            <div>
 
-                <!-- <select class="mr-2" v-model="itemsPerPage" @change="filterTable">
-                    <option v-for="num in [5, 10, 15, 20, 25]" :key="num" :value="num">{{ num }}</option>
-                </select> -->
-
-                <div class="custom-pagination">
-                    <!-- <p>หน้า</p> -->
-                    <button @click="prevPage" :disabled="currentPage === 1">◀</button>
-                    <button v-for="page in totalPages" :key="page" @click="changePage(page)"
-                        :class="{ 'active-page': page === currentPage }">
-                        {{ page }}
-                    </button>
-                    <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
-                </div>
-
-
-                <!-- รายการ -->
-            </div>
-            <div>
-                <select v-model="statusFilter" @change="filterTable">
-                    <option value="">สถานะ</option>
-                    <option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
-                    <option value="สาขา">สาขา</option>
-                    <!-- เพิ่มสถานที่ปฏิบัติงานเพิ่มเติม -->
-                </select>
-                <select v-model="positionFilter" @change="filterTable">
-                    <option value="">พนักงานที่ลางาน</option>
-                    <option value="UX/UI Designer">UX/UI Designer</option>
-                    <!-- เพิ่มตำแหน่งอื่น ๆ ตามต้องการ -->
-                </select>
-                <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
-            </div>
+        <!-- แสดง UI โหลดเมื่อกำลังดึงข้อมูล -->
+        <div v-if="isLoading" class="loading-container">
+            <div class="spinner"></div>
+            <p>กำลังโหลดข้อมูล...</p>
         </div>
 
-        <!-- Table Section -->
-        <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
-        <table v-if="!selectedUser">
-            <thead>
-                <tr>
-                    <th>ลำดับ</th>
-                    <th>รหัสพนักงาน</th>
-                    <!-- <th>ชื่อผู้ใช้</th> -->
-                    <th>ชื่อ-นามสกุล</th>
-                    <th>ตำแหน่ง</th>
-                    <th>สถานะไลน์</th>
-                    <th>สถานที่ปฏิบัติงาน</th>
-                    <th>ปรับแต่ง</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(user, index) in paginatedUsers" :key="index">
+        <!-- เมื่อโหลดข้อมูลเสร็จแล้ว -->
+        <div v-else>
+            <!-- Filtering and Search Section -->
+            <!-- ส่วนกรองและค้นหา -->
 
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ user.employeeId }}</td>
-                    <!-- <td>{{ user.username }}</td> -->
-                    <td>{{ user.fullName }}</td>
-                    <td>{{ user.position }}</td>
-                    <td>
-                        <span v-if="user.lineId !== 'null'" class="approved">
-                            เชื่อมต่อสำเร็จ
-                        </span>
-                        <span v-if="user.lineId === 'null'" class="rejected">
-                            ไม่มีการเชื่อมต่อ
-                        </span>
-                    </td>
-                    <td>{{ user.workLocation }}</td>
-                    <td class="action-buttons">
-                        <button @click="viewUser(user)" class="view-btn">
-                            <img class="icon" src="../../static/admin/admin/icon-1.png" alt="view">
+            <div v-if="!selectedUser" class="filter-search">
+                <div>
+                    <div class="custom-pagination">
+                        <!-- <p>หน้า</p> -->
+                        <button @click="prevPage" :disabled="currentPage === 1">◀</button>
+                        <button v-for="page in totalPages" :key="page" @click="changePage(page)"
+                            :class="{ 'active-page': page === currentPage }">
+                            {{ page }}
                         </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
+                    </div>
+
+                    <!-- รายการ -->
+                </div>
+                <div>
+                    <!-- ตัวกรองตามสถานที่ปฏิบัติงาน -->
+                    <select v-model="statusFilter" @change="filterTable">
+                        <option value="">สถานะ</option>
+                        <option v-for="location in uniqueLocations" :key="location" :value="location">
+                            {{ location === 'null' ? 'ไม่มีการเชื่อมต่อ' : 'เชื่อมต่อสำเร็จ' }}
+                        </option>
+                    </select>
+
+                    <!-- ตัวกรองตามตำแหน่งงาน -->
+                    <select v-model="positionFilter" @change="filterTable">
+                        <option value="">พนักงานที่ลางาน</option>
+                        <option v-for="position in uniquePositions" :key="position" :value="position">
+                            {{ position }}
+                        </option>
+                    </select>
+
+                    <input type="text" v-model="searchQuery" placeholder="ค้นหา" @input="filterTable" />
+                </div>
+            </div>
+
+
+            <!-- ตารางข้อมูล -->
+            <!-- Table Section -->
+            <LeaveDetails v-if="selectedUser" :user="selectedUser" @go-back="goBack" @save="saveUser" />
+            <table v-if="!selectedUser">
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>รหัสพนักงาน</th>
+                        <!-- <th>ชื่อผู้ใช้</th> -->
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>ตำแหน่ง</th>
+                        <th>สถานะไลน์</th>
+                        <th>สถานที่ปฏิบัติงาน</th>
+                        <th>ปรับแต่ง</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(user, index) in paginatedUsers" :key="index">
+
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ user.employeeId }}</td>
+                        <!-- <td>{{ user.username }}</td> -->
+                        <td>{{ user.fullName }}</td>
+                        <td>{{ user.position }}</td>
+                        <td>
+                            <span v-if="user.lineId !== 'null'" class="approved">
+                                เชื่อมต่อสำเร็จ
+                            </span>
+                            <span v-if="user.lineId === 'null'" class="rejected">
+                                ไม่มีการเชื่อมต่อ
+                            </span>
+                        </td>
+                        <td>{{ user.workLocation }}</td>
+                        <td class="action-buttons">
+                            <button @click="viewUser(user)" class="view-btn">
+                                <img class="icon" src="../../static/admin/admin/icon-1.png" alt="view">
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
     </div>
 </template>
 
@@ -96,10 +111,21 @@ export default {
             positionFilter: '',
             itemsPerPage: 10, // จำนวนรายการที่แสดงต่อหน้า
             currentPage: 1,  // Initialize to page 1
+            isLoading: false  // เก็บสถานะการโหลด
 
         };
     },
     computed: {
+        // กรองสถานที่ปฏิบัติงานที่ไม่ซ้ำกัน
+        uniqueLocations() {
+            const locations = this.paginatedUsers.map(user => user.lineId);
+            return [...new Set(locations)];
+        },
+        // กรองตำแหน่งงานที่ไม่ซ้ำกัน
+        uniquePositions() {
+            const positions = this.paginatedUsers.map(user => user.position);
+            return [...new Set(positions)];
+        },
         filteredUsers() {
             return this.users.filter((user) => {
                 const matchesStatus = this.statusFilter === '' || user.workLocation === this.statusFilter;
@@ -152,6 +178,7 @@ export default {
             // ฟังก์ชันกรองข้อมูลตาราง
         },
         getUsers() {
+            this.isLoading = true;  // เริ่มโหลดข้อมูล
             let config = {
                 method: 'get',
                 url: `${process.env.API_URL}/users/getUsers`,
@@ -210,7 +237,7 @@ export default {
                         });
 
                     }
-
+                    this.isLoading = false;  // โหลดข้อมูลเสร็จแล้ว
                     // console.log(this.users)
                 })
                 .catch((error) => {
@@ -226,6 +253,34 @@ export default {
 </script>
 
 <style scoped>
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100px;
+    /* ปรับตามความต้องการ */
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #4f46e5;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 span.approved {
     background-color: #c2f0e1;
     color: #17a789;

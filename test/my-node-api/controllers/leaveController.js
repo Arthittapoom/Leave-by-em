@@ -64,6 +64,9 @@ exports.updateLeave = async (req, res) => {
 exports.getLeavesByLineId = async (req, res) => {
     try {
         const Leavesdb = await Leaves.find({ lineId: req.params.lineId });
+        if (Leavesdb.length === 0) {
+            return res.status(404).json({ msg: 'Leave not found' });
+        }
         res.json(Leavesdb);
     } catch (err) {
         res.status(500).send('Server error');
