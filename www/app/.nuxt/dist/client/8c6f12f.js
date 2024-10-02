@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[28],{521:function(e,n,t){"use strict";t.r(n);var o={mounted:function(){this.$router.push("/home/leaveabsence")}},c=t(88),component=Object(c.a)(o,(function(){return(0,this._self._c)("div")}),[],!1,null,"7bf702bd",null);n.default=component.exports}}]);
