@@ -1,13 +1,16 @@
 <template>
   <div class="request-list">
     <h3>รายการคำขอทั้งหมด</h3>
-    <div class="request-item" v-for="(request, index) in requests" :key="index">
+    <div style="height: 300px;" v-if="!requests.length">
+      <p>ไม่มีรายการคำขอ</p>
+    </div>
+    <div v-if="requests.length" class="request-item" v-for="(request, index) in requests" :key="index">
       <div class="request-icon">
-        <div class="icon-number">{{ request.id }}</div>
+        <div class="icon-number">{{ index + 1 }}</div>
       </div>
       <div class="request-details">
-        <div class="request-name">{{ request.name }}</div>
-        <div class="request-date-time">{{ request.date }} | {{ request.time }}</div>
+        <div class="request-name">{{ request.type }}</div>
+        <div class="request-date-time">{{ request.startDate }} | {{ request.startTime }}</div>
       </div>
       <div class="request-reason">{{ request.reason }}</div>
       <button class="details-button" @click="openModal(request)">รายละเอียด</button>
@@ -15,34 +18,36 @@
 
     <!-- Modal -->
 
-<div v-if="selectedRequest" class="modal">
-  <div class="modal-content">
-    <span class="close" @click="closeModal">&times;</span>
-    <h3>รายละเอียดคำขอ</h3>
-    <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
-    <p><strong>รหัสพนักงาน:</strong> WM64007H</p>
-    <p><strong>ตำแหน่ง:</strong> Human Resource Officer</p>
-    <div class="flex-container">
-      <p><strong>สังกัด:</strong> Workmotion</p>
-      <p><strong>สถานที่ปฏิบัติงาน:</strong> BKK</p>
+    <div v-if="selectedRequest" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <h3>รายละเอียดคำขอ</h3>
+        <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
+        <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
+        <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
+        <div class="flex-container">
+          <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
+          <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
+        </div>
+        <div class="flex-container">
+          <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
+          <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
+        </div>
+        <p><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason }}</p>
+        <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{ selectedRequest.startDate }} - {{ selectedRequest.endDate }}
+        </p>
+        <p><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }} - {{ selectedRequest.endTime }}</p>
+        <div class="approval">
+          <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" /> อนุมัติ</label>
+          <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" /> ไม่อนุมัติ</label>
+
+        </div>
+        <label for="remark">หมายเหตุ:</label>
+        <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
+        <button @click="closeModal(selectedRequest)" class="submit-button">ยืนยัน</button>
+        <div class="submit-button-b"> </div>
+      </div>
     </div>
-    <div class="flex-container">
-      <p><strong>อายุงาน:</strong> 000-000000</p>
-      <p><strong>เบอร์โทรศัพท์:</strong> 000-00000000</p>
-    </div>
-    <p><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason }}</p>
-    <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> XX/XX/XXXX - XX/XX/XXXX</p>
-    <p><strong>เวลา ที่ต้องการลา:</strong> 22:00 - 23:00</p>
-    <div class="approval">
-      <label><input type="radio" name="approval" value="approved" /> อนุมัติ</label>
-      <label><input type="radio" name="approval" value="not-approved" /> ไม่อนุมัติ</label>
-    </div>
-    <label for="remark">หมายเหตุ:</label>
-    <textarea id="remark" rows="4"></textarea>
-    <button class="submit-button">ยืนยัน</button>
-    <div class="submit-button-b"> </div>
-  </div>
-</div>
 
   </div>
 </template>
@@ -51,32 +56,151 @@
 export default {
   data() {
     return {
-      requests: [
-        {
-          id: 1,
-          name: "นาย กานต์ธนิต ทรัพย์เขต",
-          date: "16 ส.ค 67",
-          time: "06:35 น.",
-          reason: "ลาป่วย / เป็นไข้หวัดใหญ่"
-        },
-        {
-          id: 1,
-          name: "นาย กานต์ธนิต ทรัพย์เขต",
-          date: "16 ส.ค 67",
-          time: "08:52 น.",
-          reason: "ลากิจ / พาแมวไปทำหมัน"
-        }
-      ],
+      requests: [],
       selectedRequest: null
     };
   },
+  props:['userData'],
   methods: {
     openModal(request) {
-      this.selectedRequest = request;
+      // this.selectedRequest = request;
+
+      // console.log(request.lineId);
+
+      const axios = require('axios');
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/users/getUserByLineId/' + request.lineId,
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+
+          this.selectedRequest = {
+            ...response.data,
+            ...request
+          }
+
+          // console.log(this.selectedRequest);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
     },
-    closeModal() {
-      this.selectedRequest = null;
+    closeModal(datas) {
+      this.selectedRequest = datas;
+      // console.log(this.selectedRequest.status + ' ' + this.selectedRequest.reasonText + ' ' + this.selectedRequest._id);
+      
+      const axios = require('axios');
+            let data = JSON.stringify({
+                "status": this.selectedRequest.status,
+                "reasonText": this.selectedRequest.reasonText || null
+            });
+
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/leave/updateLeave/' + this.selectedRequest._id,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    // console.log(response.data);
+                    alert('บันทึกสําเร็จ');
+                    const status = response.data.status
+                    if (status === 'อนุมัติ') {
+                        const axios = require('axios');
+                        let data = JSON.stringify({
+                            "message": "อนุมัติ"
+                        });
+
+                        let config = {
+                            method: 'post',
+                            maxBodyLength: Infinity,
+                            url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: data
+                        };
+
+                        axios.request(config)
+                            .then((response) => {
+                                // console.log(JSON.stringify(response.data));
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+
+                    }
+                    if (status === 'ไม่อนุมัติ') {
+                        const axios = require('axios');
+                        let data = JSON.stringify({
+                            "message": "ไม่อนุมัติ"
+                        });
+
+                        let config = {
+                            method: 'post',
+                            maxBodyLength: Infinity,
+                            url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: data
+                        };
+
+                        axios.request(config)
+                            .then((response) => {
+                                // console.log(JSON.stringify(response.data));
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    }
+
+                    this.selectedRequest = null;
+
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+      
+    },
+    getLeavesByApprover(approver) {
+      const axios = require('axios');
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/leave/getLeavesByApprover/' + approver,
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          this.requests = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
     }
+  },
+  mounted() {
+    // console.log(this.userData.name);
+    this.getLeavesByApprover(this.userData.name);
+    // this.getLeavesByApprover("ผู้อนุมัติ เบื้องต้น");
   }
 };
 </script>
@@ -234,5 +358,4 @@ textarea {
   margin-right: 20px;
   white-space: nowrap;
 }
-
 </style>

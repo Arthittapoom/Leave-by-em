@@ -17,4 +17,7 @@ router.put('/updateLeave/:id', leaveController.updateLeave);
 // Route สำหรับดึงข้อมูล ด้วย lineId
 router.get('/getLeavesByLineId/:lineId', leaveController.getLeavesByLineId);
 
+// Route สำหรับดึงข้อมูล ด้วย initialLeaveApprover หรือ finalLeaveApprover
+router.get('/getLeavesByApprover/:approver', leaveController.getLeavesByApprover);
+
 module.exports = router;

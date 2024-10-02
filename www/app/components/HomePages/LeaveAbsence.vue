@@ -72,6 +72,8 @@ export default {
       endTime: '',
     };
   },
+  // ดึง userData มาจากหน้า HomePages
+  props: ['userData'],
   methods: {
     submitLeaveRequest() {
 
@@ -88,8 +90,14 @@ export default {
         "lineId": localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
         "status": "รออนุมัติ",
         "reasonText": " ",
+        "initialLeaveApprover": this.userData.initialLeaveApprover,
+        "finalLeaveApprover" : this.userData.finalLeaveApprover
       });
 
+
+      console.log(data);
+
+      
       let config = {
         method: 'post',
         maxBodyLength: Infinity,

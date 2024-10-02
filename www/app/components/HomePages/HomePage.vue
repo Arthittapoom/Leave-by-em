@@ -30,11 +30,11 @@
                     </div>
                     <div class="mt-3">
                         <p>ผู้อนุมัติการลาขั้นต้น</p>
-                        <p>{{ data_user.initialLeaveApprover }}</p>
+                        <p>{{ userData.initialLeaveApprover }}</p>
                     </div>
                     <div>
                         <p>ผู้อนุมัติสูงสุด</p>
-                        <p>{{ data_user.finalLeaveApprover }}</p>
+                        <p>{{ userData.finalLeaveApprover }}</p>
                     </div>
                     <button class="button-cancel" @click="cancelRequest">ยกเลิกคำขอ</button>
                 </div>
@@ -104,8 +104,8 @@ export default {
             },
             leaveItems: [],
             data_user: {
-                initialLeaveApprover: "หัวหน้าแผนก",
-                finalLeaveApprover: "ผู้จัดการฝ่าย"
+                initialLeaveApprover: this.userData.initialLeaveApprover,
+                finalLeaveApprover: this.userData.finalLeaveApprover
             },
             profile: {},
             pageleaveDetail: false,
@@ -113,6 +113,7 @@ export default {
             selectedLeave: {}
         };
     },
+    props: ['userData'],
     watch: {
         leaveItems(newLeaveItems) {
             if (newLeaveItems.length > 0) {

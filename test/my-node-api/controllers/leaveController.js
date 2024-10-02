@@ -72,3 +72,16 @@ exports.getLeavesByLineId = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+// Route สำหรับดึงข้อมูล ด้วย initialLeaveApprover หรือ finalLeaveApprover
+exports.getLeavesByApprover = async (req, res) => {
+    try {
+        const Leavesdb = await Leaves.find({ $or: [{ initialLeaveApprover: req.params.approver }, { finalLeaveApprover: req.params.approver }] });
+        if (Leavesdb.length === 0) {
+            return res.status(404).json({ msg: 'Leave not found' });
+        }
+        res.json(Leavesdb);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};

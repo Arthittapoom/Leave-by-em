@@ -36,11 +36,13 @@
             </div>
 
             <!-- Routes -->
-            <HomePage v-if="pages === 'home'" />
+            <HomePage :userData="data_user" v-if="pages === 'home'" />
             <LeaveAbsence v-if="pages === 'leaveabsence'" :userData="data_user" />
             <LeaveOutside v-if="pages === 'leaveoutside'" />
             <ResignFromWork v-if="pages === 'resignfromwork'" />
-            <ListRequests v-if="pages === 'listrequests'" />
+
+            <!-- ส่ง data_user ไปยัง ListRequests -->
+            <ListRequests :userData="data_user" v-if="pages === 'listrequests'" />
 
             <div class="pt-5"></div>
 

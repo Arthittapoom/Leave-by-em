@@ -12,6 +12,8 @@ const leaveSchema = new mongoose.Schema({
     lineId: { type: String, required: true },
     status: { type: String, required: true },
     reasonText: { type: String, required: true },
+    initialLeaveApprover: { type: String , required: true },
+    finalLeaveApprover: { type: String , required: true },
 
 });
 
