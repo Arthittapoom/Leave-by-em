@@ -177,7 +177,7 @@ exports.sendImage = async (req, res) => {
                             {
                                 "type": "uri",        
                                 "label": "ดูคำขอใหม่",
-                                "uri": "https://chatgpt.com/c/66e7aa73-7e10-800a-a776-c0f359fed3b3"
+                                "uri": "https://liff.line.me/2006404318-E15PmnbO"
                             }
                         ]  
                     }
