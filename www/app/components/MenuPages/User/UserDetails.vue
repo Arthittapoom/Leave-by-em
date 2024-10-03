@@ -178,6 +178,7 @@ export default {
   data() {
     return {
       form: {
+        id : this.user.id,
         code: this.user.username,
         department: this.user.department,
         fullName: this.user.fullName,

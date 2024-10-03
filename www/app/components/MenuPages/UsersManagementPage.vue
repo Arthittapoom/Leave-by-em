@@ -168,11 +168,34 @@ export default {
         },
         saveUser(updatedUser) {
             // console.log('Updated user:', updatedUser);
-            const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
-            if (index !== -1) {
-                this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้ในตาราง
-            }
-            this.selectedUser = null; // กลับไปที่ตารางหลังจากบันทึก
+
+            const axios = require('axios');
+            let data = JSON.stringify(updatedUser);
+
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url:  process.env.API_URL + '/users/updateUser/' + updatedUser.id,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    // console.log(response.data);
+                    this.selectedUser = null; // กลับไปที่ตารางหลังจากบันทึก
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            // const index = this.users.findIndex(user => user.employeeId === updatedUser.employeeId);
+            // if (index !== -1) {
+            //     this.users.splice(index, 1, updatedUser); // อัพเดตข้อมูลผู้ใช้ในตาราง
+            // }
+            // this.selectedUser = null; // กลับไปที่ตารางหลังจากบันทึก
         },
         filterTable() {
             // ฟังก์ชันกรองข้อมูลตาราง
