@@ -45,7 +45,7 @@
         </div>
         <label for="remark">หมายเหตุ:</label>
         <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
-        <button @click="closeModal(selectedRequest)" class="submit-button">ยืนยัน</button>
+        <button @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
         <div class="submit-button-b"> </div>
       </div>
     </div>
@@ -93,7 +93,7 @@ export default {
         });
 
     },
-    closeModal(datas) {
+    updateLeave(datas) {
       this.selectedRequest = datas;
       // console.log(this.selectedRequest.status + ' ' + this.selectedRequest.reasonText + ' ' + this.selectedRequest._id);
 
@@ -198,11 +198,14 @@ export default {
           } else {
             console.log('Unexpected data format:', response.data);
           }
-          console.log(this.requests);
+          // console.log(this.requests);
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+    closeModal() {
+      this.selectedRequest = null;
     }
 
   },

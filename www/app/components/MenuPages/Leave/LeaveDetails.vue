@@ -67,7 +67,7 @@
 
         <div class="form-row">
           <label>เหตุผล *</label>
-          <textarea v-model="user.reasonText" ></textarea>
+          <textarea v-model="user.reasonText"></textarea>
         </div>
 
         <div class="form-row buttons">
@@ -88,13 +88,16 @@ export default {
   data() {
     return {
       history: false,
+      leaveItems: [],
     };
   },
   props: ['user'], // รับข้อมูลผู้ใช้ที่ถูกเลือกจาก parent
   mounted() {
     // console.log(this.user);
+
   },
   methods: {
+    
     viewHistory() {
       this.history = true;
     },
