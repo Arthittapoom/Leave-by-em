@@ -15,6 +15,9 @@ router.get('/getUser/:id', usersController.getUser);
 // Route สำหรับดึงข้อมูล ด้วย lineId
 router.get('/getUserByLineId/:lineId', usersController.getUserByLineId);
 
+// route สำหรับดึงข้อมูลผู้ใช้ ด้วย name
+router.get('/getUserByName/:name', usersController.getUserByName);
+
 // Route สำหรับ update ข้อมูลผู้ใช้
 router.put('/updateUser/:id', usersController.updateUser);
 

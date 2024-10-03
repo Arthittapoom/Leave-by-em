@@ -30,6 +30,7 @@
                         <option value="อนุมัติ">อนุมัติ</option>
                         <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
                         <option value="รออนุมัติ">รออนุมัติ</option>
+                        <option value="ยกเลิกคำขอ">ยกเลิกคำขอ</option>
                     </select>
                     <select v-model="positionFilter" @change="filterTable">
                         <option value="">พนักงานที่ลางาน</option>
@@ -74,7 +75,12 @@
                         <td>{{ leave.endTime }}</td>
                         <td>
                             <span
-                                :class="{ 'approved': leave.status === 'อนุมัติ', 'rejected': leave.status === 'ไม่อนุมัติ', 'pending': leave.status === 'รออนุมัติ' }">
+                                :class="{ 
+                                    'approved': leave.status === 'อนุมัติ', 
+                                    'rejected': leave.status === 'ไม่อนุมัติ', 
+                                    'pending': leave.status === 'รออนุมัติ',
+                                    'cancelled': leave.status === 'ยกเลิกคำขอ'
+                                    }">
                                 {{ leave.status }}
                             </span>
                         </td>
@@ -398,6 +404,13 @@ span.rejected {
 }
 
 span.pending {
+    background-color: #ffe39b;
+    color: #555555;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+ 
+span.cancelled {   
     background-color: #e5e5e5;
     color: #555;
     padding: 5px 10px;

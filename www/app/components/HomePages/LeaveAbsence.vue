@@ -91,13 +91,13 @@ export default {
         "status": "รออนุมัติ",
         "reasonText": " ",
         "initialLeaveApprover": this.userData.initialLeaveApprover,
-        "finalLeaveApprover" : this.userData.finalLeaveApprover
+        "finalLeaveApprover": this.userData.finalLeaveApprover
       });
 
 
-      console.log(data);
+      // console.log(data);
 
-      
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -111,7 +111,7 @@ export default {
       axios.request(config)
         .then((response) => {
           // เมื่อบันทึกสำเร็จแล้ว แสดง alert ก่อน
-          
+
           // หลังจาก alert ให้ส่งข้อมูลผ่าน axios ไปยัง API อื่น
           let sendImageConfig = {
             method: 'post',
@@ -127,9 +127,108 @@ export default {
 
           axios.request(sendImageConfig)
             .then((response) => {
-              
-              alert('บันทึกสำเร็จ');
-              this.$router.push('/');
+
+              const axios = require('axios');
+
+              let initialApprover = this.userData.initialLeaveApprover;
+              let finalApprover = this.userData.finalLeaveApprover;
+
+              // ตรวจสอบและส่ง request ให้กับ initialLeaveApprover ถ้ามีค่า
+              if (initialApprover) {
+                let configInitial = {
+                  method: 'get',
+                  maxBodyLength: Infinity,
+                  url: `${process.env.API_URL}/users/getUserByName/${initialApprover}`,
+                  headers: {}
+                };
+
+                axios.request(configInitial)
+                  .then((response) => {
+                    // console.log('Initial Approver:', response.data[0].lineId);
+                    if (response.data[0].lineId) {
+                      const axios = require('axios');
+                      let data = JSON.stringify({
+                        "message": "มีคำขอใหม่"
+                      });
+
+                      let config = {
+                        method: 'post',
+                        maxBodyLength: Infinity,
+                        url: process.env.API_URL + '/lineApi/sendImage/' + response.data[0].lineId,
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        data: data
+                      };
+
+                      axios.request(config)
+                        .then((response) => {
+                          // console.log(JSON.stringify(response.data));
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+
+                    }
+                    return
+                  })
+                  .catch((error) => {
+                    console.log('Error Initial Approver:', error);
+                  });
+              }
+
+              // ตรวจสอบและส่ง request ให้กับ finalLeaveApprover ถ้ามีค่า
+              if (finalApprover) {
+                let configFinal = {
+                  method: 'get',
+                  maxBodyLength: Infinity,
+                  url: `${process.env.API_URL}/users/getUserByName/${finalApprover}`,
+                  headers: {}
+                };
+
+                axios.request(configFinal)
+                  .then((response) => {
+                    // console.log('Final Approver:', response.data[0].lineId);
+                    if (response.data[0].lineId) {
+                      const axios = require('axios');
+                      let data = JSON.stringify({
+                        "message": "มีคำขอใหม่"
+                      });
+
+                      let config = {
+                        method: 'post',
+                        maxBodyLength: Infinity,
+                        url: process.env.API_URL + '/lineApi/sendImage/' + response.data[0].lineId,
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        data: data
+                      };
+
+                      axios.request(config)
+                        .then((response) => {
+                          // console.log(JSON.stringify(response.data));
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                    }
+                    return
+                  })
+                  .catch((error) => {
+                    console.log('Error Final Approver:', error);
+                  });
+              }
+
+              // หากทั้งสองค่าไม่ถูกส่ง
+              if (!initialApprover && !finalApprover) {
+                console.log("No approvers available.");
+                alert('ไม่พบข้อมูลผู้อนุมัติ');
+              } else {
+                alert('บันทึกสำเร็จ');
+                this.$router.push('/');
+              }
+
 
             })
             .catch((error) => {

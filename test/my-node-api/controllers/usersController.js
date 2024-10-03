@@ -59,3 +59,16 @@ exports.updateUser = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+// route สำหรับดึงข้อมูลผู้ใช้ ด้วย name
+exports.getUserByName = async (req, res) => {
+    try {
+        const users = await Usersdb.find({ name: req.params.name });
+        if (users.length === 0) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(users);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+}

@@ -2,11 +2,18 @@
     <div>
         <!-- ส่วนแสดงสถานะการขอ -->
         <div v-if="statusLeave === 'submitted'" class="card-2 mt-4 pt-4 pb-4">
-            <img class="logo-status" :src="statusIcon" alt="status icon">
+
+            <img v-if="leaveDetails.status === 'รออนุมัติ'" class="logo-status" :src="statusIcon[0]" alt="status icon">
+            <img v-if="leaveDetails.status === 'อนุมัติ'" class="logo-status-1" :src="statusIcon[2]" alt="status icon">
+            <img v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="logo-status-1" :src="statusIcon[3]" alt="status icon">
+            <img v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="logo-status-1" :src="statusIcon[3]" alt="status icon">
+
             <div class="row text-center" style="width: 100%;">
-                <div class="col">{{ statusMessages.submitted }}</div>
-                <div class="col">{{ statusMessages.approving }}</div>
-                <div class="col">{{ statusMessages.statusRequest }}</div>
+                <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.submitted }}</div>
+                <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.approving }}</div>
+                <div v-if="leaveDetails.status === 'อนุมัติ' " class="col">{{ statusMessages.statusRequest }} <br> หมายเหตุ: {{ leaveDetails.reasonText }}</div>
+                <div v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="col"> ยกเลิกคำขอ <br> หมายเหตุ: {{ leaveDetails.reasonText }} </div>
+                <div v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="col"> ไม่อนุมัติ <br> หมายเหตุ: {{ leaveDetails.reasonText }} </div>
             </div>
             <br>
             <transition name="fade">
@@ -36,7 +43,7 @@
                         <p>ผู้อนุมัติสูงสุด</p>
                         <p>{{ userData.finalLeaveApprover }}</p>
                     </div>
-                    <button class="button-cancel" @click="cancelRequest">ยกเลิกคำขอ</button>
+                    <button class="button-cancel" @click="cancelRequest(leaveDetails)">ยกเลิกคำขอ</button>
                 </div>
             </transition>
             <!-- Buttons with transition -->
@@ -53,7 +60,9 @@
             <p>รายการล่าสุด</p>
             <div v-for="(leave, index) in leaveItems" :key="index" class="leave-item">
                 <div class="leave-icon">
-                    <img src="../../static/home/status-icon-1.png" alt="leave icon" />
+                    <img v-if="leave.status === 'อนุมัติ'" :src="statusIcon[2]" alt="leave icon" />
+                    <img v-if="leave.status === 'ไม่อนุมัติ' || leave.status === 'ยกเลิกคำขอ' " :src="statusIcon[3]" alt="leave icon" />
+                    <img v-if="leave.status === 'รออนุมัติ'" :src="statusIcon[4]" alt="leave icon" />
                 </div>
                 <div class="leave-info">
                     <p>{{ leave.type }} / {{ leave.reason }}</p>
@@ -89,18 +98,28 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            statusIcon: "/home/status.png",
+            // statusIcon: "/home/status.png",
+            statusIcon: 
+            [
+                "/home/status-1.png", 
+                "/home/status-2.png", 
+                "/home/status-3.png", 
+                "/home/status-4.png",
+                "/home/status-5.png",
+            ],
             statusLeave: "submitted",
             statusMessages: {
-                submitted: "ส่งคำขอสำเร็จ",
-                approving: "กำลังอนุมัติ",
-                statusRequest: "สถานะคำขอ"
+                submitted: "ส่งคำขอ",
+                approving: "รออนุมัติ",
+                statusRequest: "คำขอสำเร็จ"
             },
             leaveDetails: {
                 type: '',
                 reason: '',
                 date: '',
-                time: ''
+                time: '',
+                id: '',
+
             },
             leaveItems: [],
             data_user: {
@@ -122,6 +141,10 @@ export default {
                 this.leaveDetails.reason = latestLeave.reason;
                 this.leaveDetails.date = `${latestLeave.startDate} - ${latestLeave.endDate}`;
                 this.leaveDetails.time = `${latestLeave.startTime} - ${latestLeave.endTime}`;
+                this.leaveDetails.id = latestLeave._id;
+                this.leaveDetails.lineId = latestLeave.lineId;
+                this.leaveDetails.status = latestLeave.status;
+                this.leaveDetails.reasonText = latestLeave.reasonText;
             } else {
                 this.leaveDetails.type = 'ประเภทการลาเริ่มต้น';
                 this.leaveDetails.reason = 'เหตุผลการลาเริ่มต้น';
@@ -131,9 +154,60 @@ export default {
         }
     },
     methods: {
-        cancelRequest() {
-            alert("คำขอถูกยกเลิก");
-            this.statusLeave = "cancelled";
+        cancelRequest(s) {
+            console.log(s);
+
+            const axios = require('axios');
+            let data = JSON.stringify({
+                "status": "ยกเลิกคำขอ"
+            });
+
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: process.env.API_URL + '/leave/updateLeave/' + s.id,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    // console.log(response.data);
+                    const axios = require('axios');
+                    let data = JSON.stringify({
+                        "message": "ยกเลิกคำขอ"
+                    });
+
+                    let config = {
+                        method: 'post',
+                        maxBodyLength: Infinity,
+                        url:  process.env.API_URL + '/lineApi/sendImage/' + s.lineId,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        data: data
+                    };
+
+                    axios.request(config)
+                        .then((response) => {
+                            console.log(response.data);
+                            this.statusLeave = "cancelled";
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+
+                    
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+
+            // alert("คำขอถูกยกเลิก");
+            // this.statusLeave = "cancelled";
         },
         async getLeavesByLineId(id) {
             try {
@@ -190,6 +264,14 @@ export default {
 
 .logo-status {
     width: 250px;
+    align-self: center;
+    height: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.logo-status-1 {
+    width: 80px;
     align-self: center;
     height: auto;
     margin-top: 10px;

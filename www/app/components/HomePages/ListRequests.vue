@@ -39,7 +39,8 @@
         <p><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }} - {{ selectedRequest.endTime }}</p>
         <div class="approval">
           <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" /> อนุมัติ</label>
-          <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" /> ไม่อนุมัติ</label>
+          <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" />
+            ไม่อนุมัติ</label>
 
         </div>
         <label for="remark">หมายเหตุ:</label>
@@ -60,7 +61,7 @@ export default {
       selectedRequest: null
     };
   },
-  props:['userData'],
+  props: ['userData'],
   methods: {
     openModal(request) {
       // this.selectedRequest = request;
@@ -95,86 +96,86 @@ export default {
     closeModal(datas) {
       this.selectedRequest = datas;
       // console.log(this.selectedRequest.status + ' ' + this.selectedRequest.reasonText + ' ' + this.selectedRequest._id);
-      
+
       const axios = require('axios');
+      let data = JSON.stringify({
+        "status": this.selectedRequest.status,
+        "reasonText": this.selectedRequest.reasonText || null
+      });
+
+      let config = {
+        method: 'put',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/leave/updateLeave/' + this.selectedRequest._id,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: data
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          alert('บันทึกสําเร็จ');
+          const status = response.data.status
+          if (status === 'อนุมัติ') {
+            const axios = require('axios');
             let data = JSON.stringify({
-                "status": this.selectedRequest.status,
-                "reasonText": this.selectedRequest.reasonText || null
+              "message": "อนุมัติ"
             });
 
             let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: process.env.API_URL + '/leave/updateLeave/' + this.selectedRequest._id,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: data
+              method: 'post',
+              maxBodyLength: Infinity,
+              url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              data: data
             };
 
             axios.request(config)
-                .then((response) => {
-                    // console.log(response.data);
-                    alert('บันทึกสําเร็จ');
-                    const status = response.data.status
-                    if (status === 'อนุมัติ') {
-                        const axios = require('axios');
-                        let data = JSON.stringify({
-                            "message": "อนุมัติ"
-                        });
+              .then((response) => {
+                // console.log(JSON.stringify(response.data));
+              })
+              .catch((error) => {
+                console.log(error);
+              });
 
-                        let config = {
-                            method: 'post',
-                            maxBodyLength: Infinity,
-                            url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            data: data
-                        };
+          }
+          if (status === 'ไม่อนุมัติ') {
+            const axios = require('axios');
+            let data = JSON.stringify({
+              "message": "ไม่อนุมัติ"
+            });
 
-                        axios.request(config)
-                            .then((response) => {
-                                // console.log(JSON.stringify(response.data));
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+            let config = {
+              method: 'post',
+              maxBodyLength: Infinity,
+              url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              data: data
+            };
 
-                    }
-                    if (status === 'ไม่อนุมัติ') {
-                        const axios = require('axios');
-                        let data = JSON.stringify({
-                            "message": "ไม่อนุมัติ"
-                        });
+            axios.request(config)
+              .then((response) => {
+                // console.log(JSON.stringify(response.data));
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
 
-                        let config = {
-                            method: 'post',
-                            maxBodyLength: Infinity,
-                            url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            data: data
-                        };
+          this.selectedRequest = null;
 
-                        axios.request(config)
-                            .then((response) => {
-                                // console.log(JSON.stringify(response.data));
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-                    this.selectedRequest = null;
 
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-
-      
     },
     getLeavesByApprover(approver) {
       const axios = require('axios');
@@ -188,19 +189,29 @@ export default {
 
       axios.request(config)
         .then((response) => {
-          // console.log(response.data);
-          this.requests = response.data;
+          // ตรวจสอบว่าข้อมูลมีอยู่และเป็น array
+          if (Array.isArray(response.data)) {
+            // เรียงข้อมูลตาม sendDate จากล่าสุดไปเก่าสุด
+            this.requests = response.data.sort((a, b) => {
+              return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
+            });
+          } else {
+            console.log('Unexpected data format:', response.data);
+          }
+          console.log(this.requests);
         })
         .catch((error) => {
           console.log(error);
         });
-
     }
+
   },
   mounted() {
+
     // console.log(this.userData.name);
     this.getLeavesByApprover(this.userData.name);
     // this.getLeavesByApprover("ผู้อนุมัติ เบื้องต้น");
+    
   }
 };
 </script>

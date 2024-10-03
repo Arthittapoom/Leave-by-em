@@ -249,6 +249,7 @@ export default {
     border-radius: 7px;
     padding: 10px;
     margin-top: 10px;
+    width: 100%;
     transition: all 0.3s ease-in-out;
 }
 
@@ -256,7 +257,7 @@ export default {
 .button-detail {
     background: rgba(255, 255, 255, 0);
     border-radius: 50px;
-    width: 20%;
+    width: 100%;
     font-weight: bold;
     margin-top: 10px;
     height: 10px;
