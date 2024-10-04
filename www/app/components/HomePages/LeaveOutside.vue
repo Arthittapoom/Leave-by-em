@@ -49,10 +49,10 @@ export default {
           return;
         }
 
-        if (this.startTime > this.endTime) {
-          alert('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม');
-          return;
-        }
+        // if (this.startTime > this.endTime) {
+        //   alert('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม');
+        //   return;
+        // }
 
         if (!this.userData) {
           alert('กรุณาเข้าสู่ระบบก่อน');
@@ -93,7 +93,7 @@ export default {
 
         // ส่งข้อมูลการขออนุมัติ
         const response = await axios.request(config);
-        console.log(response.data);
+        // console.log(response.data);
 
         // ส่งข้อความแจ้งเตือนผู้อนุมัติ
         await this.sendNotification(response.data.lineId, 'รออนุมัติ');

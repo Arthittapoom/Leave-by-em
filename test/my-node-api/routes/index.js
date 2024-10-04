@@ -9,6 +9,7 @@ const leaveRoutes = require('./leave');
 const users = require('./users');
 const lineApi = require('./lineapi');
 const LeaveOutside = require('./LeaveOutside');
+const LeaveResign = require('./LeaveResign');
 
 // ใช้เส้นทางต่าง ๆ
 router.use('/auth', authRoutes);
@@ -18,5 +19,6 @@ router.use('/users', users);
 router.use('/leave', leaveRoutes);
 router.use('/lineApi', lineApi);
 router.use('/LeaveOutside', LeaveOutside);
+router.use('/LeaveResign', LeaveResign);
 
 module.exports = router;

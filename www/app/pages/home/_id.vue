@@ -141,6 +141,7 @@ export default {
                         phone: filteredData[0].phone,
                         code: filteredData[0].code,
                         lineId: filteredData[0].lineId,
+                        startDate: filteredData[0].startDate,
 
                         diffDays_days_exl: filteredData[0].diffDays_days_exl,
                         sickLeave_days: filteredData[0].sickLeave_days,
