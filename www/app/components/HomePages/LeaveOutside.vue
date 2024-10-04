@@ -68,7 +68,7 @@ export default {
         // เตรียมข้อมูลสำหรับส่งไปยัง API
         const data = JSON.stringify({
           userId: this.userData.id,
-          lineId: this.userData.lineId,
+          lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
           workLocation: this.workLocation,
           vehicle: this.vehicle,
           vehicleNumber: this.vehicleNumber,

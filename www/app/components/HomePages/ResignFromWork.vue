@@ -61,7 +61,7 @@ export default {
           sendDate: new Date(),
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
-          lineId: this.userData.lineId,
+          lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
           userId: this.userData.id
         });
 

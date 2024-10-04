@@ -234,55 +234,75 @@ export default {
     },
     methods: {
         async getLeavesDataByLineId(id) {
-            try {
-                // เรียก API ทั้งสามพร้อมกัน
-                const leaveRequest = axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
-                const leaveOutsideRequest = axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
-                const leaveResignRequest = axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResignByLineId/${id}`);
+    try {
+        console.log('getLeavesDataByLineId', id);
 
-                // ดึงข้อมูลจาก API ทั้งสาม
-                const [leaveResponse, leaveOutsideResponse, leaveResignResponse] = await Promise.all([leaveRequest, leaveOutsideRequest, leaveResignRequest]);
+        // เรียก API แต่ละตัวแยกกันและจัดการข้อผิดพลาดของแต่ละ API
+        let leaveItems = [];
+        let leaveOutsideItems = [];
+        let leaveResignItems = [];
 
-                // แปลงข้อมูลจาก leaveResponse
-                const leaveItems = leaveResponse.data.map(leave => ({
-                    ...leave,
-                    showDetail: false
-                }));
-
-                // แปลงข้อมูลจาก leaveOutsideResponse
-                const leaveOutsideItems = leaveOutsideResponse.data.map(leave => ({
-                    ...leave,
-                    showDetail: false,
-                    type: 'ออกปฏิบัติงานนอกสถานที่'  // ประเภทสำหรับการทำงานนอกสถานที่
-                }));
-
-                // แปลงข้อมูลจาก leaveResignResponse
-                const leaveResignItems = leaveResignResponse.data.map(resign => ({
-                    ...resign,
-                    showDetail: false,
-                    type: 'ลาออก',  // ประเภทสำหรับการลาออก
-                    reasonText: resign.reasonText || 'ไม่มีเหตุผล',  // ตรวจสอบเหตุผลการลาออก
-                    firstWorkDay: resign.firstWorkDay,
-                    lastWorkDay: resign.lastWorkDay,
-                    needsCertification: resign.needsCertification,
-                    hasFunding: resign.hasFunding,
-                    status: resign.status || 'รออนุมัติ',
-                    sendDate: resign.sendDate || new Date(),
-                    initialLeaveApprover: resign.initialLeaveApprover || 'ไม่ระบุ',
-                    finalLeaveApprover: resign.finalLeaveApprover || 'ไม่ระบุ',
-                    lineId: resign.lineId,
-                    userId: resign.userId,
-                }));
-
-                // รวมข้อมูลทั้งสามและเรียงลำดับตามวันที่ส่ง
-                this.leaveItems = [...leaveItems, ...leaveOutsideItems, ...leaveResignItems]
-                    .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
-
-            } catch (error) {
-                console.error("Error fetching leave data:", error);
-            }
+        try {
+            const leaveResponse = await axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
+            leaveItems = Array.isArray(leaveResponse.data) ? leaveResponse.data : [leaveResponse.data];
+        } catch (error) {
+            console.error("Error fetching leave data:", error);
         }
-        ,
+
+        try {
+            const leaveOutsideResponse = await axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
+            leaveOutsideItems = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [leaveOutsideResponse.data];
+        } catch (error) {
+            console.error("Error fetching leave outside data:", error);
+        }
+
+        try {
+            const leaveResignResponse = await axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResignByLineId/${id}`);
+            leaveResignItems = Array.isArray(leaveResignResponse.data) ? leaveResignResponse.data : [leaveResignResponse.data];
+        } catch (error) {
+            console.error("Error fetching leave resign data:", error);
+        }
+
+        // แปลงข้อมูลจาก leaveItems
+        const formattedLeaveItems = leaveItems.map(leave => ({
+            ...leave,
+            showDetail: false
+        }));
+
+        // แปลงข้อมูลจาก leaveOutsideItems
+        const formattedLeaveOutsideItems = leaveOutsideItems.map(leave => ({
+            ...leave,
+            showDetail: false,
+            type: 'ออกปฏิบัติงานนอกสถานที่'
+        }));
+
+        // แปลงข้อมูลจาก leaveResignItems
+        const formattedLeaveResignItems = leaveResignItems.map(resign => ({
+            ...resign,
+            showDetail: false,
+            type: 'ลาออก',
+            reasonText: resign.reasonText || 'ไม่มีเหตุผล',
+            firstWorkDay: resign.firstWorkDay,
+            lastWorkDay: resign.lastWorkDay,
+            needsCertification: resign.needsCertification,
+            hasFunding: resign.hasFunding,
+            status: resign.status || 'รออนุมัติ',
+            sendDate: resign.sendDate || new Date(),
+            initialLeaveApprover: resign.initialLeaveApprover || 'ไม่ระบุ',
+            finalLeaveApprover: resign.finalLeaveApprover || 'ไม่ระบุ',
+            lineId: resign.lineId,
+            userId: resign.userId,
+        }));
+
+        // รวมข้อมูลทั้งหมดและเรียงตามวันที่ส่ง
+        this.leaveItems = [...formattedLeaveItems, ...formattedLeaveOutsideItems, ...formattedLeaveResignItems]
+            .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
+
+    } catch (error) {
+        console.error("Error fetching leave data:", error);
+    }
+}
+,
 
         cancelRequest(leaveDetails) {
     const axios = require('axios');
