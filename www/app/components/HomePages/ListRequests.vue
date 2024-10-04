@@ -95,9 +95,67 @@ export default {
     },
     updateLeave(datas) {
       this.selectedRequest = datas;
-      // console.log(this.selectedRequest.status + ' ' + this.selectedRequest.reasonText + ' ' + this.selectedRequest._id);
-
+      // console.log(this.selectedRequest._id);
       const axios = require('axios');
+
+      // ฟังก์ชันสำหรับการเพิ่มจำนวนวันลา
+      const incrementLeave = async (lineId, leaveType, apiField) => {
+        try {
+          // ดึงข้อมูลผู้ใช้
+          let getConfig = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
+            headers: { 'Content-Type': 'application/json' }
+          };
+
+          const userResponse = await axios.request(getConfig);
+          let currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
+
+          // บวกเพิ่ม 1
+          let updatedLeaveCount = currentLeaveCount + 1;
+          let data = JSON.stringify({ [apiField]: updatedLeaveCount });
+
+          // อัปเดตข้อมูลวันลา
+          let updateConfig = {
+            method: 'put',
+            maxBodyLength: Infinity,
+            url: `${process.env.API_URL}/users/updateUserByLineId/${lineId}`,
+            headers: { 'Content-Type': 'application/json' },
+            data: data
+          };
+
+          const updateResponse = await axios.request(updateConfig);
+          // console.log(updateResponse.data[apiField]);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      if (this.selectedRequest.status === 'อนุมัติ') {
+        // เช็คประเภทของการลาและอัปเดตตามประเภทนั้นๆ
+        switch (this.selectedRequest.type) {
+          case 'ลาป่วย':
+            incrementLeave(this.selectedRequest.lineId, 'ลาป่วย', 'totalSickLeave');
+            break;
+          case 'ลากิจ':
+            incrementLeave(this.selectedRequest.lineId, 'ลากิจ', 'totalPersonalLeave');
+            break;
+          case 'ลาพักร้อน':
+            incrementLeave(this.selectedRequest.lineId, 'ลาพักร้อน', 'totalVacationLeave');
+            break;
+          case 'ลากิจพิเศษ':
+          case 'อุปสมบท':
+          case 'ลาคลอด':
+          case 'ลาไม่รับค่าจ้าง':
+            incrementLeave(this.selectedRequest.lineId, 'ลาอื่นๆ', 'totalUnpaidLeave');
+            break;
+          default:
+            console.log('ไม่พบประเภทการลา');
+        }
+      }
+
+      // อัปเดตสถานะการลา
       let data = JSON.stringify({
         "status": this.selectedRequest.status,
         "reasonText": this.selectedRequest.reasonText || null
@@ -106,76 +164,41 @@ export default {
       let config = {
         method: 'put',
         maxBodyLength: Infinity,
-        url: process.env.API_URL + '/leave/updateLeave/' + this.selectedRequest._id,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        url: `${process.env.API_URL}/leave/updateLeave/${this.selectedRequest._id}`,
+        headers: { 'Content-Type': 'application/json' },
         data: data
       };
 
       axios.request(config)
         .then((response) => {
           // console.log(response.data);
-          alert('บันทึกสําเร็จ');
-          const status = response.data.status
+          alert('บันทึกสำเร็จ');
+          const status = response.data.status;
+
+          // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
+          const sendLineNotification = (message) => {
+            let lineData = JSON.stringify({ "message": message });
+            let lineConfig = {
+              method: 'post',
+              maxBodyLength: Infinity,
+              url: `${process.env.API_URL}/lineApi/sendImage/${this.selectedRequest.lineId}`,
+              headers: { 'Content-Type': 'application/json' },
+              data: lineData
+            };
+            axios.request(lineConfig)
+              .then((response) => console.log())
+              .catch((error) => console.log(error));
+          };
+
           if (status === 'อนุมัติ') {
-            const axios = require('axios');
-            let data = JSON.stringify({
-              "message": "อนุมัติ"
-            });
-
-            let config = {
-              method: 'post',
-              maxBodyLength: Infinity,
-              url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              data: data
-            };
-
-            axios.request(config)
-              .then((response) => {
-                // console.log(JSON.stringify(response.data));
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-
-          }
-          if (status === 'ไม่อนุมัติ') {
-            const axios = require('axios');
-            let data = JSON.stringify({
-              "message": "ไม่อนุมัติ"
-            });
-
-            let config = {
-              method: 'post',
-              maxBodyLength: Infinity,
-              url: process.env.API_URL + '/lineApi/sendImage/' + this.selectedRequest.lineId,
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              data: data
-            };
-
-            axios.request(config)
-              .then((response) => {
-                // console.log(JSON.stringify(response.data));
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+            sendLineNotification('อนุมัติ');
+          } else if (status === 'ไม่อนุมัติ') {
+            sendLineNotification('ไม่อนุมัติ');
           }
 
           this.selectedRequest = null;
-
         })
-        .catch((error) => {
-          console.log(error);
-        });
-
-
+        .catch((error) => console.log(error));
     },
     getLeavesByApprover(approver) {
       const axios = require('axios');
@@ -196,7 +219,7 @@ export default {
               return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
             });
           } else {
-            console.log('Unexpected data format:', response.data);
+            // console.log('Unexpected data format:', response.data);
           }
           // console.log(this.requests);
         })
@@ -214,7 +237,7 @@ export default {
     // console.log(this.userData.name);
     this.getLeavesByApprover(this.userData.name);
     // this.getLeavesByApprover("ผู้อนุมัติ เบื้องต้น");
-    
+
   }
 };
 </script>

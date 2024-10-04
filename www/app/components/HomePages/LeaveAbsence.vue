@@ -93,11 +93,7 @@ export default {
         "initialLeaveApprover": this.userData.initialLeaveApprover,
         "finalLeaveApprover": this.userData.finalLeaveApprover
       });
-
-
-      // console.log(data);
-
-
+      
       let config = {
         method: 'post',
         maxBodyLength: Infinity,

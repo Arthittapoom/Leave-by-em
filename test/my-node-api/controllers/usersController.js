@@ -72,3 +72,20 @@ exports.getUserByName = async (req, res) => {
         res.status(500).send('Server error');
     }
 }
+
+// Route สำหรับ update ด้วย lineId
+exports.updateUserByLineId = async (req, res) => {
+    try {
+        const { lineId } = req.params;
+        const user = await Usersdb.findOne({ lineId: lineId });
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        const updatedUser = await Usersdb.findOneAndUpdate({ lineId: lineId }, req.body, {
+            new: true
+        });
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+}

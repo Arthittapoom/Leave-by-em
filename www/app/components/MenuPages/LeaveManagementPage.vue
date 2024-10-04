@@ -74,13 +74,12 @@
                         <td>{{ leave.endDate }}</td>
                         <td>{{ leave.endTime }}</td>
                         <td>
-                            <span
-                                :class="{ 
-                                    'approved': leave.status === 'อนุมัติ', 
-                                    'rejected': leave.status === 'ไม่อนุมัติ', 
-                                    'pending': leave.status === 'รออนุมัติ',
-                                    'cancelled': leave.status === 'ยกเลิกคำขอ'
-                                    }">
+                            <span :class="{
+                                'approved': leave.status === 'อนุมัติ',
+                                'rejected': leave.status === 'ไม่อนุมัติ',
+                                'pending': leave.status === 'รออนุมัติ',
+                                'cancelled': leave.status === 'ยกเลิกคำขอ'
+                            }">
                                 {{ leave.status }}
                             </span>
                         </td>
@@ -214,11 +213,84 @@ export default {
             this.selectedUser = null; // กลับไปที่รายการหลังจากดูรายละเอียด
         },
         saveUser(updatedUser) {
-            // อัปเดตข้อมูลผู้ใช้ที่ถูกเลือก
-
-            // console.log('Updated user:', updatedUser);
-
             const axios = require('axios');
+
+
+            // ฟังก์ชันสำหรับดึงและอัปเดตจำนวนวันลา
+            const incrementLeave = async (lineId, apiField) => {
+                try {
+                    // ดึงข้อมูลผู้ใช้
+                    let getConfig = {
+                        method: 'get',
+                        maxBodyLength: Infinity,
+                        url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
+                        headers: { 'Content-Type': 'application/json' }
+                    };
+
+                    const userResponse = await axios.request(getConfig);
+                    let currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
+
+                    // บวกเพิ่ม 1
+                    let updatedLeaveCount = currentLeaveCount + 1;
+                    let data = JSON.stringify({ [apiField]: updatedLeaveCount });
+
+                    // อัปเดตข้อมูลวันลา
+                    let updateConfig = {
+                        method: 'put',
+                        maxBodyLength: Infinity,
+                        url: `${process.env.API_URL}/users/updateUserByLineId/${lineId}`,
+                        headers: { 'Content-Type': 'application/json' },
+                        data: data
+                    };
+
+                    const updateResponse = await axios.request(updateConfig);
+                    // console.log(updateResponse.data[apiField]);
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+
+            // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
+            const sendLineNotification = (lineId, message) => {
+                let lineData = JSON.stringify({ "message": message });
+                let lineConfig = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: `${process.env.API_URL}/lineApi/sendImage/${lineId}`,
+                    headers: { 'Content-Type': 'application/json' },
+                    data: lineData
+                };
+
+                axios.request(lineConfig)
+                    .then((response) => console.log())
+                    .catch((error) => console.log(error));
+            };
+            // เช็คสถานะ
+            if (updatedUser.status === 'อนุมัติ') {
+                // เช็คประเภทของการลาและอัปเดตจำนวนวันลา
+                switch (updatedUser.leaveType) {
+                    case 'ลาป่วย':
+                        incrementLeave(updatedUser.lineId, 'totalSickLeave');
+                        break;
+                    case 'ลากิจ':
+                        incrementLeave(updatedUser.lineId, 'totalPersonalLeave');
+                        break;
+                    case 'ลาพักร้อน':
+                        incrementLeave(updatedUser.lineId, 'totalVacationLeave');
+                        break;
+                    case 'ลากิจพิเศษ':
+                    case 'อุปสมบท':
+                    case 'ลาคลอด':
+                    case 'ลาไม่รับค่าจ้าง':
+                        incrementLeave(updatedUser.lineId, 'totalUnpaidLeave');
+                        break;
+                    default:
+                        console.log('ไม่พบประเภทการลา');
+                }
+            }
+
+
+            // เตรียมข้อมูลที่ต้องการอัปเดตสถานะการลา
             let data = JSON.stringify({
                 "status": updatedUser.status,
                 "reasonText": updatedUser.reasonText || null
@@ -227,75 +299,31 @@ export default {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: process.env.API_URL + '/leave/updateLeave/' + updatedUser.id,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                url: `${process.env.API_URL}/leave/updateLeave/${updatedUser.id}`,
+                headers: { 'Content-Type': 'application/json' },
                 data: data
             };
 
+            // อัปเดตสถานะการลา
             axios.request(config)
                 .then((response) => {
-                    console.log(response.data);
-                    alert('บันทึกสําเร็จ');
-                    const status = response.data.status
+                    // console.log(response.data);
+                    alert('บันทึกสำเร็จ');
+
+                    const status = response.data.status;
+
+                    // ส่งการแจ้งเตือนตามสถานะ
                     if (status === 'อนุมัติ') {
-                        const axios = require('axios');
-                        let data = JSON.stringify({
-                            "message": "อนุมัติ"
-                        });
-
-                        let config = {
-                            method: 'post',
-                            maxBodyLength: Infinity,
-                            url: process.env.API_URL + '/lineApi/sendImage/' + updatedUser.lineId,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            data: data
-                        };
-
-                        axios.request(config)
-                            .then((response) => {
-                                console.log(JSON.stringify(response.data));
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-
-                    }
-                    if (status === 'ไม่อนุมัติ') {
-                        const axios = require('axios');
-                        let data = JSON.stringify({
-                            "message": "ไม่อนุมัติ"
-                        });
-
-                        let config = {
-                            method: 'post',
-                            maxBodyLength: Infinity,
-                            url: process.env.API_URL + '/lineApi/sendImage/' + updatedUser.lineId,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            data: data
-                        };
-
-                        axios.request(config)
-                            .then((response) => {
-                                console.log(JSON.stringify(response.data));
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                        sendLineNotification(updatedUser.lineId, 'อนุมัติ');
+                    } else if (status === 'ไม่อนุมัติ') {
+                        sendLineNotification(updatedUser.lineId, 'ไม่อนุมัติ');
                     }
 
-                    this.selectedUser = null;
-
+                    this.selectedUser = null; // ล้างข้อมูลผู้ใช้ที่เลือก
                 })
                 .catch((error) => {
                     console.log(error);
                 });
-
         },
         filterTable() {
             // ฟังก์ชันกรองข้อมูลตาราง
@@ -409,8 +437,8 @@ span.pending {
     padding: 5px 10px;
     border-radius: 20px;
 }
- 
-span.cancelled {   
+
+span.cancelled {
     background-color: #e5e5e5;
     color: #555;
     padding: 5px 10px;
