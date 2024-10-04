@@ -19,36 +19,43 @@
     <!-- Modal -->
 
     <div v-if="selectedRequest" class="modal">
-      <div class="modal-content">
+    <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <h3>รายละเอียดคำขอ</h3>
         <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
         <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
         <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
         <div class="flex-container">
-          <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
-          <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
+            <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
+            <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
         </div>
         <div class="flex-container">
-          <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
-          <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
+            <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
+            <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
         </div>
         <p><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason }}</p>
-        <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{ selectedRequest.startDate }} - {{ selectedRequest.endDate }}
-        </p>
+        <p><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{ selectedRequest.startDate }} - {{ selectedRequest.endDate }}</p>
         <p><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }} - {{ selectedRequest.endTime }}</p>
-        <div class="approval">
-          <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" /> อนุมัติ</label>
-          <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" />
-            ไม่อนุมัติ</label>
 
+        <!-- เพิ่มรายละเอียดการออกปฏิบัติงานนอกสถานที่ -->
+        <div v-if="selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'">
+            <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
+            <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
+            <p><strong>หมายเลข:</strong> {{ selectedRequest.vehicleNumber }}</p>
         </div>
+
+        <div class="approval">
+            <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" /> อนุมัติ</label>
+            <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" /> ไม่อนุมัติ</label>
+        </div>
+        
         <label for="remark">หมายเหตุ:</label>
         <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
         <button @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
         <div class="submit-button-b"> </div>
-      </div>
     </div>
+</div>
+
 
   </div>
 </template>
@@ -64,10 +71,6 @@ export default {
   props: ['userData'],
   methods: {
     openModal(request) {
-      // this.selectedRequest = request;
-
-      // console.log(request.lineId);
-
       const axios = require('axios');
 
       let config = {
@@ -79,27 +82,21 @@ export default {
 
       axios.request(config)
         .then((response) => {
-          // console.log(response.data);
-
           this.selectedRequest = {
             ...response.data,
             ...request
           }
-
-          // console.log(this.selectedRequest);
         })
         .catch((error) => {
           console.log(error);
         });
-
     },
     updateLeave(datas) {
       this.selectedRequest = datas;
-      // console.log(this.selectedRequest._id);
       const axios = require('axios');
 
       // ฟังก์ชันสำหรับการเพิ่มจำนวนวันลา
-      const incrementLeave = async (lineId, leaveType, apiField) => {
+      const incrementLeave = async (lineId, apiField) => {
         try {
           // ดึงข้อมูลผู้ใช้
           let getConfig = {
@@ -125,35 +122,39 @@ export default {
             data: data
           };
 
-          const updateResponse = await axios.request(updateConfig);
-          // console.log(updateResponse.data[apiField]);
+          await axios.request(updateConfig);
         } catch (error) {
           console.error(error);
         }
       };
 
+      // อัปเดตจำนวนวันลาถ้าสถานะเป็นอนุมัติ
       if (this.selectedRequest.status === 'อนุมัติ') {
-        // เช็คประเภทของการลาและอัปเดตตามประเภทนั้นๆ
         switch (this.selectedRequest.type) {
           case 'ลาป่วย':
-            incrementLeave(this.selectedRequest.lineId, 'ลาป่วย', 'totalSickLeave');
+            incrementLeave(this.selectedRequest.lineId, 'totalSickLeave');
             break;
           case 'ลากิจ':
-            incrementLeave(this.selectedRequest.lineId, 'ลากิจ', 'totalPersonalLeave');
+            incrementLeave(this.selectedRequest.lineId, 'totalPersonalLeave');
             break;
           case 'ลาพักร้อน':
-            incrementLeave(this.selectedRequest.lineId, 'ลาพักร้อน', 'totalVacationLeave');
+            incrementLeave(this.selectedRequest.lineId, 'totalVacationLeave');
             break;
           case 'ลากิจพิเศษ':
           case 'อุปสมบท':
           case 'ลาคลอด':
           case 'ลาไม่รับค่าจ้าง':
-            incrementLeave(this.selectedRequest.lineId, 'ลาอื่นๆ', 'totalUnpaidLeave');
+            incrementLeave(this.selectedRequest.lineId, 'totalUnpaidLeave');
             break;
           default:
             console.log('ไม่พบประเภทการลา');
         }
       }
+
+      // ตรวจสอบประเภทการลา ถ้าเป็น "ออกปฏิบัติงานนอกสถานที่" จะใช้ API อื่น
+      const apiUrl = this.selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'
+        ? `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${this.selectedRequest._id}`
+        : `${process.env.API_URL}/leave/updateLeave/${this.selectedRequest._id}`;
 
       // อัปเดตสถานะการลา
       let data = JSON.stringify({
@@ -164,14 +165,13 @@ export default {
       let config = {
         method: 'put',
         maxBodyLength: Infinity,
-        url: `${process.env.API_URL}/leave/updateLeave/${this.selectedRequest._id}`,
+        url: apiUrl,
         headers: { 'Content-Type': 'application/json' },
         data: data
       };
 
       axios.request(config)
         .then((response) => {
-          // console.log(response.data);
           alert('บันทึกสำเร็จ');
           const status = response.data.status;
 
@@ -186,7 +186,7 @@ export default {
               data: lineData
             };
             axios.request(lineConfig)
-              .then((response) => console.log())
+              .then(() => console.log())
               .catch((error) => console.log(error));
           };
 
@@ -201,46 +201,40 @@ export default {
         .catch((error) => console.log(error));
     },
     getLeavesByApprover(approver) {
-      const axios = require('axios');
+  const axios = require('axios');
 
-      let config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: process.env.API_URL + '/leave/getLeavesByApprover/' + approver,
-        headers: {}
-      };
+  const leaveRequestsUrl = `${process.env.API_URL}/leave/getLeavesByApprover/${approver}`;
+  const leaveOutsideRequestsUrl = `${process.env.API_URL}/LeaveOutside/getLeavesOutside`;
 
-      axios.request(config)
-        .then((response) => {
-          // ตรวจสอบว่าข้อมูลมีอยู่และเป็น array
-          if (Array.isArray(response.data)) {
-            // เรียงข้อมูลตาม sendDate จากล่าสุดไปเก่าสุด
-            this.requests = response.data.sort((a, b) => {
-              return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
-            });
-          } else {
-            // console.log('Unexpected data format:', response.data);
-          }
-          // console.log(this.requests);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
+  // เรียก API ทั้งสองพร้อมกัน
+  Promise.all([
+    axios.get(leaveRequestsUrl),
+    axios.get(leaveOutsideRequestsUrl)
+  ])
+  .then(([leaveResponse, leaveOutsideResponse]) => {
+    // ตรวจสอบว่าข้อมูลมีอยู่และเป็น array
+    const leaveRequests = Array.isArray(leaveResponse.data) ? leaveResponse.data : [];
+    const leaveOutsideRequests = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [];
+
+    // รวมข้อมูลทั้งสองประเภท
+    this.requests = [...leaveRequests, ...leaveOutsideRequests].sort((a, b) => {
+      return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+},
     closeModal() {
       this.selectedRequest = null;
     }
-
   },
   mounted() {
-
-    // console.log(this.userData.name);
     this.getLeavesByApprover(this.userData.name);
-    // this.getLeavesByApprover("ผู้อนุมัติ เบื้องต้น");
-
   }
 };
 </script>
+
 
 <style scoped>
 .request-list {

@@ -1,6 +1,7 @@
 <template>
   <div>
     <LeaveHistory :user="user" @go-back-history="goBackHistory" v-if="history === true" />
+
     <div v-if="history === false" class="profile-container scrollable-content">
       <div class="profile-pic">
         <div class="circle"></div>
@@ -10,10 +11,6 @@
 
       <div class="form">
         <div class="form-row">
-          <!-- <div class="input-group">
-            <label>ชื่อผู้ใช้งาน</label>
-            <input type="text" v-model="user.username" disabled />
-          </div> -->
           <div class="input-group">
             <label>ตำแหน่ง</label>
             <input type="text" v-model="user.position" disabled />
@@ -25,10 +22,6 @@
             <label>ชื่อ - นามสกุล</label>
             <input type="text" v-model="user.fullName" disabled />
           </div>
-          <!-- <div class="input-group">
-            <label>อีเมล</label>
-            <input type="email" v-model="user.email" disabled />
-          </div> -->
         </div>
 
         <div class="form-row">
@@ -53,6 +46,48 @@
           </div>
         </div>
 
+        <!-- ส่วนรายละเอียดสำหรับคำขอลานอกสถานที่ -->
+        <div v-if="user.leaveType === 'ออกปฏิบัติงานนอกสถานที่'" class="form-row">
+          <div class="input-group">
+            <label>สถานที่</label>
+            <input type="text" v-model="user.workLocation" disabled />
+          </div>
+          <div class="input-group">
+            <label>ยานพาหนะ</label>
+            <input type="text" v-model="user.vehicle" disabled />
+          </div>
+        </div>
+
+        <div v-if="user.leaveType === 'ออกปฏิบัติงานนอกสถานที่'" class="form-row">
+          <div class="input-group">
+            <label>หมายเลข</label>
+            <input type="text" v-model="user.vehicleNumber" disabled />
+          </div>
+          <div class="input-group">
+            <label>วันที่เริ่มลา</label>
+            <input type="date" v-model="user.startDate" disabled />
+          </div>
+        </div>
+
+        <div v-if="user.leaveType === 'ออกปฏิบัติงานนอกสถานที่'" class="form-row">
+          <div class="input-group">
+            <label>วันที่สิ้นสุดลา</label>
+            <input type="date" v-model="user.endDate" disabled />
+          </div>
+          <div class="input-group">
+            <label>เวลาเริ่มลา</label>
+            <input type="time" v-model="user.startTime" disabled />
+          </div>
+        </div>
+
+        <div v-if="user.leaveType === 'ออกปฏิบัติงานนอกสถานที่'" class="form-row">
+          <div class="input-group">
+            <label>เวลาสิ้นสุดลา</label>
+            <input type="time" v-model="user.endTime" disabled />
+          </div>
+        </div>
+
+
         <div class="form-row">
           <label>สถานะคำขอ</label>
           <div class="radio-group">
@@ -64,7 +99,6 @@
             </label>
           </div>
         </div>
-
         <div class="form-row">
           <label>เหตุผล *</label>
           <textarea v-model="user.reasonText"></textarea>
@@ -93,11 +127,11 @@ export default {
   },
   props: ['user'], // รับข้อมูลผู้ใช้ที่ถูกเลือกจาก parent
   mounted() {
-    // console.log(this.user);
+    console.log(this.user);
 
   },
   methods: {
-    
+
     viewHistory() {
       this.history = true;
     },

@@ -37,9 +37,9 @@
 
             <!-- Routes -->
             <HomePage :userData="data_user" v-if="pages === 'home'" />
-            <LeaveAbsence v-if="pages === 'leaveabsence'" :userData="data_user" />
-            <LeaveOutside v-if="pages === 'leaveoutside'" />
-            <ResignFromWork v-if="pages === 'resignfromwork'" />
+            <LeaveAbsence :userData="data_user" v-if="pages === 'leaveabsence'"  />
+            <LeaveOutside :userData="data_user" v-if="pages === 'leaveoutside'" />
+            <ResignFromWork :userData="data_user" v-if="pages === 'resignfromwork'" />
 
             <!-- ส่ง data_user ไปยัง ListRequests -->
             <ListRequests :userData="data_user" v-if="pages === 'listrequests'" />
@@ -140,6 +140,7 @@ export default {
                         finalLeaveApprover: filteredData[0].finalLeaveApprover,
                         phone: filteredData[0].phone,
                         code: filteredData[0].code,
+                        lineId: filteredData[0].lineId,
 
                         diffDays_days_exl: filteredData[0].diffDays_days_exl,
                         sickLeave_days: filteredData[0].sickLeave_days,

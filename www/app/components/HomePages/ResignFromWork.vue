@@ -26,8 +26,8 @@
   export default {
     data() {
       return {
-        resignReason: 'ได้ที่ทำงานใหม่ที่ดีกว่า',
-        firstWorkDay: '1 ม.ค. 67',
+        resignReason: '',
+        firstWorkDay: '',
         lastWorkDay: '',
         needsCertification: false,
         hasFunding: false
@@ -36,11 +36,13 @@
     methods: {
       submitForm() {
         console.log('Form submitted with:', {
-          resignReason: this.resignReason,
           firstWorkDay: this.firstWorkDay,
           lastWorkDay: this.lastWorkDay,
           needsCertification: this.needsCertification,
           hasFunding: this.hasFunding,
+          status: 'รออนุมัติ',
+          reasonText: this.resignReason
+           
         });
       }
     }

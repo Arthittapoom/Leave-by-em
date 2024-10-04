@@ -101,8 +101,15 @@ export default {
   methods: {
     async getLeavesByLineId(id) {
       try {
-        const response = await axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
-        this.leaveHistory = response.data
+        // เรียก API ทั้งสองตัวพร้อมกัน
+        const leaveRequest = axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
+        const leaveOutsideRequest = axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
+
+        // รอให้ API ทั้งสองตัวทำงานเสร็จ
+        const [leaveResponse, leaveOutsideResponse] = await Promise.all([leaveRequest, leaveOutsideRequest]);
+
+        // รวมข้อมูลจากการลาในบริษัทและนอกบริษัท และจัดเรียงตามวันที่
+        this.leaveHistory = [...leaveResponse.data, ...leaveOutsideResponse.data]
           .map(leave => ({ ...leave, showDetail: false }))
           .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
       } catch (error) {
@@ -131,6 +138,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 /* Pagination Controls */

@@ -40,6 +40,7 @@
 </template>
 
 <script>
+const axios = require('axios');
 export default {
   props: {
     userData: {
@@ -75,167 +76,95 @@ export default {
   // ดึง userData มาจากหน้า HomePages
   props: ['userData'],
   methods: {
-    submitLeaveRequest() {
 
-      const axios = require('axios');
-      let data = JSON.stringify({
-
-        "type": this.selectedLeaveType,
-        "reason": this.leaveReason,
-        "startDate": this.startDate,
-        "endDate": this.endDate,
-        "startTime": this.startTime,
-        "endTime": this.endTime,
-        "sendDate": new Date(),
-        "lineId": localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
-        "status": "รออนุมัติ",
-        "reasonText": " ",
-        "initialLeaveApprover": this.userData.initialLeaveApprover,
-        "finalLeaveApprover": this.userData.finalLeaveApprover
-      });
-      
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: process.env.API_URL + '/leave/createLeave',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: data
-      };
-
-      axios.request(config)
-        .then((response) => {
-          // เมื่อบันทึกสำเร็จแล้ว แสดง alert ก่อน
-
-          // หลังจาก alert ให้ส่งข้อมูลผ่าน axios ไปยัง API อื่น
-          let sendImageConfig = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: process.env.API_URL + '/lineApi/sendImage/' + response.data.lineId,
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            data: JSON.stringify({
-              "message": "รออนุมัติ"
-            })
-          };
-
-          axios.request(sendImageConfig)
-            .then((response) => {
-
-              const axios = require('axios');
-
-              let initialApprover = this.userData.initialLeaveApprover;
-              let finalApprover = this.userData.finalLeaveApprover;
-
-              // ตรวจสอบและส่ง request ให้กับ initialLeaveApprover ถ้ามีค่า
-              if (initialApprover) {
-                let configInitial = {
-                  method: 'get',
-                  maxBodyLength: Infinity,
-                  url: `${process.env.API_URL}/users/getUserByName/${initialApprover}`,
-                  headers: {}
-                };
-
-                axios.request(configInitial)
-                  .then((response) => {
-                    // console.log('Initial Approver:', response.data[0].lineId);
-                    if (response.data[0].lineId) {
-                      const axios = require('axios');
-                      let data = JSON.stringify({
-                        "message": "มีคำขอใหม่"
-                      });
-
-                      let config = {
-                        method: 'post',
-                        maxBodyLength: Infinity,
-                        url: process.env.API_URL + '/lineApi/sendImage/' + response.data[0].lineId,
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        data: data
-                      };
-
-                      axios.request(config)
-                        .then((response) => {
-                          // console.log(JSON.stringify(response.data));
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-
-                    }
-                    return
-                  })
-                  .catch((error) => {
-                    console.log('Error Initial Approver:', error);
-                  });
-              }
-
-              // ตรวจสอบและส่ง request ให้กับ finalLeaveApprover ถ้ามีค่า
-              if (finalApprover) {
-                let configFinal = {
-                  method: 'get',
-                  maxBodyLength: Infinity,
-                  url: `${process.env.API_URL}/users/getUserByName/${finalApprover}`,
-                  headers: {}
-                };
-
-                axios.request(configFinal)
-                  .then((response) => {
-                    // console.log('Final Approver:', response.data[0].lineId);
-                    if (response.data[0].lineId) {
-                      const axios = require('axios');
-                      let data = JSON.stringify({
-                        "message": "มีคำขอใหม่"
-                      });
-
-                      let config = {
-                        method: 'post',
-                        maxBodyLength: Infinity,
-                        url: process.env.API_URL + '/lineApi/sendImage/' + response.data[0].lineId,
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        data: data
-                      };
-
-                      axios.request(config)
-                        .then((response) => {
-                          // console.log(JSON.stringify(response.data));
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                    }
-                    return
-                  })
-                  .catch((error) => {
-                    console.log('Error Final Approver:', error);
-                  });
-              }
-
-              // หากทั้งสองค่าไม่ถูกส่ง
-              if (!initialApprover && !finalApprover) {
-                console.log("No approvers available.");
-                alert('ไม่พบข้อมูลผู้อนุมัติ');
-              } else {
-                alert('บันทึกสำเร็จ');
-                this.$router.push('/');
-              }
-
-
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-        })
-        .catch((error) => {
-          console.log(error);
+    async submitLeaveRequest() {
+      try {
+        const data = JSON.stringify({
+          type: this.selectedLeaveType,
+          reason: this.leaveReason,
+          startDate: this.startDate,
+          endDate: this.endDate,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          sendDate: new Date(),
+          lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
+          status: "รออนุมัติ",
+          reasonText: " ",
+          initialLeaveApprover: this.userData.initialLeaveApprover,
+          finalLeaveApprover: this.userData.finalLeaveApprover
         });
+
+        const config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: `${process.env.API_URL}/leave/createLeave`,
+          headers: { 'Content-Type': 'application/json' },
+          data: data
+        };
+
+        const response = await axios.request(config);
+
+        // ส่งข้อความแจ้งเตือนการขออนุมัติ
+        await this.sendNotification(response.data.lineId, "รออนุมัติ");
+
+        // ส่งการแจ้งเตือนให้กับ initial และ final approver
+        const { initialLeaveApprover, finalLeaveApprover } = this.userData;
+
+        if (initialLeaveApprover) {
+          await this.notifyApprover(initialLeaveApprover, "มีคำขอใหม่");
+        }
+        if (finalLeaveApprover) {
+          await this.notifyApprover(finalLeaveApprover, "มีคำขอใหม่");
+        }
+
+        if (!initialLeaveApprover && !finalLeaveApprover) {
+          alert('ไม่พบข้อมูลผู้อนุมัติ');
+        } else {
+          alert('บันทึกสำเร็จ');
+          this.$router.push('/');
+        }
+      } catch (error) {
+        console.error('Error submitting leave request:', error);
+      }
+    },
+
+    async notifyApprover(approverName, message) {
+      try {
+        const config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: `${process.env.API_URL}/users/getUserByName/${approverName}`,
+          headers: {}
+        };
+
+        const response = await axios.request(config);
+
+        if (response.data[0]?.lineId) {
+          await this.sendNotification(response.data[0].lineId, message);
+        }
+      } catch (error) {
+        console.error(`Error notifying ${approverName}:`, error);
+      }
+    },
+
+    async sendNotification(lineId, message) {
+      try {
+        const data = JSON.stringify({ message: message });
+
+        const config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: `${process.env.API_URL}/lineApi/sendImage/${lineId}`,
+          headers: { 'Content-Type': 'application/json' },
+          data: data
+        };
+
+        await axios.request(config);
+      } catch (error) {
+        console.error('Error sending notification:', error);
+      }
     }
+
 
   }
 };
