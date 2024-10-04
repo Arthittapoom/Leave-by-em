@@ -30,17 +30,41 @@
                             <input type="text" id="leaveType" class="form-control" v-model="leaveDetails.type"
                                 disabled />
                         </div>
-                        <div v-if="leaveDetails.type !== 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
+                        <div v-if="leaveDetails.type !== 'ออกปฏิบัติงานนอกสถานที่' && leaveDetails.type !== 'ลาออก'"
+                            class="form-group">
                             <label for="leaveReason">เหตุผลการลา :</label>
                             <input type="text" id="leaveReason" class="form-control" v-model="leaveDetails.reason"
                                 disabled />
                         </div>
-                        <div class="form-group">
+                        <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
+                            <label for="leaveStartTime">เวลาเริ่มงาน :</label>
+                            <input type="text" id="leaveStartTime" class="form-control"
+                                v-model="leaveDetails.firstWorkDay" disabled />
+                        </div>
+                        <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
+                            <label for="leaveEndTime">เวลาสิ้นสุดงาน :</label>
+                            <input type="text" id="leaveEndTime" class="form-control" v-model="leaveDetails.lastWorkDay"
+                                disabled />
+                        </div>
+                        <div v-if="leaveDetails.type === 'ลาออก'">
+                            <div class="form-group">
+                                <label for="leaveCertificate">ต้องการใบรับรอง :</label>
+                                <input type="text" id="leaveCertificate" class="form-control"
+                                    v-model="leaveDetails.needsCertification" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label for="leaveFunding">ต้องการเงิน :</label>
+                                <input type="text" id="leaveFunding" class="form-control"
+                                    v-model="leaveDetails.hasFunding" disabled />
+                            </div>
+                        </div>
+
+                        <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
                             <label for="leaveDate">วัน/เดือน/ปี ที่ต้องการลา :</label>
                             <input type="text" id="leaveDate" class="form-control" v-model="leaveDetails.date"
                                 disabled />
                         </div>
-                        <div class="form-group">
+                        <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
                             <label for="leaveTime">เวลา ที่ต้องการลา :</label>
                             <input type="text" id="leaveTime" class="form-control" v-model="leaveDetails.time"
                                 disabled />
@@ -83,7 +107,6 @@
                 </transition>
             </div>
 
-
             <!-- รายการล่าสุด -->
             <div class="card-3">
                 <p>รายการล่าสุด</p>
@@ -95,8 +118,8 @@
                         <img v-if="leave.status === 'รออนุมัติ'" :src="statusIcon[4]" alt="leave icon" />
                     </div>
                     <div class="leave-info">
-                        <p>{{ leave.type }} / {{ leave.reason }}</p>
-                        <p>{{ leave.startDate }} | {{ leave.startTime }}</p>
+                        <p>{{ leave.type }} : {{ leave.reason }}</p>
+                        <p v-if="leave.type !== 'ลาออก'">{{ leave.startDate }} | {{ leave.startTime }}</p>
                     </div>
                     <div class="leave-actions">
                         <a v-if="leave.hasEvidence" :href="leave.evidenceLink">{{ leave.evidenceText }}</a>
@@ -113,9 +136,11 @@
                     <span class="close" @click="modalVisible = false">&times;</span>
                     <h2>รายละเอียดการลา</h2>
                     <p>ประเภทการลา: {{ selectedLeave.type }}</p>
-                    <p>เหตุผลการลา: {{ selectedLeave.reason }}</p>
-                    <p>วันที่: {{ selectedLeave.startDate }} ถึง {{ selectedLeave.endDate }}</p>
-                    <p>เวลา: {{ selectedLeave.startTime }} ถึง {{ selectedLeave.endTime }}</p>
+                    <p v-if="selectedLeave.type !== 'ลาออก'">เหตุผลการลา: {{ selectedLeave.reason }}</p>
+                    <p v-if="selectedLeave.type !== 'ลาออก'">วันที่: {{ selectedLeave.startDate }} ถึง {{
+                        selectedLeave.endDate }}</p>
+                    <p v-if="selectedLeave.type !== 'ลาออก'">เวลา: {{ selectedLeave.startTime }} ถึง {{
+                        selectedLeave.endTime }}</p>
                     <p>วันที่ส่งคำขอ: {{ formatDate(selectedLeave.sendDate) }}</p>
                     <p>สถานะ: {{ selectedLeave.status }}</p>
                     <p>หมายเหตุ: {{ selectedLeave.reasonText }}</p>
@@ -123,6 +148,12 @@
                         <p>สถานที่: {{ selectedLeave.workLocation }}</p>
                         <p>ยานพาหนะ: {{ selectedLeave.vehicle }}</p>
                         <p>หมายเลข: {{ selectedLeave.vehicleNumber }}</p>
+                    </div>
+                    <div v-if="selectedLeave.type === 'ลาออก'">
+                        <p>วันที่เริ่มงาน: {{ formatDate(selectedLeave.firstWorkDay) }}</p>
+                        <p>วันที่สิ้นสุดงาน: {{ formatDate(selectedLeave.lastWorkDay) }}</p>
+                        <p>ต้องการใบรับรอง: {{ selectedLeave.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
+                        <p>ต้องการเงิน: {{ selectedLeave.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
                     </div>
                 </div>
             </div>
@@ -156,6 +187,13 @@ export default {
                 workLocation: '',
                 vehicle: '',
                 vehicleNumber: '',
+                firstWorkDay: '',
+                lastWorkDay: '',
+                needsCertification: '',
+                hasFunding: '',
+
+
+
 
             },
             leaveItems: [],   // รวมรายการใบลาทั้งหมดที่มาจากทั้งสอง API
@@ -180,7 +218,11 @@ export default {
                 this.leaveDetails.reasonText = latestLeave.reasonText;
                 this.leaveDetails.workLocation = latestLeave.workLocation
                 this.leaveDetails.vehicle = latestLeave.vehicle,
-                    this.leaveDetails.vehicleNumber = latestLeave.vehicleNumber
+                    this.leaveDetails.vehicleNumber = latestLeave.vehicleNumber,
+                    this.leaveDetails.firstWorkDay = latestLeave.firstWorkDay
+                this.leaveDetails.lastWorkDay = latestLeave.lastWorkDay
+                this.leaveDetails.needsCertification = latestLeave.needsCertification
+                this.leaveDetails.hasFunding = latestLeave.hasFunding
             } else {
                 // กรณีไม่มีข้อมูลการลา
                 this.leaveDetails.type = 'ประเภทการลาเริ่มต้น';
@@ -193,12 +235,13 @@ export default {
     methods: {
         async getLeavesDataByLineId(id) {
             try {
-                // เรียก API ทั้งสองพร้อมกัน
+                // เรียก API ทั้งสามพร้อมกัน
                 const leaveRequest = axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
                 const leaveOutsideRequest = axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
+                const leaveResignRequest = axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResignByLineId/${id}`);
 
-                // ดึงข้อมูลจาก API ทั้งสอง
-                const [leaveResponse, leaveOutsideResponse] = await Promise.all([leaveRequest, leaveOutsideRequest]);
+                // ดึงข้อมูลจาก API ทั้งสาม
+                const [leaveResponse, leaveOutsideResponse, leaveResignResponse] = await Promise.all([leaveRequest, leaveOutsideRequest, leaveResignRequest]);
 
                 // แปลงข้อมูลจาก leaveResponse
                 const leaveItems = leaveResponse.data.map(leave => ({
@@ -210,69 +253,96 @@ export default {
                 const leaveOutsideItems = leaveOutsideResponse.data.map(leave => ({
                     ...leave,
                     showDetail: false,
-                    type: 'ออกปฏิบัติงานนอกสถานที่'  // หรือประเภทอื่นตามต้องการ
+                    type: 'ออกปฏิบัติงานนอกสถานที่'  // ประเภทสำหรับการทำงานนอกสถานที่
                 }));
 
-                // รวมข้อมูลทั้งสองและเรียงลำดับตามวันที่ส่ง
-                this.leaveItems = [...leaveItems, ...leaveOutsideItems]
+                // แปลงข้อมูลจาก leaveResignResponse
+                const leaveResignItems = leaveResignResponse.data.map(resign => ({
+                    ...resign,
+                    showDetail: false,
+                    type: 'ลาออก',  // ประเภทสำหรับการลาออก
+                    reasonText: resign.reasonText || 'ไม่มีเหตุผล',  // ตรวจสอบเหตุผลการลาออก
+                    firstWorkDay: resign.firstWorkDay,
+                    lastWorkDay: resign.lastWorkDay,
+                    needsCertification: resign.needsCertification,
+                    hasFunding: resign.hasFunding,
+                    status: resign.status || 'รออนุมัติ',
+                    sendDate: resign.sendDate || new Date(),
+                    initialLeaveApprover: resign.initialLeaveApprover || 'ไม่ระบุ',
+                    finalLeaveApprover: resign.finalLeaveApprover || 'ไม่ระบุ',
+                    lineId: resign.lineId,
+                    userId: resign.userId,
+                }));
+
+                // รวมข้อมูลทั้งสามและเรียงลำดับตามวันที่ส่ง
+                this.leaveItems = [...leaveItems, ...leaveOutsideItems, ...leaveResignItems]
                     .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
 
             } catch (error) {
                 console.error("Error fetching leave data:", error);
             }
-        },
+        }
+        ,
 
         cancelRequest(leaveDetails) {
-            const axios = require('axios');
-            let data = JSON.stringify({
-                "status": "ยกเลิกคำขอ"
-            });
+    const axios = require('axios');
+    let data = JSON.stringify({
+        "status": "ยกเลิกคำขอ"
+    });
 
-            // กำหนด URL ขึ้นอยู่กับประเภทการลา
-            let url;
-            if (leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่') {
-                url = `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${leaveDetails.id}`; // URL สำหรับการลาแบบนอกสถานที่
-            } else {
-                url = `${process.env.API_URL}/leave/updateLeave/${leaveDetails.id}`; // URL สำหรับการลาในสถานที่
-            }
+    // กำหนด URL ขึ้นอยู่กับประเภทการลา
+    let url;
+    if (leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่') {
+        url = `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${leaveDetails.id}`; // URL สำหรับการลาแบบนอกสถานที่
+    } else if (leaveDetails.type === 'ลาออก') {
+        url = `${process.env.API_URL}/LeaveResign/updateLeaveResign/${leaveDetails.id}`; // URL สำหรับการลาออก
+    } else {
+        url = `${process.env.API_URL}/leave/updateLeave/${leaveDetails.id}`; // URL สำหรับการลาในสถานที่
+    }
 
-            let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: url, // ใช้ URL ที่กำหนด
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: data
-            };
-
-            axios.request(config)
-                .then((response) => {
-                    let notifyConfig = {
-                        method: 'post',
-                        maxBodyLength: Infinity,
-                        url: process.env.API_URL + '/lineApi/sendImage/' + leaveDetails.lineId,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        data: JSON.stringify({ "message": "ยกเลิกคำขอ" })
-                    };
-
-                    axios.request(notifyConfig)
-                        .then((response) => {
-                            console.log(response.data);
-                            this.statusLeave = "cancelled";
-                            // อาจจะเพิ่มฟังก์ชันการดึงข้อมูลใหม่เพื่ออัพเดต UI ที่นี่
-                            this.getLeavesDataByLineId(); // เพิ่มการเรียกข้อมูลหลังจากยกเลิกคำขอ
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+    let config = {
+        method: 'put',
+        maxBodyLength: Infinity,
+        url: url, // ใช้ URL ที่กำหนด
+        headers: {
+            'Content-Type': 'application/json'
         },
+        data: data
+    };
+
+    axios.request(config)
+        .then((response) => {
+            // ตรวจสอบ lineId ก่อนที่จะเรียก getLeavesDataByLineId
+            if (leaveDetails.lineId) {
+                let notifyConfig = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: process.env.API_URL + '/lineApi/sendImage/' + leaveDetails.lineId,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({ "message": "ยกเลิกคำขอ" })
+                };
+
+                axios.request(notifyConfig)
+                    .then((response) => {
+                        console.log(response.data);
+                        this.statusLeave = "cancelled";
+                        this.getLeavesDataByLineId(); // เพิ่มการเรียกข้อมูลหลังจากยกเลิกคำขอ
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            } else {
+                console.error("lineId is undefined");
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+},
+
+
 
 
         openModal(leave) {
