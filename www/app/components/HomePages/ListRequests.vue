@@ -110,147 +110,152 @@ export default {
         });
     },
     updateLeave(datas) {
-  this.selectedRequest = datas;
-  const axios = require('axios');
+      this.selectedRequest = datas;
+      const axios = require('axios');
 
-  // ฟังก์ชันสำหรับการเพิ่มจำนวนวันลา
-  const incrementLeave = async (lineId, apiField) => {
-    try {
-      // ดึงข้อมูลผู้ใช้
-      let getConfig = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
-        headers: { 'Content-Type': 'application/json' }
+      // ฟังก์ชันสำหรับการเพิ่มจำนวนวันลา
+      const incrementLeave = async (lineId, apiField) => {
+        try {
+          // ดึงข้อมูลผู้ใช้
+          let getConfig = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
+            headers: { 'Content-Type': 'application/json' }
+          };
+
+          const userResponse = await axios.request(getConfig);
+          let currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
+
+          // บวกเพิ่ม 1
+          let updatedLeaveCount = currentLeaveCount + 1;
+          let data = JSON.stringify({ [apiField]: updatedLeaveCount });
+
+          // อัปเดตข้อมูลวันลา
+          let updateConfig = {
+            method: 'put',
+            maxBodyLength: Infinity,
+            url: `${process.env.API_URL}/users/updateUserByLineId/${lineId}`,
+            headers: { 'Content-Type': 'application/json' },
+            data: data
+          };
+
+          await axios.request(updateConfig);
+        } catch (error) {
+          console.error(error);
+        }
       };
 
-      const userResponse = await axios.request(getConfig);
-      let currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
+      // อัปเดตจำนวนวันลาถ้าสถานะเป็นอนุมัติ
+      if (this.selectedRequest.status === 'อนุมัติ') {
+        switch (this.selectedRequest.type) {
+          case 'ลาป่วย':
+            incrementLeave(this.selectedRequest.lineId, 'totalSickLeave');
+            break;
+          case 'ลากิจ':
+            incrementLeave(this.selectedRequest.lineId, 'totalPersonalLeave');
+            break;
+          case 'ลาพักร้อน':
+            incrementLeave(this.selectedRequest.lineId, 'totalVacationLeave');
+            break;
+          case 'ลากิจพิเศษ':
+          case 'อุปสมบท':
+          case 'ลาคลอด':
+          case 'ลาไม่รับค่าจ้าง':
+            incrementLeave(this.selectedRequest.lineId, 'totalUnpaidLeave');
+            break;
+          case 'ลาออก':
+            // ถ้าเป็นลาออก ไม่ต้องอัปเดตจำนวนวันลา
+            break;
+          default:
+            console.log('ไม่พบประเภทการลา');
+        }
+      }
 
-      // บวกเพิ่ม 1
-      let updatedLeaveCount = currentLeaveCount + 1;
-      let data = JSON.stringify({ [apiField]: updatedLeaveCount });
+      // ตรวจสอบประเภทการลา ถ้าเป็น "ออกปฏิบัติงานนอกสถานที่" หรือ "ลาออก" จะใช้ API อื่น
+      const apiUrl = this.selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'
+        ? `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${this.selectedRequest._id}`
+        : this.selectedRequest.Type === 'ลาออก'
+          ? `${process.env.API_URL}/LeaveResign/updateLeaveResign/${this.selectedRequest._id}` // API สำหรับลาออก
+          : `${process.env.API_URL}/leave/updateLeave/${this.selectedRequest._id}`;
 
-      // อัปเดตข้อมูลวันลา
-      let updateConfig = {
+      // อัปเดตสถานะการลา
+      let data = JSON.stringify({
+        "status": this.selectedRequest.status,
+        "reasonText": this.selectedRequest.reasonText || null
+      });
+
+      let config = {
         method: 'put',
         maxBodyLength: Infinity,
-        url: `${process.env.API_URL}/users/updateUserByLineId/${lineId}`,
+        url: apiUrl,
         headers: { 'Content-Type': 'application/json' },
         data: data
       };
 
-      await axios.request(updateConfig);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+      axios.request(config)
+        .then((response) => {
+          alert('บันทึกสำเร็จ');
+          const status = response.data.status;
 
-  // อัปเดตจำนวนวันลาถ้าสถานะเป็นอนุมัติ
-  if (this.selectedRequest.status === 'อนุมัติ') {
-    switch (this.selectedRequest.type) {
-      case 'ลาป่วย':
-        incrementLeave(this.selectedRequest.lineId, 'totalSickLeave');
-        break;
-      case 'ลากิจ':
-        incrementLeave(this.selectedRequest.lineId, 'totalPersonalLeave');
-        break;
-      case 'ลาพักร้อน':
-        incrementLeave(this.selectedRequest.lineId, 'totalVacationLeave');
-        break;
-      case 'ลากิจพิเศษ':
-      case 'อุปสมบท':
-      case 'ลาคลอด':
-      case 'ลาไม่รับค่าจ้าง':
-        incrementLeave(this.selectedRequest.lineId, 'totalUnpaidLeave');
-        break;
-      case 'ลาออก':
-        // ถ้าเป็นลาออก ไม่ต้องอัปเดตจำนวนวันลา
-        break;
-      default:
-        console.log('ไม่พบประเภทการลา');
-    }
-  }
+          // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
+          const sendLineNotification = (message) => {
+            let lineData = JSON.stringify({ "message": message });
+            let lineConfig = {
+              method: 'post',
+              maxBodyLength: Infinity,
+              url: `${process.env.API_URL}/lineApi/sendImage/${this.selectedRequest.lineId}`,
+              headers: { 'Content-Type': 'application/json' },
+              data: lineData
+            };
+            axios.request(lineConfig)
+              .then(() => console.log())
+              .catch((error) => console.log(error));
+          };
 
-  // ตรวจสอบประเภทการลา ถ้าเป็น "ออกปฏิบัติงานนอกสถานที่" หรือ "ลาออก" จะใช้ API อื่น
-  const apiUrl = this.selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'
-    ? `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${this.selectedRequest._id}`
-    : this.selectedRequest.Type === 'ลาออก'
-      ? `${process.env.API_URL}/LeaveResign/updateLeaveResign/${this.selectedRequest._id}` // API สำหรับลาออก
-      : `${process.env.API_URL}/leave/updateLeave/${this.selectedRequest._id}`;
+          if (status === 'อนุมัติ') {
+            sendLineNotification('อนุมัติ');
+          } else if (status === 'ไม่อนุมัติ') {
+            sendLineNotification('ไม่อนุมัติ');
+          }
 
-  // อัปเดตสถานะการลา
-  let data = JSON.stringify({
-    "status": this.selectedRequest.status,
-    "reasonText": this.selectedRequest.reasonText || null
-  });
-
-  let config = {
-    method: 'put',
-    maxBodyLength: Infinity,
-    url: apiUrl,
-    headers: { 'Content-Type': 'application/json' },
-    data: data
-  };
-
-  axios.request(config)
-    .then((response) => {
-      alert('บันทึกสำเร็จ');
-      const status = response.data.status;
-
-      // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
-      const sendLineNotification = (message) => {
-        let lineData = JSON.stringify({ "message": message });
-        let lineConfig = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: `${process.env.API_URL}/lineApi/sendImage/${this.selectedRequest.lineId}`,
-          headers: { 'Content-Type': 'application/json' },
-          data: lineData
-        };
-        axios.request(lineConfig)
-          .then(() => console.log())
-          .catch((error) => console.log(error));
-      };
-
-      if (status === 'อนุมัติ') {
-        sendLineNotification('อนุมัติ');
-      } else if (status === 'ไม่อนุมัติ') {
-        sendLineNotification('ไม่อนุมัติ');
-      }
-
-      this.selectedRequest = null;
-    })
-    .catch((error) => console.log(error));
-},
+          this.selectedRequest = null;
+        })
+        .catch((error) => console.log(error));
+    },
 
     getLeavesByApprover(approver) {
-      const axios = require('axios');
+      try {
+        const axios = require('axios');
 
-      const leaveRequestsUrl = `${process.env.API_URL}/leave/getLeavesByApprover/${approver}`;
-      const leaveOutsideRequestsUrl = `${process.env.API_URL}/LeaveOutside/getLeavesOutside`;
-      const leaveResignRequestsUrl = `${process.env.API_URL}/LeaveResign/getLeavesResign`; // URL สำหรับการลาออก
+        const leaveRequestsUrl = `${process.env.API_URL}/leave/getLeavesByApprover/${approver}`;
+        const leaveOutsideRequestsUrl = `${process.env.API_URL}/LeaveOutside/getLeavesOutside`;
+        const leaveResignRequestsUrl = `${process.env.API_URL}/LeaveResign/getLeavesResign`; // URL สำหรับการลาออก
 
-      // เรียก API ทั้งสามพร้อมกัน
-      Promise.all([
-        axios.get(leaveRequestsUrl),
-        axios.get(leaveOutsideRequestsUrl),
-        axios.get(leaveResignRequestsUrl) // เพิ่มการเรียก API สำหรับการลาออก
-      ])
-        .then(([leaveResponse, leaveOutsideResponse, leaveResignResponse]) => {
-          // ตรวจสอบว่าข้อมูลมีอยู่และเป็น array
-          const leaveRequests = Array.isArray(leaveResponse.data) ? leaveResponse.data : [];
-          const leaveOutsideRequests = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [];
-          const leaveResignRequests = Array.isArray(leaveResignResponse.data) ? leaveResignResponse.data : []; // ข้อมูลการลาออก
+        // เรียก API ทั้งสามพร้อมกัน
+        Promise.all([
+          axios.get(leaveRequestsUrl),
+          axios.get(leaveOutsideRequestsUrl),
+          axios.get(leaveResignRequestsUrl) // เพิ่มการเรียก API สำหรับการลาออก
+        ])
+          .then(([leaveResponse, leaveOutsideResponse, leaveResignResponse]) => {
+            // ตรวจสอบว่าข้อมูลมีอยู่และเป็น array
+            const leaveRequests = Array.isArray(leaveResponse.data) ? leaveResponse.data : [];
+            const leaveOutsideRequests = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [];
+            const leaveResignRequests = Array.isArray(leaveResignResponse.data) ? leaveResignResponse.data : []; // ข้อมูลการลาออก
 
-          // รวมข้อมูลทั้งสามประเภท
-          this.requests = [...leaveRequests, ...leaveOutsideRequests, ...leaveResignRequests].sort((a, b) => {
-            return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
+            // รวมข้อมูลทั้งสามประเภท
+            this.requests = [...leaveRequests, ...leaveOutsideRequests, ...leaveResignRequests].sort((a, b) => {
+              return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
+            });
+          })
+          .catch((error) => {
+            // console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      }
+      catch (error) {
+        console.error(error);
+      }
     },
 
     closeModal() {

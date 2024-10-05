@@ -21,11 +21,17 @@
     <label for="end-time">เวลาเสร็จสิ้น</label>
     <input type="time" id="end-time" v-model="endTime" />
 
-    <button type="button" @click="submitForm">ส่งคำขอการปฏิบัติงานนอกสถานที่</button>
+    <button v-if="loading === false" type="button" @click="submitForm">ส่งคำขอการปฏิบัติงานนอกสถานที่</button>
+    <button v-if="loading === true" type="submit">
+      <div class="spinner-border text-warning" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </button>
   </div>
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 const axios = require('axios');
 export default {
   data() {
@@ -36,32 +42,47 @@ export default {
       startDate: '',
       endDate: '',
       startTime: '',
-      endTime: ''
+      endTime: '',
+      loading: false
     };
   },
   props: ['userData'],
   methods: {
     async submitForm() {
+      this.loading = true;
       try {
-        // ตรวจสอบข้อมูลเบื้องต้น
+
         if (this.startDate > this.endDate) {
-          alert('วันที่สิ้นสุดต้องมากกว่าวันที่เริ่ม');
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'วันที่เริ่มต้องน้อยกว่าวันที่สิ้นสุด'
+          }).then(() => {
+            this.loading = false
+          })
           return;
         }
 
-        // if (this.startTime > this.endTime) {
-        //   alert('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม');
-        //   return;
-        // }
-
         if (!this.userData) {
-          alert('กรุณาเข้าสู่ระบบก่อน');
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณาเข้าสู่ระบบ'
+          }).then(() => {
+            this.loading = false
+          })
           return;
         }
 
         if (!this.workLocation || !this.vehicle || !this.vehicleNumber || !this.startDate ||
           !this.endDate || !this.startTime || !this.endTime) {
-          alert('กรุณากรอกข้อมูลให้ครบ');
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณากรอกข้อมูลให้ครบถ้วน'
+          }).then(() => {
+            this.loading = false
+          })
           return;
         }
 
@@ -113,8 +134,14 @@ export default {
         if (!initialLeaveApprover && !finalLeaveApprover) {
           alert('ไม่พบข้อมูลผู้อนุมัติ');
         } else {
-          alert('บันทึกสำเร็จ');
-          this.$router.push('/');
+          Swal.fire({
+            icon: 'success',
+            title: 'ส่งคำขอสําเร็จ',
+            text: 'ส่งคำขอสําเร็จแล้ว'
+          }).then(() => {
+            this.loading = false
+            this.$router.push('/');
+          })
         }
       } catch (error) {
         console.error('Error submitting form:', error);

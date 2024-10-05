@@ -34,13 +34,21 @@
       <label for="end-time">เวลาสิ้นสุด</label>
       <input type="time" id="end-time" v-model="endTime" />
 
-      <button type="submit">ส่งคำขอลาการลา</button>
+      <button v-if="loading === false" type="submit">ส่งคำขอลาการลา</button>
+
+      <button v-if="loading === true" type="submit"><div class="spinner-border text-warning" role="status">
+        <span class="sr-only">Loading...</span>
+      </div></button>
+
+      
+
     </form>
   </div>
 </template>
 
 <script>
 const axios = require('axios');
+import Swal from 'sweetalert2'
 export default {
   props: {
     userData: {
@@ -71,6 +79,7 @@ export default {
       endDate: '',
       startTime: '',
       endTime: '',
+      loading: false
     };
   },
   // ดึง userData มาจากหน้า HomePages
@@ -78,6 +87,31 @@ export default {
   methods: {
 
     async submitLeaveRequest() {
+
+      this.loading = true;
+
+      if (!this.selectedLeaveType || !this.leaveReason || !this.startDate || !this.endDate || !this.startTime || !this.endTime) {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        }).then(() => {
+          this.loading = false
+        })
+        return;
+      }
+
+      if (this.startDate > this.endDate) {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'วันที่เริ่มลาต้องน้อยกว่าวันที่สิ้นสุด',
+        }).then(() => {
+          this.loading = false
+        })
+        return;
+      }
+
       try {
         const data = JSON.stringify({
           type: this.selectedLeaveType,
@@ -120,8 +154,14 @@ export default {
         if (!initialLeaveApprover && !finalLeaveApprover) {
           alert('ไม่พบข้อมูลผู้อนุมัติ');
         } else {
-          alert('บันทึกสำเร็จ');
-          this.$router.push('/');
+          Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ',
+            text: 'สำเร็จ',
+          }).then(() => {
+            this.loading = false;
+            this.$router.push('/');
+          })
         }
       } catch (error) {
         console.error('Error submitting leave request:', error);

@@ -1,51 +1,88 @@
 <template>
-  <div class="resign-form">
-    <label for="resign-reason">เหตุผลในการลาออก :</label>
-    <input type="text" id="resign-reason" v-model="resignReason" placeholder="ระบุเหตุผลการลาออก" />
-
-    <label for="first-work-day">วันทำงานวันแรก</label>
-    <input type="text" id="first-work-day" v-model="firstWorkDay" readonly />
-
-    <label for="last-work-day">วันทำงานวันสุดท้าย</label>
-    <input type="date" id="last-work-day" v-model="lastWorkDay" />
-
-    <div class="checkbox-group">
-      <label>
-        <input type="checkbox" v-model="needsCertification" /> ต้องการหนังสือรับรอง
-      </label>
-      <label>
-        <input type="checkbox" v-model="hasFunding" /> มีกองทุนหรือไม่
-      </label>
+  <div>
+    <div v-if="loading === true" class="spinner-border text-warning" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
+    <div v-if="loading === false" class="resign-form">
+      <label for="resign-reason">เหตุผลในการลาออก :</label>
+      <input type="text" id="resign-reason" v-model="resignReason" placeholder="ระบุเหตุผลการลาออก" />
 
-    <button type="button" @click="submitForm">ส่งคำขอลาออก</button>
+      <label for="first-work-day">วันทำงานวันแรก</label>
+      <input type="text" id="first-work-day" v-model="firstWorkDay" readonly />
+
+      <label for="last-work-day">วันทำงานวันสุดท้าย</label>
+      <input type="date" id="last-work-day" v-model="lastWorkDay" />
+
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" v-model="needsCertification" /> ต้องการหนังสือรับรอง
+        </label>
+        <label>
+          <input type="checkbox" v-model="hasFunding" /> มีกองทุนหรือไม่
+        </label>
+      </div>
+
+      <button v-if="loading === false" type="button" @click="submitForm">ส่งคำขอลาออก</button>
+      <button v-if="loading === true" type="submit">
+        <div class="spinner-border text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
   </div>
+
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 const axios = require('axios');
 export default {
   data() {
     return {
       resignReason: '',
-      firstWorkDay: this.userData.startDate ? new Date(this.userData.startDate).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' }).split('/').reverse().join('-') : '',
       lastWorkDay: '',
       needsCertification: false,
-      hasFunding: false
+      hasFunding: false,
+      loading: false,
+      userData: null,
+      firstWorkDay: '',
     };
   },
-  props: ['userData'],
   methods: {
     async submitForm() {
+      this.loading = true;
       try {
         // ตรวจสอบข้อมูลเบื้องต้น
         if (!this.resignReason) {
-          alert('กรุณากรอกเหตุผลในการลาออก');
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณากรอกเหตุผลในการลาออก'
+          }).then(() => {
+            this.loading = false
+          })
+          return;
+        }
+
+        if (!this.lastWorkDay) {
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณากรอกวันที่สิ้นสุดงาน'
+          }).then(() => {
+            this.loading = false
+          })
           return;
         }
 
         if (!this.userData) {
-          alert('กรุณาเข้าสู่ระบบก่อน');
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณาเข้าสู่ระบบ'
+          }).then(() => {
+            this.loading = false
+          })
           return;
         }
 
@@ -62,7 +99,7 @@ export default {
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
           lineId: localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null,
-          userId: this.userData.id
+          userId: this.userData._id
         });
 
         const config = {
@@ -84,9 +121,6 @@ export default {
 
         const { initialLeaveApprover, finalLeaveApprover } = this.userData;
 
-        // console.log('Initial Leave Approver:', initialLeaveApprover);
-        // console.log('Final Leave Approver:', finalLeaveApprover);
-
         // แจ้งเตือนผู้อนุมัติเริ่มต้น (initialLeaveApprover)
         if (initialLeaveApprover) {
           await this.notifyApprover(initialLeaveApprover, 'มีคำขอใหม่');
@@ -100,8 +134,14 @@ export default {
         if (!initialLeaveApprover && !finalLeaveApprover) {
           alert('ไม่พบข้อมูลผู้อนุมัติ');
         } else {
-          alert('บันทึกสำเร็จ');
-          this.$router.push('/');
+          Swal.fire({
+            icon: 'success',
+            title: 'สำหรับคำขอลาออกสำเร็จ',
+            text: 'สำหรับคำขอลาออกสำเร็จแล้ว'
+          }).then(() => {
+            this.loading = false;
+            this.$router.push('/');
+          })
         }
       } catch (error) {
         console.error('Error submitting form:', error);
@@ -144,10 +184,34 @@ export default {
       } catch (error) {
         console.error('Error sending notification:', error);
       }
+    },
+
+    getUserByLineId(lineId) {
+      const axios = require('axios');
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/users/getUserByLineId/' + lineId,
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          this.userData = response.data;
+          this.firstWorkDay = new Date(this.userData.startDate).toLocaleDateString('en-GB')
+          this.loading = false
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
     }
-
-
-
+  },
+  mounted() {
+    this.loading = true
+    this.getUserByLineId(localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null);
   }
 };
 </script>

@@ -235,7 +235,7 @@ export default {
     methods: {
         async getLeavesDataByLineId(id) {
     try {
-        console.log('getLeavesDataByLineId', id);
+        // console.log('getLeavesDataByLineId', id);
 
         // เรียก API แต่ละตัวแยกกันและจัดการข้อผิดพลาดของแต่ละ API
         let leaveItems = [];
