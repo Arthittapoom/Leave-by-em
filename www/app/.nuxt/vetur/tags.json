@@ -44,6 +44,9 @@
   "MenuPagesLeaveManagementPage": {
     "description": "Auto imported from components/MenuPages/LeaveManagementPage.vue"
   },
+  "MenuPagesLeaveResignManagementPage": {
+    "description": "Auto imported from components/MenuPages/LeaveResignManagementPage.vue"
+  },
   "MenuPagesUsersManagementPage": {
     "description": "Auto imported from components/MenuPages/UsersManagementPage.vue"
   },
@@ -58,6 +61,9 @@
   },
   "MenuPagesLeaveHistory": {
     "description": "Auto imported from components/MenuPages/Leave/LeaveHistory.vue"
+  },
+  "MenuPagesLeaveResignDetails": {
+    "description": "Auto imported from components/MenuPages/Leave/ResignDetails.vue"
   },
   "MenuPagesUserDetails": {
     "description": "Auto imported from components/MenuPages/User/UserDetails.vue"

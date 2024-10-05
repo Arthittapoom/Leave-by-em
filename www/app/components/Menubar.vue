@@ -20,6 +20,12 @@
         class="sidebar-item">
         <img class="icon-1" src="/admin/icon-3.png" alt=""> Leave Management
       </div>
+      <!-- LeaveResignManagementPage -->
+      <div @click="updatePage('LeaveResignManagementPage')" :class="{ 'active-item': activePage === 'LeaveResignManagementPage' }"
+        class="sidebar-item">
+        <img class="icon-1" src="/admin/icon-3.png" alt=""> Resign Management
+      </div>
+
       <div @click="updatePage('UsersManagementPage')" :class="{ 'active-item': activePage === 'UsersManagementPage' }"
         class="sidebar-item">
         <img class="icon-1" src="/admin/icon-4.png" alt=""> User Management

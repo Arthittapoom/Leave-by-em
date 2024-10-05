@@ -61,7 +61,7 @@ export default {
       leaveCredits: [
         { label: 'สิทธิ์ลาป่วย', remaining: this.userData.totalSickLeave, total: this.userData.remainingSickLeave, class: 'sick-leave' },
         { label: 'สิทธิ์ลากิจ', remaining: this.userData.totalPersonalLeave, total: this.userData.remainingPersonalLeave, class: 'business-leave' },
-        { label: 'สิทธิ์ลาพักร้อน', remaining: this.userData.remainingVacationLeave, total: this.userData.grantedVacationLeave, class: 'vacation-leave' },
+        { label: 'สิทธิ์ลาพักร้อน', remaining: this.userData.totalVacationLeave, total: this.userData.remainingVacationLeave, class: 'vacation-leave' },
       ],
       leaveTypes: [
         { value: 'ลาป่วย', label: 'ลาป่วย' },
