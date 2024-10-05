@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-if="loading === true" class="spinner-border text-warning" role="status">
+    <div v-if="loadingData === true" class="spinner-border text-warning" role="status">
       <span class="sr-only">Loading...</span>
     </div>
-    <div v-if="loading === false" class="resign-form">
+    <div v-if="loadingData === false" class="resign-form">
       <label for="resign-reason">เหตุผลในการลาออก :</label>
       <input type="text" id="resign-reason" v-model="resignReason" placeholder="ระบุเหตุผลการลาออก" />
 
@@ -44,6 +44,7 @@ export default {
       needsCertification: false,
       hasFunding: false,
       loading: false,
+      loadingData: false,
       userData: null,
       firstWorkDay: '',
     };
@@ -201,7 +202,7 @@ export default {
           // console.log(response.data);
           this.userData = response.data;
           this.firstWorkDay = new Date(this.userData.startDate).toLocaleDateString('en-GB')
-          this.loading = false
+          this.loadingData = false
         })
         .catch((error) => {
           console.log(error);
@@ -210,7 +211,7 @@ export default {
     }
   },
   mounted() {
-    this.loading = true
+    this.loadingData = true
     this.getUserByLineId(localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')).userId : null);
   }
 };

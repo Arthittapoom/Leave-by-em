@@ -1,163 +1,175 @@
     <template>
         <div>
-            <!-- ส่วนแสดงสถานะการขอ -->
-            <div v-if="statusLeave === 'submitted'" class="card-2 mt-4 pt-4 pb-4">
 
-                <img v-if="leaveDetails.status === 'รออนุมัติ'" class="logo-status" :src="statusIcon[0]"
-                    alt="status icon">
-                <img v-if="leaveDetails.status === 'อนุมัติ'" class="logo-status-1" :src="statusIcon[2]"
-                    alt="status icon">
-                <img v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="logo-status-1" :src="statusIcon[3]"
-                    alt="status icon">
-                <img v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="logo-status-1" :src="statusIcon[3]"
-                    alt="status icon">
-
-                <div class="row text-center" style="width: 100%;">
-                    <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.submitted }}</div>
-                    <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.approving }}</div>
-                    <div v-if="leaveDetails.status === 'อนุมัติ'" class="col">{{ statusMessages.statusRequest }} <br>
-                        หมายเหตุ: {{ leaveDetails.reasonText }}</div>
-                    <div v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="col"> ยกเลิกคำขอ <br> หมายเหตุ: {{
-                        leaveDetails.reasonText }}</div>
-                    <div v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="col"> ไม่อนุมัติ <br> หมายเหตุ: {{
-                        leaveDetails.reasonText }}</div>
-                </div>
-                <br>
-                <transition name="fade">
-                    <div v-if="pageleaveDetail" class="container">
-                        <div class="form-group">
-                            <label for="leaveType">ประเภทการลา :</label>
-                            <input type="text" id="leaveType" class="form-control" v-model="leaveDetails.type"
-                                disabled />
-                        </div>
-                        <div v-if="leaveDetails.type !== 'ออกปฏิบัติงานนอกสถานที่' && leaveDetails.type !== 'ลาออก'"
-                            class="form-group">
-                            <label for="leaveReason">เหตุผลการลา :</label>
-                            <input type="text" id="leaveReason" class="form-control" v-model="leaveDetails.reason"
-                                disabled />
-                        </div>
-                        <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
-                            <label for="leaveStartTime">เวลาเริ่มงาน :</label>
-                            <input type="text" id="leaveStartTime" class="form-control"
-                                v-model="leaveDetails.firstWorkDay" disabled />
-                        </div>
-                        <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
-                            <label for="leaveEndTime">เวลาสิ้นสุดงาน :</label>
-                            <input type="text" id="leaveEndTime" class="form-control" v-model="leaveDetails.lastWorkDay"
-                                disabled />
-                        </div>
-                        <div v-if="leaveDetails.type === 'ลาออก'">
-                            <div class="form-group">
-                                <label for="leaveCertificate">ต้องการใบรับรอง :</label>
-                                <input type="text" id="leaveCertificate" class="form-control"
-                                    v-model="leaveDetails.needsCertification" disabled />
-                            </div>
-                            <div class="form-group">
-                                <label for="leaveFunding">ต้องการเงิน :</label>
-                                <input type="text" id="leaveFunding" class="form-control"
-                                    v-model="leaveDetails.hasFunding" disabled />
-                            </div>
-                        </div>
-
-                        <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
-                            <label for="leaveDate">วัน/เดือน/ปี ที่ต้องการลา :</label>
-                            <input type="text" id="leaveDate" class="form-control" v-model="leaveDetails.date"
-                                disabled />
-                        </div>
-                        <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
-                            <label for="leaveTime">เวลา ที่ต้องการลา :</label>
-                            <input type="text" id="leaveTime" class="form-control" v-model="leaveDetails.time"
-                                disabled />
-                        </div>
-
-                        <!-- เพิ่มรายละเอียดการลาแบบนอกสถานที่ -->
-                        <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
-                            <label for="leaveWorkLocation">สถานที่ปฏิบัติงานนอกสถานที่ :</label>
-                            <input type="text" id="leaveWorkLocation" class="form-control"
-                                v-model="leaveDetails.workLocation" disabled />
-                        </div>
-                        <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
-                            <label for="leaveVehicle">ยานพาหนะ :</label>
-                            <input type="text" id="leaveVehicle" class="form-control" v-model="leaveDetails.vehicle"
-                                disabled />
-                        </div>
-                        <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
-                            <label for="leaveVehicleNumber">หมายเลขยานพาหนะ :</label>
-                            <input type="text" id="leaveVehicleNumber" class="form-control"
-                                v-model="leaveDetails.vehicleNumber" disabled />
-                        </div>
-
-                        <div class="mt-3">
-                            <p>ผู้อนุมัติการลาขั้นต้น</p>
-                            <p>{{ userData.initialLeaveApprover }}</p>
-                        </div>
-                        <div>
-                            <p>ผู้อนุมัติสูงสุด</p>
-                            <p>{{ userData.finalLeaveApprover }}</p>
-                        </div>
-                        <button class="button-cancel" @click="cancelRequest(leaveDetails)">ยกเลิกคำขอ</button>
-                    </div>
-                </transition>
-                <!-- Buttons with transition -->
-                <transition name="fade">
-                    <button v-if="!pageleaveDetail" @click="pageleaveDetail = true" class="button-detail-2">...</button>
-                </transition>
-                <transition name="fade">
-                    <button v-if="pageleaveDetail" @click="pageleaveDetail = false" class="button-detail-2">...</button>
-                </transition>
+            <div v-if="loadingData === true" class="spinner-border text-warning" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
 
-            <!-- รายการล่าสุด -->
-            <div class="card-3">
-                <p>รายการล่าสุด</p>
-                <div v-for="(leave, index) in leaveItems" :key="index" class="leave-item">
-                    <div class="leave-icon">
-                        <img v-if="leave.status === 'อนุมัติ'" :src="statusIcon[2]" alt="leave icon" />
-                        <img v-if="leave.status === 'ไม่อนุมัติ' || leave.status === 'ยกเลิกคำขอ'" :src="statusIcon[3]"
-                            alt="leave icon" />
-                        <img v-if="leave.status === 'รออนุมัติ'" :src="statusIcon[4]" alt="leave icon" />
+            <div v-if="loadingData === false">
+                <!-- ส่วนแสดงสถานะการขอ -->
+                <div v-if="statusLeave === 'submitted'" class="card-2 mt-4 pt-4 pb-4">
+
+                    <img v-if="leaveDetails.status === 'รออนุมัติ'" class="logo-status" :src="statusIcon[0]"
+                        alt="status icon">
+                    <img v-if="leaveDetails.status === 'อนุมัติ'" class="logo-status-1" :src="statusIcon[2]"
+                        alt="status icon">
+                    <img v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="logo-status-1" :src="statusIcon[3]"
+                        alt="status icon">
+                    <img v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="logo-status-1" :src="statusIcon[3]"
+                        alt="status icon">
+
+                    <div class="row text-center" style="width: 100%;">
+                        <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.submitted }}</div>
+                        <div v-if="leaveDetails.status === 'รออนุมัติ'" class="col">{{ statusMessages.approving }}</div>
+                        <div v-if="leaveDetails.status === 'อนุมัติ'" class="col">{{ statusMessages.statusRequest }}
+                            <br>
+                            หมายเหตุ: {{ leaveDetails.reasonText }}
+                        </div>
+                        <div v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="col"> ยกเลิกคำขอ <br> หมายเหตุ: {{
+                            leaveDetails.reasonText }}</div>
+                        <div v-if="leaveDetails.status === 'ไม่อนุมัติ'" class="col"> ไม่อนุมัติ <br> หมายเหตุ: {{
+                            leaveDetails.reasonText }}</div>
                     </div>
-                    <div class="leave-info">
-                        <p>{{ leave.type }} : {{ leave.reason }}</p>
-                        <p v-if="leave.type !== 'ลาออก'">{{ leave.startDate }} | {{ leave.startTime }}</p>
-                    </div>
-                    <div class="leave-actions">
-                        <a v-if="leave.hasEvidence" :href="leave.evidenceLink">{{ leave.evidenceText }}</a>
-                        <a @click.prevent="openModal(leave)" href="#">{{ leave.showDetail ? 'ซ่อนรายละเอียด' :
-                            'รายละเอียด'
-                            }}</a>
+                    <br>
+                    <transition name="fade">
+                        <div v-if="pageleaveDetail" class="container">
+                            <div class="form-group">
+                                <label for="leaveType">ประเภทการลา :</label>
+                                <input type="text" id="leaveType" class="form-control" v-model="leaveDetails.type"
+                                    disabled />
+                            </div>
+                            <div v-if="leaveDetails.type !== 'ออกปฏิบัติงานนอกสถานที่' && leaveDetails.type !== 'ลาออก'"
+                                class="form-group">
+                                <label for="leaveReason">เหตุผลการลา :</label>
+                                <input type="text" id="leaveReason" class="form-control" v-model="leaveDetails.reason"
+                                    disabled />
+                            </div>
+                            <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
+                                <label for="leaveStartTime">เวลาเริ่มงาน :</label>
+                                <input type="text" id="leaveStartTime" class="form-control"
+                                    v-model="leaveDetails.firstWorkDay" disabled />
+                            </div>
+                            <div v-if="leaveDetails.type === 'ลาออก'" class="form-group">
+                                <label for="leaveEndTime">เวลาสิ้นสุดงาน :</label>
+                                <input type="text" id="leaveEndTime" class="form-control"
+                                    v-model="leaveDetails.lastWorkDay" disabled />
+                            </div>
+                            <div v-if="leaveDetails.type === 'ลาออก'">
+                                <div class="form-group">
+                                    <label for="leaveCertificate">ต้องการใบรับรอง :</label>
+                                    <input type="text" id="leaveCertificate" class="form-control"
+                                        v-model="leaveDetails.needsCertification" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label for="leaveFunding">ต้องการเงิน :</label>
+                                    <input type="text" id="leaveFunding" class="form-control"
+                                        v-model="leaveDetails.hasFunding" disabled />
+                                </div>
+                            </div>
+
+                            <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
+                                <label for="leaveDate">วัน/เดือน/ปี ที่ต้องการลา :</label>
+                                <input type="text" id="leaveDate" class="form-control" v-model="leaveDetails.date"
+                                    disabled />
+                            </div>
+                            <div v-if="leaveDetails.type !== 'ลาออก'" class="form-group">
+                                <label for="leaveTime">เวลา ที่ต้องการลา :</label>
+                                <input type="text" id="leaveTime" class="form-control" v-model="leaveDetails.time"
+                                    disabled />
+                            </div>
+
+                            <!-- เพิ่มรายละเอียดการลาแบบนอกสถานที่ -->
+                            <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
+                                <label for="leaveWorkLocation">สถานที่ปฏิบัติงานนอกสถานที่ :</label>
+                                <input type="text" id="leaveWorkLocation" class="form-control"
+                                    v-model="leaveDetails.workLocation" disabled />
+                            </div>
+                            <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
+                                <label for="leaveVehicle">ยานพาหนะ :</label>
+                                <input type="text" id="leaveVehicle" class="form-control" v-model="leaveDetails.vehicle"
+                                    disabled />
+                            </div>
+                            <div v-if="leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่'" class="form-group">
+                                <label for="leaveVehicleNumber">หมายเลขยานพาหนะ :</label>
+                                <input type="text" id="leaveVehicleNumber" class="form-control"
+                                    v-model="leaveDetails.vehicleNumber" disabled />
+                            </div>
+
+                            <div class="mt-3">
+                                <p>ผู้อนุมัติการลาขั้นต้น</p>
+                                <p>{{ userData.initialLeaveApprover }}</p>
+                            </div>
+                            <div>
+                                <p>ผู้อนุมัติสูงสุด</p>
+                                <p>{{ userData.finalLeaveApprover }}</p>
+                            </div>
+                            <button class="button-cancel" @click="cancelRequest(leaveDetails)">ยกเลิกคำขอ</button>
+                        </div>
+                    </transition>
+                    <!-- Buttons with transition -->
+                    <transition name="fade">
+                        <button v-if="!pageleaveDetail" @click="pageleaveDetail = true"
+                            class="button-detail-2">...</button>
+                    </transition>
+                    <transition name="fade">
+                        <button v-if="pageleaveDetail" @click="pageleaveDetail = false"
+                            class="button-detail-2">...</button>
+                    </transition>
+                </div>
+
+                <!-- รายการล่าสุด -->
+                <div class="card-3">
+                    <p>รายการล่าสุด</p>
+                    <div v-for="(leave, index) in leaveItems" :key="index" class="leave-item">
+                        <div class="leave-icon">
+                            <img v-if="leave.status === 'อนุมัติ'" :src="statusIcon[2]" alt="leave icon" />
+                            <img v-if="leave.status === 'ไม่อนุมัติ' || leave.status === 'ยกเลิกคำขอ'"
+                                :src="statusIcon[3]" alt="leave icon" />
+                            <img v-if="leave.status === 'รออนุมัติ'" :src="statusIcon[4]" alt="leave icon" />
+                        </div>
+                        <div class="leave-info">
+                            <p>{{ leave.type }} : {{ leave.reason }}</p>
+                            <p v-if="leave.type !== 'ลาออก'">{{ leave.startDate }} | {{ leave.startTime }}</p>
+                        </div>
+                        <div class="leave-actions">
+                            <a v-if="leave.hasEvidence" :href="leave.evidenceLink">{{ leave.evidenceText }}</a>
+                            <a @click.prevent="openModal(leave)" href="#">{{ leave.showDetail ? 'ซ่อนรายละเอียด' :
+                                'รายละเอียด'
+                                }}</a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Modal for Leave Details -->
-            <div v-if="modalVisible" class="modal">
-                <div class="modal-content">
-                    <span class="close" @click="modalVisible = false">&times;</span>
-                    <h2>รายละเอียดการลา</h2>
-                    <p>ประเภทการลา: {{ selectedLeave.type }}</p>
-                    <p v-if="selectedLeave.type !== 'ลาออก'">เหตุผลการลา: {{ selectedLeave.reason }}</p>
-                    <p v-if="selectedLeave.type !== 'ลาออก'">วันที่: {{ selectedLeave.startDate }} ถึง {{
-                        selectedLeave.endDate }}</p>
-                    <p v-if="selectedLeave.type !== 'ลาออก'">เวลา: {{ selectedLeave.startTime }} ถึง {{
-                        selectedLeave.endTime }}</p>
-                    <p>วันที่ส่งคำขอ: {{ formatDate(selectedLeave.sendDate) }}</p>
-                    <p>สถานะ: {{ selectedLeave.status }}</p>
-                    <p>หมายเหตุ: {{ selectedLeave.reasonText }}</p>
-                    <div v-if="selectedLeave.type === 'ออกปฏิบัติงานนอกสถานที่'">
-                        <p>สถานที่: {{ selectedLeave.workLocation }}</p>
-                        <p>ยานพาหนะ: {{ selectedLeave.vehicle }}</p>
-                        <p>หมายเลข: {{ selectedLeave.vehicleNumber }}</p>
-                    </div>
-                    <div v-if="selectedLeave.type === 'ลาออก'">
-                        <p>วันที่เริ่มงาน: {{ formatDate(selectedLeave.firstWorkDay) }}</p>
-                        <p>วันที่สิ้นสุดงาน: {{ formatDate(selectedLeave.lastWorkDay) }}</p>
-                        <p>ต้องการใบรับรอง: {{ selectedLeave.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
-                        <p>ต้องการเงิน: {{ selectedLeave.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
+                <!-- Modal for Leave Details -->
+                <div v-if="modalVisible" class="modal">
+                    <div class="modal-content">
+                        <span class="close" @click="modalVisible = false">&times;</span>
+                        <h2>รายละเอียดการลา</h2>
+                        <p>ประเภทการลา: {{ selectedLeave.type }}</p>
+                        <p v-if="selectedLeave.type !== 'ลาออก'">เหตุผลการลา: {{ selectedLeave.reason }}</p>
+                        <p v-if="selectedLeave.type !== 'ลาออก'">วันที่: {{ selectedLeave.startDate }} ถึง {{
+                            selectedLeave.endDate }}</p>
+                        <p v-if="selectedLeave.type !== 'ลาออก'">เวลา: {{ selectedLeave.startTime }} ถึง {{
+                            selectedLeave.endTime }}</p>
+                        <p>วันที่ส่งคำขอ: {{ formatDate(selectedLeave.sendDate) }}</p>
+                        <p>สถานะ: {{ selectedLeave.status }}</p>
+                        <p>หมายเหตุ: {{ selectedLeave.reasonText }}</p>
+                        <div v-if="selectedLeave.type === 'ออกปฏิบัติงานนอกสถานที่'">
+                            <p>สถานที่: {{ selectedLeave.workLocation }}</p>
+                            <p>ยานพาหนะ: {{ selectedLeave.vehicle }}</p>
+                            <p>หมายเลข: {{ selectedLeave.vehicleNumber }}</p>
+                        </div>
+                        <div v-if="selectedLeave.type === 'ลาออก'">
+                            <p>วันที่เริ่มงาน: {{ formatDate(selectedLeave.firstWorkDay) }}</p>
+                            <p>วันที่สิ้นสุดงาน: {{ formatDate(selectedLeave.lastWorkDay) }}</p>
+                            <p>ต้องการใบรับรอง: {{ selectedLeave.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
+                            <p>ต้องการเงิน: {{ selectedLeave.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </template>
 
 <script>
@@ -192,15 +204,13 @@ export default {
                 needsCertification: '',
                 hasFunding: '',
 
-
-
-
             },
             leaveItems: [],   // รวมรายการใบลาทั้งหมดที่มาจากทั้งสอง API
             profile: {},      // ข้อมูลผู้ใช้ที่ดึงจาก localStorage
             pageleaveDetail: false,
             modalVisible: false,
-            selectedLeave: {}
+            selectedLeave: {},
+            loadingData: false
         };
     },
     props: ['userData'],
@@ -234,136 +244,133 @@ export default {
     },
     methods: {
         async getLeavesDataByLineId(id) {
-    try {
-        // console.log('getLeavesDataByLineId', id);
+            try {
+                // console.log('getLeavesDataByLineId', id);
 
-        // เรียก API แต่ละตัวแยกกันและจัดการข้อผิดพลาดของแต่ละ API
-        let leaveItems = [];
-        let leaveOutsideItems = [];
-        let leaveResignItems = [];
+                // เรียก API แต่ละตัวแยกกันและจัดการข้อผิดพลาดของแต่ละ API
+                let leaveItems = [];
+                let leaveOutsideItems = [];
+                let leaveResignItems = [];
 
-        try {
-            const leaveResponse = await axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
-            leaveItems = Array.isArray(leaveResponse.data) ? leaveResponse.data : [leaveResponse.data];
-        } catch (error) {
-            console.error("Error fetching leave data:", error);
-        }
+                try {
+                    const leaveResponse = await axios.get(`${process.env.API_URL}/leave/getLeavesByLineId/${id}`);
+                    leaveItems = Array.isArray(leaveResponse.data) ? leaveResponse.data : [leaveResponse.data];
+                } catch (error) {
+                    console.error("Error fetching leave data:", error);
+                }
 
-        try {
-            const leaveOutsideResponse = await axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
-            leaveOutsideItems = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [leaveOutsideResponse.data];
-        } catch (error) {
-            console.error("Error fetching leave outside data:", error);
-        }
+                try {
+                    const leaveOutsideResponse = await axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutsideByLineId/${id}`);
+                    leaveOutsideItems = Array.isArray(leaveOutsideResponse.data) ? leaveOutsideResponse.data : [leaveOutsideResponse.data];
+                } catch (error) {
+                    console.error("Error fetching leave outside data:", error);
+                }
 
-        try {
-            const leaveResignResponse = await axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResignByLineId/${id}`);
-            leaveResignItems = Array.isArray(leaveResignResponse.data) ? leaveResignResponse.data : [leaveResignResponse.data];
-        } catch (error) {
-            console.error("Error fetching leave resign data:", error);
-        }
+                try {
+                    const leaveResignResponse = await axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResignByLineId/${id}`);
+                    leaveResignItems = Array.isArray(leaveResignResponse.data) ? leaveResignResponse.data : [leaveResignResponse.data];
+                } catch (error) {
+                    console.error("Error fetching leave resign data:", error);
+                }
 
-        // แปลงข้อมูลจาก leaveItems
-        const formattedLeaveItems = leaveItems.map(leave => ({
-            ...leave,
-            showDetail: false
-        }));
+                // แปลงข้อมูลจาก leaveItems
+                const formattedLeaveItems = leaveItems.map(leave => ({
+                    ...leave,
+                    showDetail: false
+                }));
 
-        // แปลงข้อมูลจาก leaveOutsideItems
-        const formattedLeaveOutsideItems = leaveOutsideItems.map(leave => ({
-            ...leave,
-            showDetail: false,
-            type: 'ออกปฏิบัติงานนอกสถานที่'
-        }));
+                // แปลงข้อมูลจาก leaveOutsideItems
+                const formattedLeaveOutsideItems = leaveOutsideItems.map(leave => ({
+                    ...leave,
+                    showDetail: false,
+                    type: 'ออกปฏิบัติงานนอกสถานที่'
+                }));
 
-        // แปลงข้อมูลจาก leaveResignItems
-        const formattedLeaveResignItems = leaveResignItems.map(resign => ({
-            ...resign,
-            showDetail: false,
-            type: 'ลาออก',
-            reasonText: resign.reasonText || 'ไม่มีเหตุผล',
-            firstWorkDay: resign.firstWorkDay,
-            lastWorkDay: resign.lastWorkDay,
-            needsCertification: resign.needsCertification,
-            hasFunding: resign.hasFunding,
-            status: resign.status || 'รออนุมัติ',
-            sendDate: resign.sendDate || new Date(),
-            initialLeaveApprover: resign.initialLeaveApprover || 'ไม่ระบุ',
-            finalLeaveApprover: resign.finalLeaveApprover || 'ไม่ระบุ',
-            lineId: resign.lineId,
-            userId: resign.userId,
-        }));
+                // แปลงข้อมูลจาก leaveResignItems
+                const formattedLeaveResignItems = leaveResignItems.map(resign => ({
+                    ...resign,
+                    showDetail: false,
+                    type: 'ลาออก',
+                    reasonText: resign.reasonText || 'ไม่มีเหตุผล',
+                    firstWorkDay: resign.firstWorkDay,
+                    lastWorkDay: resign.lastWorkDay,
+                    needsCertification: resign.needsCertification,
+                    hasFunding: resign.hasFunding,
+                    status: resign.status || 'รออนุมัติ',
+                    sendDate: resign.sendDate || new Date(),
+                    initialLeaveApprover: resign.initialLeaveApprover || 'ไม่ระบุ',
+                    finalLeaveApprover: resign.finalLeaveApprover || 'ไม่ระบุ',
+                    lineId: resign.lineId,
+                    userId: resign.userId,
+                }));
 
-        // รวมข้อมูลทั้งหมดและเรียงตามวันที่ส่ง
-        this.leaveItems = [...formattedLeaveItems, ...formattedLeaveOutsideItems, ...formattedLeaveResignItems]
-            .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
+                // รวมข้อมูลทั้งหมดและเรียงตามวันที่ส่ง
+                this.leaveItems = [...formattedLeaveItems, ...formattedLeaveOutsideItems, ...formattedLeaveResignItems]
+                    .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
 
-    } catch (error) {
-        console.error("Error fetching leave data:", error);
-    }
-}
-,
+                    this.loadingData = false;
+            } catch (error) {
+                console.error("Error fetching leave data:", error);
+            }
+        },
 
         cancelRequest(leaveDetails) {
-    const axios = require('axios');
-    let data = JSON.stringify({
-        "status": "ยกเลิกคำขอ"
-    });
+            const axios = require('axios');
+            let data = JSON.stringify({
+                "status": "ยกเลิกคำขอ"
+            });
 
-    // กำหนด URL ขึ้นอยู่กับประเภทการลา
-    let url;
-    if (leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่') {
-        url = `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${leaveDetails.id}`; // URL สำหรับการลาแบบนอกสถานที่
-    } else if (leaveDetails.type === 'ลาออก') {
-        url = `${process.env.API_URL}/LeaveResign/updateLeaveResign/${leaveDetails.id}`; // URL สำหรับการลาออก
-    } else {
-        url = `${process.env.API_URL}/leave/updateLeave/${leaveDetails.id}`; // URL สำหรับการลาในสถานที่
-    }
-
-    let config = {
-        method: 'put',
-        maxBodyLength: Infinity,
-        url: url, // ใช้ URL ที่กำหนด
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: data
-    };
-
-    axios.request(config)
-        .then((response) => {
-            // ตรวจสอบ lineId ก่อนที่จะเรียก getLeavesDataByLineId
-            if (leaveDetails.lineId) {
-                let notifyConfig = {
-                    method: 'post',
-                    maxBodyLength: Infinity,
-                    url: process.env.API_URL + '/lineApi/sendImage/' + leaveDetails.lineId,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    data: JSON.stringify({ "message": "ยกเลิกคำขอ" })
-                };
-
-                axios.request(notifyConfig)
-                    .then((response) => {
-                        console.log(response.data);
-                        this.statusLeave = "cancelled";
-                        this.getLeavesDataByLineId(); // เพิ่มการเรียกข้อมูลหลังจากยกเลิกคำขอ
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+            // กำหนด URL ขึ้นอยู่กับประเภทการลา
+            let url;
+            if (leaveDetails.type === 'ออกปฏิบัติงานนอกสถานที่') {
+                url = `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${leaveDetails.id}`; // URL สำหรับการลาแบบนอกสถานที่
+            } else if (leaveDetails.type === 'ลาออก') {
+                url = `${process.env.API_URL}/LeaveResign/updateLeaveResign/${leaveDetails.id}`; // URL สำหรับการลาออก
             } else {
-                console.error("lineId is undefined");
+                url = `${process.env.API_URL}/leave/updateLeave/${leaveDetails.id}`; // URL สำหรับการลาในสถานที่
             }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-},
 
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: url, // ใช้ URL ที่กำหนด
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
 
+            axios.request(config)
+                .then((response) => {
+                    // ตรวจสอบ lineId ก่อนที่จะเรียก getLeavesDataByLineId
+                    if (leaveDetails.lineId) {
+                        let notifyConfig = {
+                            method: 'post',
+                            maxBodyLength: Infinity,
+                            url: process.env.API_URL + '/lineApi/sendImage/' + leaveDetails.lineId,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify({ "message": "ยกเลิกคำขอ" })
+                        };
 
+                        axios.request(notifyConfig)
+                            .then((response) => {
+                                console.log(response.data);
+                                this.statusLeave = "cancelled";
+                                this.getLeavesDataByLineId(); // เพิ่มการเรียกข้อมูลหลังจากยกเลิกคำขอ
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    } else {
+                        console.error("lineId is undefined");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
 
         openModal(leave) {
             this.selectedLeave = leave;
@@ -376,6 +383,7 @@ export default {
         }
     },
     mounted() {
+        this.loadingData = true;
         const profileData = localStorage.getItem('profile');
         if (profileData) {
             this.profile = JSON.parse(profileData);

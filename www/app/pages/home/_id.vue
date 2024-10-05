@@ -1,81 +1,88 @@
 <template>
-    <div class="background">
-        <div class="from-login mt-5">
-            <p class="Profile-style">Profile</p>
-            <img class="logo" :src="profile.pictureUrl" alt="">
-            <div class="card pt-4 pb-4 pl-5 pr-5">
-                <div class="p-canter">
+    <div>
+        <div v-if="loadingData === true" class="spinner-border text-warning text-center m-5" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div v-if="loadingData === false" class="background">
+            <div class="from-login mt-5">
+                <p class="Profile-style">Profile</p>
+                <img class="logo" :src="profile.pictureUrl" alt="">
+                <div class="card pt-4 pb-4 pl-5 pr-5">
+                    <div class="p-canter">
 
-                    <p>ชื่อ-นามสกุล : {{ data_user.name }}</p>
+                        <p>ชื่อ-นามสกุล : {{ data_user.name }}</p>
 
-                    <div class="box">
-                        <p>รหัสพนักงาน : {{ data_user.code }}</p>
-                        <p>ตำแหน่ง : {{ data_user.position }}</p>
+                        <div class="box">
+                            <p>รหัสพนักงาน : {{ data_user.code }}</p>
+                            <p>ตำแหน่ง : {{ data_user.position }}</p>
 
-                        <!-- Transition for user details -->
+                            <!-- Transition for user details -->
+                            <transition name="fade">
+                                <div v-if="pageuserDetail">
+                                    <p>สังกัด : {{ data_user.department }}</p>
+                                    <p>ประเภทพนักงาน : {{ data_user.type }}</p>
+                                    <p>ฝ่าย : {{ data_user.division }}</p>
+                                    <p>สถานที่ปฏิบัติงาน : {{ data_user.workplace }}</p>
+                                    <p>อายุงาน : {{ data_user.years }}</p>
+                                    <p>เบอร์โทรศัพท์ : {{ data_user.phone }}</p>
+                                </div>
+                            </transition>
+                        </div>
+
+                        <!-- Buttons with transition -->
                         <transition name="fade">
-                            <div v-if="pageuserDetail">
-                                <p>สังกัด : {{ data_user.department }}</p>
-                                <p>ประเภทพนักงาน : {{ data_user.type }}</p>
-                                <p>ฝ่าย : {{ data_user.division }}</p>
-                                <p>สถานที่ปฏิบัติงาน : {{ data_user.workplace }}</p>
-                                <p>อายุงาน : {{ data_user.years }}</p>
-                                <p>เบอร์โทรศัพท์ : {{ data_user.phone }}</p>
-                            </div>
+                            <button v-if="!pageuserDetail" @click="pageuserDetail = true"
+                                class="button-detail">...</button>
+                        </transition>
+                        <transition name="fade">
+                            <button v-if="pageuserDetail" @click="pageuserDetail = false"
+                                class="button-detail">...</button>
                         </transition>
                     </div>
-
-                    <!-- Buttons with transition -->
-                    <transition name="fade">
-                        <button v-if="!pageuserDetail" @click="pageuserDetail = true" class="button-detail">...</button>
-                    </transition>
-                    <transition name="fade">
-                        <button v-if="pageuserDetail" @click="pageuserDetail = false" class="button-detail">...</button>
-                    </transition>
                 </div>
-            </div>
 
-            <!-- Routes -->
-            <HomePage :userData="data_user" v-if="pages === 'home'" />
-            <LeaveAbsence :userData="data_user" v-if="pages === 'leaveabsence'"  />
-            <LeaveOutside :userData="data_user" v-if="pages === 'leaveoutside'" />
-            <ResignFromWork :userData="data_user" v-if="pages === 'resignfromwork'" />
+                <!-- Routes -->
+                <HomePage :userData="data_user" v-if="pages === 'home'" />
+                <LeaveAbsence :userData="data_user" v-if="pages === 'leaveabsence'" />
+                <LeaveOutside :userData="data_user" v-if="pages === 'leaveoutside'" />
+                <ResignFromWork :userData="data_user" v-if="pages === 'resignfromwork'" />
 
-            <!-- ส่ง data_user ไปยัง ListRequests -->
-            <ListRequests :userData="data_user" v-if="pages === 'listrequests'" />
+                <!-- ส่ง data_user ไปยัง ListRequests -->
+                <ListRequests :userData="data_user" v-if="pages === 'listrequests'" />
 
-            <div class="pt-5"></div>
-
+                <div class="pt-5"></div>
 
 
-            <!-- footer -->
-            <div class="footer-home row">
-                <button @click="pages = 'leaveabsence'; page(1)" class="col item-footer item-footer-active-1">
-                    <img class="img-menu-1" src="../../static/home/menu-1.png" alt="">
-                    <p v-if="role !== 'admin'">ลาหยุด</p>
-                    <p class="p-admin" v-if="role === 'admin'">ลาหยุด</p>
-                </button>
-                <button @click="pages = 'leaveoutside'; page(2)" class="col item-footer item-footer-active-2">
-                    <img class="img-menu-2" src="../../static/home/menu-2.png" alt="">
-                    <p v-if="role !== 'admin'">นอกสถานที่</p>
-                    <p class="p-admin" v-if="role === 'admin'">นอกสถานที่</p>
-                </button>
-                <button @click="pages = 'resignfromwork'; page(3)" class="col item-footer item-footer-active-3">
-                    <img class="img-menu-3" src="../../static/home/menu-3.png" alt="">
-                    <p v-if="role !== 'admin'">ลาออก</p>
-                    <p class="p-admin" v-if="role === 'admin'">ลาออก</p>
-                </button>
-                <button v-if="role === 'admin'" @click="pages = 'listrequests'; page(5)"
-                    class="col item-footer item-footer-active-5">
-                    <img class="img-menu-5" src="../../static/home/menu-5.png" alt="">
-                    <p v-if="role !== 'admin'">คำขอ</p>
-                    <p class="p-admin" v-if="role === 'admin'">คำขอ</p>
-                </button>
-                <button @click="pages = 'home'; page(4)" class="col item-footer item-footer-active-4">
-                    <img class="img-menu-4" src="../../static/home/menu-4.png" alt="">
-                    <p v-if="role !== 'admin'">โปรไฟล</p>
-                    <p class="p-admin" v-if="role === 'admin'">โปรไฟล</p>
-                </button>
+
+                <!-- footer -->
+                <div class="footer-home row">
+                    <button @click="pages = 'leaveabsence'; page(1)" class="col item-footer item-footer-active-1">
+                        <img class="img-menu-1" src="../../static/home/menu-1.png" alt="">
+                        <p v-if="role !== 'admin'">ลาหยุด</p>
+                        <p class="p-admin" v-if="role === 'admin'">ลาหยุด</p>
+                    </button>
+                    <button @click="pages = 'leaveoutside'; page(2)" class="col item-footer item-footer-active-2">
+                        <img class="img-menu-2" src="../../static/home/menu-2.png" alt="">
+                        <p v-if="role !== 'admin'">นอกสถานที่</p>
+                        <p class="p-admin" v-if="role === 'admin'">นอกสถานที่</p>
+                    </button>
+                    <button @click="pages = 'resignfromwork'; page(3)" class="col item-footer item-footer-active-3">
+                        <img class="img-menu-3" src="../../static/home/menu-3.png" alt="">
+                        <p v-if="role !== 'admin'">ลาออก</p>
+                        <p class="p-admin" v-if="role === 'admin'">ลาออก</p>
+                    </button>
+                    <button v-if="role === 'admin'" @click="pages = 'listrequests'; page(5)"
+                        class="col item-footer item-footer-active-5">
+                        <img class="img-menu-5" src="../../static/home/menu-5.png" alt="">
+                        <p v-if="role !== 'admin'">คำขอ</p>
+                        <p class="p-admin" v-if="role === 'admin'">คำขอ</p>
+                    </button>
+                    <button @click="pages = 'home'; page(4)" class="col item-footer item-footer-active-4">
+                        <img class="img-menu-4" src="../../static/home/menu-4.png" alt="">
+                        <p v-if="role !== 'admin'">โปรไฟล</p>
+                        <p class="p-admin" v-if="role === 'admin'">โปรไฟล</p>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -110,6 +117,7 @@ export default {
 
             // กำหนดสิทธิ์
             role: 'admin',
+            loadingData: true
         }
     },
     methods: {
@@ -166,8 +174,12 @@ export default {
                         workInjuryLeave_days: filteredData[0].workInjuryLeave_days
                     };
                     this.newPhone = this.data_user.phone;
+
+                    this.loadingData = false;
                 } else {
                     alert('ไม่พบข้อมูลในระบบ');
+                    this.$router.push('/');
+                    this.loadingData = false;
                 }
             } catch (error) {
                 console.error(error);
@@ -208,6 +220,7 @@ export default {
 
     },
     mounted() {
+        this.loadingData = true;
 
         this.pages = this.$route.params.id
 
@@ -278,7 +291,7 @@ export default {
     /* height: 200vh; */
     height: auto;
     width: 100vw;
-    
+
 }
 
 .from-login {
