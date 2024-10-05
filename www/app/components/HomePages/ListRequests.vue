@@ -1,89 +1,104 @@
 <template>
-  <div class="request-list">
-    <h3>รายการคำขอทั้งหมด</h3>
-    <div style="height: 300px;" v-if="!requests.length">
-      <p>ไม่มีรายการคำขอ</p>
+  <div>
+    <div v-if="loadingData === true" class="spinner-border text-warning" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
-    <div v-if="requests.length" class="request-item" v-for="(request, index) in requests" :key="index">
-      <div class="request-icon">
-        <div class="icon-number">{{ index + 1 }}</div>
+    <div v-if="loadingData === false" class="request-list">
+      <h3>รายการคำขอทั้งหมด</h3>
+      <div style="height: 300px;" v-if="!requests.length">
+        <p>ไม่มีรายการคำขอ</p>
       </div>
-      <div class="request-details">
-        <div class="request-name">{{ request.type }}</div>
-        <div v-if="request.Type === 'ลาออก'" class="request-name">{{ request.Type }}</div>
-        <div v-if="request.Type !== 'ลาออก'" class="request-date-time">{{ request.startDate }} | {{ request.startTime }}
+      <div v-if="requests.length" class="request-item" v-for="(request, index) in requests" :key="index">
+        <div class="request-icon">
+          <div class="icon-number">{{ index + 1 }}</div>
+        </div>
+        <div class="request-details">
+          <div class="request-name">{{ request.type }}</div>
+          <div v-if="request.Type === 'ลาออก'" class="request-name">{{ request.Type }}</div>
+          <div v-if="request.Type !== 'ลาออก'" class="request-date-time">{{ request.startDate }} | {{ request.startTime
+            }}
+          </div>
+        </div>
+        <div class="request-reason">{{ request.reason }}</div>
+        <button class="details-button" @click="openModal(request)">รายละเอียด</button>
+      </div>
+
+      <!-- Modal -->
+
+      <div v-if="selectedRequest" class="modal">
+        <div class="modal-content">
+          <span class="close" @click="closeModal">&times;</span>
+          <h3>รายละเอียดคำขอ</h3>
+          <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
+          <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
+          <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
+          <div class="flex-container">
+            <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
+            <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
+          </div>
+          <div class="flex-container">
+            <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
+            <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
+          </div>
+          <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason
+            }}</p>
+          <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{
+            selectedRequest.startDate }} - {{ selectedRequest.endDate }}
+          </p>
+          <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }}
+            -
+            {{ selectedRequest.endTime }}</p>
+
+          <!-- เพิ่มรายละเอียดการออกปฏิบัติงานนอกสถานที่ -->
+          <div v-if="selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'">
+            <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
+            <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
+            <p><strong>หมายเลข:</strong> {{ selectedRequest.vehicleNumber }}</p>
+          </div>
+          <!-- เพิ่มรายละเอียดการลาออก -->
+          <div v-if="selectedRequest.Type === 'ลาออก'">
+            <p><strong>วันที่เริ่มงาน:</strong> {{ selectedRequest.firstWorkDay }}</p>
+            <p><strong>วันที่สิ้นสุดงาน:</strong> {{ selectedRequest.lastWorkDay }}</p>
+            <p><strong>ต้องการใบรับรอง:</strong> {{ selectedRequest.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
+            <p><strong>ต้องการเงิน:</strong> {{ selectedRequest.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
+            <p><strong>เหตุผล:</strong> {{ selectedRequest.reasonText }}</p>
+          </div>
+
+          <div class="approval">
+            <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" />
+              อนุมัติ</label>
+            <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" />
+              ไม่อนุมัติ</label>
+          </div>
+
+          <label for="remark">หมายเหตุ:</label>
+          <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
+          <button v-if="loading === false" @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
+       
+            <div v-if="loading === true" class="spinner-border text-warning" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          
+
+          <div class="submit-button-b"> </div>
         </div>
       </div>
-      <div class="request-reason">{{ request.reason }}</div>
-      <button class="details-button" @click="openModal(request)">รายละเอียด</button>
+
+
     </div>
-
-    <!-- Modal -->
-
-    <div v-if="selectedRequest" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h3>รายละเอียดคำขอ</h3>
-        <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
-        <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
-        <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
-        <div class="flex-container">
-          <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
-          <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
-        </div>
-        <div class="flex-container">
-          <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
-          <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
-        </div>
-        <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason
-          }}</p>
-        <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{
-          selectedRequest.startDate }} - {{ selectedRequest.endDate }}
-        </p>
-        <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }} -
-          {{ selectedRequest.endTime }}</p>
-
-        <!-- เพิ่มรายละเอียดการออกปฏิบัติงานนอกสถานที่ -->
-        <div v-if="selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'">
-          <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
-          <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
-          <p><strong>หมายเลข:</strong> {{ selectedRequest.vehicleNumber }}</p>
-        </div>
-        <!-- เพิ่มรายละเอียดการลาออก -->
-        <div v-if="selectedRequest.Type === 'ลาออก'">
-          <p><strong>วันที่เริ่มงาน:</strong> {{ selectedRequest.firstWorkDay }}</p>
-          <p><strong>วันที่สิ้นสุดงาน:</strong> {{ selectedRequest.lastWorkDay }}</p>
-          <p><strong>ต้องการใบรับรอง:</strong> {{ selectedRequest.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
-          <p><strong>ต้องการเงิน:</strong> {{ selectedRequest.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
-          <p><strong>เหตุผล:</strong> {{ selectedRequest.reasonText }}</p>
-        </div>
-
-        <div class="approval">
-          <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" /> อนุมัติ</label>
-          <label><input type="radio" name="approval" value="ไม่อนุมัติ" v-model="selectedRequest.status" />
-            ไม่อนุมัติ</label>
-        </div>
-
-
-
-
-        <label for="remark">หมายเหตุ:</label>
-        <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
-        <button @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
-        <div class="submit-button-b"> </div>
-      </div>
-    </div>
-
-
   </div>
+
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 export default {
   data() {
     return {
       requests: [],
-      selectedRequest: null
+      selectedRequest: null,
+      loadingData: true,
+      loading: false
     };
   },
   props: ['userData'],
@@ -110,6 +125,7 @@ export default {
         });
     },
     updateLeave(datas) {
+      this.loading = true
       this.selectedRequest = datas;
       const axios = require('axios');
 
@@ -195,7 +211,13 @@ export default {
 
       axios.request(config)
         .then((response) => {
-          alert('บันทึกสำเร็จ');
+          // alert('บันทึกสำเร็จ');
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกสำเร็จ',
+            text: 'บันทึกสำเร็จ'
+          })
+          this.loading = false;
           const status = response.data.status;
 
           // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
@@ -248,9 +270,12 @@ export default {
             this.requests = [...leaveRequests, ...leaveOutsideRequests, ...leaveResignRequests].sort((a, b) => {
               return new Date(b.sendDate) - new Date(a.sendDate); // เรียงจากมากไปน้อย (ล่าสุดไปเก่าสุด)
             });
+
+            this.loadingData = false;
           })
           .catch((error) => {
-            // console.log(error);
+            this.loadingData = false;
+            console.log(error);
           });
       }
       catch (error) {
@@ -263,6 +288,7 @@ export default {
     }
   },
   mounted() {
+    this.loadingData = true;
     this.getLeavesByApprover(this.userData.name);
   }
 };
