@@ -40,8 +40,6 @@
         <span class="sr-only">Loading...</span>
       </div></button>
 
-      
-
     </form>
   </div>
 </template>

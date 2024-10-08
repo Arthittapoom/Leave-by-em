@@ -108,49 +108,71 @@ export default {
     },
     methods: {
         async getResignationData() {
-            const axios = require('axios');
-            this.isLoading = true;
+    const axios = require('axios');
+    this.isLoading = true;
+
+    try {
+        const response = await axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResign`);
+        const resignationRequests = await Promise.all(response.data.map(async resignation => {
+            // สร้าง config สำหรับการดึงข้อมูลผู้ใช้ตาม lineId
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `${process.env.API_URL}/users/getUserByLineId/${resignation.lineId}`,
+                headers: {}
+            };
 
             try {
-                const response = await axios.get(`${process.env.API_URL}/LeaveResign/getLeavesResign`);
-                const resignationRequests = await Promise.all(response.data.map(async resignation => {
-                    // สร้าง config สำหรับการดึงข้อมูลผู้ใช้ตาม lineId
-                    let config = {
-                        method: 'get',
-                        maxBodyLength: Infinity,
-                        url: `${process.env.API_URL}/users/getUserByLineId/${resignation.lineId}`,
-                        headers: {}
-                    };
+                // ดึงข้อมูลผู้ใช้จาก API
+                const userResponse = await axios.request(config);
+                const userData = userResponse.data;
 
-                    // ดึงข้อมูลผู้ใช้จาก API
-                    const userResponse = await axios.request(config);
-                    const userData = userResponse.data;
-
-                    return {
-                        id: resignation._id,
-                        employeeId: userData.code || 'ไม่พบข้อมูล', // ปรับให้ตรงกับโครงสร้างข้อมูลของคุณ
-                        fullName: userData.name || 'ไม่พบข้อมูล', // ใช้ข้อมูลจาก API ที่สอง
-                        position: userData.position || 'ไม่พบข้อมูล', // ใช้ข้อมูลจาก API ที่สอง
-                        sendDate: resignation.sendDate ? resignation.sendDate.slice(0, 10) : 'ไม่พบข้อมูล',
-                        status: resignation.status || 'รออนุมัติ',
-                        reasonText: resignation.reasonText || 'ไม่มีเหตุผล',
-                        lineId: resignation.lineId,
-                        dataUser: userData,
-                        dataResignation: resignation
-                    };
-                }));
-
-                // จัดเรียง resignationRequests โดยเรียงจาก sendDate ล่าสุด
-                this.resignationRequests = resignationRequests.sort((a, b) => {
-                    return new Date(b.sendDate) - new Date(a.sendDate); // เรียงตามวันที่จากใหม่ไปเก่า
-                });
+                // หากมีข้อมูลจาก API ให้แสดง
+                return {
+                    id: resignation._id,
+                    employeeId: userData.code || 'ไม่พบข้อมูล', 
+                    fullName: userData.name || 'ไม่พบข้อมูล', 
+                    position: userData.position || 'ไม่พบข้อมูล', 
+                    sendDate: resignation.sendDate ? resignation.sendDate.slice(0, 10) : 'ไม่พบข้อมูล',
+                    status: resignation.status || 'รออนุมัติ',
+                    reasonText: resignation.reasonText || 'ไม่มีเหตุผล',
+                    lineId: resignation.lineId,
+                    dataUser: userData,
+                    dataResignation: resignation
+                };
 
             } catch (error) {
-                console.log("Error fetching resignation data:", error);
-            } finally {
-                this.isLoading = false;
+                // จัดการกรณีที่ API ไม่พบข้อมูล (404) หรือเกิดข้อผิดพลาดอื่น ๆ
+                console.error(`Error fetching user data for Line ID ${resignation.lineId}:`, error);
+
+                // คืนค่าข้อมูลที่ไม่พบผู้ใช้
+                return {
+                    id: resignation._id,
+                    employeeId: 'ไม่พบข้อมูล', // กำหนดค่าเริ่มต้นเมื่อไม่พบผู้ใช้
+                    fullName: 'ไม่พบข้อมูล',
+                    position: 'ไม่พบข้อมูล',
+                    sendDate: resignation.sendDate ? resignation.sendDate.slice(0, 10) : 'ไม่พบข้อมูล',
+                    status: resignation.status || 'รออนุมัติ',
+                    reasonText: resignation.reasonText || 'ไม่มีเหตุผล',
+                    lineId: resignation.lineId,
+                    dataUser: null, // ไม่มีข้อมูลผู้ใช้
+                    dataResignation: resignation
+                };
             }
-        },
+        }));
+
+        // จัดเรียง resignationRequests โดยเรียงจาก sendDate ล่าสุด
+        this.resignationRequests = resignationRequests.sort((a, b) => {
+            return new Date(b.sendDate) - new Date(a.sendDate); // เรียงตามวันที่จากใหม่ไปเก่า
+        });
+
+    } catch (error) {
+        console.log("Error fetching resignation data:", error);
+    } finally {
+        this.isLoading = false;
+    }
+}
+,
 
 
         viewUser(user) {

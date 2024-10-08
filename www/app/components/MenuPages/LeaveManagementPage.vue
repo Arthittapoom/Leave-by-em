@@ -97,6 +97,7 @@
 
 <script>
 import LeaveDetails from '../../components/MenuPages/Leave/LeaveDetails.vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -116,12 +117,11 @@ export default {
     },
     computed: {
         uniquePositions() {
-            // ดึงตำแหน่งงานที่ไม่ซ้ำกันจาก leaveRequests
             const positions = this.leaveRequests.map(leave => leave.position);
             return [...new Set(positions)]; // ใช้ Set เพื่อให้ได้ข้อมูลที่ไม่ซ้ำกัน
         },
         filteredLeaveRequests() {
-            return this.leaveRequests.filter((leave) => {
+            return this.leaveRequests.filter(leave => {
                 const matchesStatus = this.statusFilter === '' || leave.status === this.statusFilter;
                 const matchesPosition = this.positionFilter === '' || leave.position === this.positionFilter;
                 const matchesSearchQuery =
@@ -132,8 +132,7 @@ export default {
         },
         paginatedLeaveRequests() {
             const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
-            return this.filteredLeaveRequests.slice(start, end);
+            return this.filteredLeaveRequests.slice(start, start + this.itemsPerPage);
         },
         totalPages() {
             return Math.ceil(this.filteredLeaveRequests.length / this.itemsPerPage);
@@ -143,75 +142,57 @@ export default {
         this.getLeaveDataByLineId();
     },
     methods: {
-        // รวม API ทั้งสองเข้าด้วยกัน
         async getLeaveDataByLineId() {
-        const axios = require('axios');
-        this.isLoading = true;
-
-        try {
-            // เรียก API สองตัวพร้อมกัน
-            const leaveRequest = axios.get(`${process.env.API_URL}/leave/getLeaves`);
-            const leaveOutsideRequest = axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutside`);
-
-            const [leaveResponse, leaveOutsideResponse] = await Promise.all([leaveRequest, leaveOutsideRequest]);
-
-            const leaves = leaveResponse.data;
-            const leavesOutside = leaveOutsideResponse.data;
-
-            this.leaveRequests = await Promise.all([...leaves, ...leavesOutside].map(async leave => {
-                const userData = await this.getUserByLineId(leave.lineId);
-                
-                // ตรวจสอบประเภทของการลาเพื่อตั้งค่าฟิลด์ที่จำเป็น
-                const isOutsideLeave = leave.type === 'ออกปฏิบัติงานนอกสถานที่';
-
-                return {
-                    id: leave._id,
-                    leaveType: leave.type || 'ออกปฏิบัติงานนอกสถานที่',
-                    leaveReason: leave.reason,
-                    employeeId: userData ? userData.code : 'N/A',
-                    fullName: userData ? userData.name : 'ไม่พบข้อมูล',
-                    position: userData ? userData.position : 'ไม่พบข้อมูล',
-                    startDate: leave.startDate,
-                    startTime: leave.startTime,
-                    endDate: leave.endDate,
-                    endTime: leave.endTime,
-                    status: leave.status || 'รออนุมัติ',
-                    lineId: leave.lineId,
-                    dataUser: userData,
-                    sendDate: leave.sendDate || leave.createdAt, // ใช้ createdAt ในกรณีที่ไม่มี sendDate
-
-                    // ฟิลด์เพิ่มเติมสำหรับการลาออกปฏิบัติงานนอกสถานที่
-                    workLocation: isOutsideLeave ? leave.workLocation : null,
-                    vehicle: isOutsideLeave ? leave.vehicle : null,
-                    vehicleNumber: isOutsideLeave ? leave.vehicleNumber : null,
-                };
-            }));
-
-            // เรียงลำดับจาก sendDate ใหม่ไปเก่า
-            this.leaveRequests.sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
-
-        } catch (error) {
-            console.log("Error fetching leave data:", error);
-        } finally {
-            this.isLoading = false;
-        }
-    },
-
-        async getUserByLineId(lineId) {
-            const axios = require('axios');
-
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
-                headers: {}
-            };
+            this.isLoading = true;
 
             try {
-                const response = await axios.request(config);
+                const [leaveResponse, leaveOutsideResponse] = await Promise.all([
+                    axios.get(`${process.env.API_URL}/leave/getLeaves`),
+                    axios.get(`${process.env.API_URL}/LeaveOutside/getLeavesOutside`)
+                ]);
+
+                const leaves = leaveResponse.data;
+                const leavesOutside = leaveOutsideResponse.data;
+
+                this.leaveRequests = await Promise.all([...leaves, ...leavesOutside].map(async leave => {
+                    const userData = await this.getUserByLineId(leave.lineId);
+                    const isOutsideLeave = leave.type === 'ออกปฏิบัติงานนอกสถานที่';
+
+                    return {
+                        id: leave._id,
+                        leaveType: leave.type || 'ออกปฏิบัติงานนอกสถานที่',
+                        leaveReason: leave.reason,
+                        employeeId: userData ? userData.code : 'N/A',
+                        fullName: userData ? userData.name : 'ไม่พบข้อมูล',
+                        position: userData ? userData.position : 'ไม่พบข้อมูล',
+                        startDate: leave.startDate,
+                        startTime: leave.startTime,
+                        endDate: leave.endDate,
+                        endTime: leave.endTime,
+                        status: leave.status || 'รออนุมัติ',
+                        lineId: leave.lineId,
+                        dataUser: userData,
+                        sendDate: leave.sendDate || leave.createdAt, // ใช้ createdAt ในกรณีที่ไม่มี sendDate
+                        workLocation: isOutsideLeave ? leave.workLocation : null,
+                        vehicle: isOutsideLeave ? leave.vehicle : null,
+                        vehicleNumber: isOutsideLeave ? leave.vehicleNumber : null,
+                    };
+                }));
+
+                this.leaveRequests.sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
+            } catch (error) {
+                console.log("Error fetching leave data:", error);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async getUserByLineId(lineId) {
+            try {
+                const response = await axios.get(`${process.env.API_URL}/users/getUserByLineId/${lineId}`);
                 return response.data;
             } catch (error) {
-                console.log(error);
+                console.log("Error fetching user data:", error);
                 return null;
             }
         },
@@ -222,123 +203,65 @@ export default {
         goBack() {
             this.selectedUser = null; // กลับไปที่รายการหลังจากดูรายละเอียด
         },
-        saveUser(updatedUser) {
-            const axios = require('axios');
-
-            // ฟังก์ชันสำหรับดึงและอัปเดตจำนวนวันลา
+        async saveUser(updatedUser) {
             const incrementLeave = async (lineId, apiField) => {
                 try {
-                    // ดึงข้อมูลผู้ใช้
-                    let getConfig = {
-                        method: 'get',
-                        maxBodyLength: Infinity,
-                        url: `${process.env.API_URL}/users/getUserByLineId/${lineId}`,
-                        headers: { 'Content-Type': 'application/json' }
-                    };
+                    const userResponse = await axios.get(`${process.env.API_URL}/users/getUserByLineId/${lineId}`);
+                    const currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
+                    const updatedLeaveCount = currentLeaveCount + 1;
 
-                    const userResponse = await axios.request(getConfig);
-                    let currentLeaveCount = parseInt(userResponse.data[apiField]) || 0;
-
-                    // บวกเพิ่ม 1
-                    let updatedLeaveCount = currentLeaveCount + 1;
-                    let data = JSON.stringify({ [apiField]: updatedLeaveCount });
-
-                    // อัปเดตข้อมูลวันลา
-                    let updateConfig = {
-                        method: 'put',
-                        maxBodyLength: Infinity,
-                        url: `${process.env.API_URL}/users/updateUserByLineId/${lineId}`,
-                        headers: { 'Content-Type': 'application/json' },
-                        data: data
-                    };
-
-                    await axios.request(updateConfig);
+                    await axios.put(`${process.env.API_URL}/users/updateUserByLineId/${lineId}`, {
+                        [apiField]: updatedLeaveCount
+                    });
                 } catch (error) {
-                    console.error(error);
+                    console.error("Error updating leave count:", error);
                 }
             };
 
-            // ฟังก์ชันสำหรับส่งการแจ้งเตือนผ่าน LINE API
             const sendLineNotification = (lineId, message) => {
-                let lineData = JSON.stringify({ "message": message });
-                let lineConfig = {
-                    method: 'post',
-                    maxBodyLength: Infinity,
-                    url: `${process.env.API_URL}/lineApi/sendImage/${lineId}`,
-                    headers: { 'Content-Type': 'application/json' },
-                    data: lineData
-                };
-
-                axios.request(lineConfig)
-                    .then((response) => console.log())
-                    .catch((error) => console.log(error));
+                axios.post(`${process.env.API_URL}/lineApi/sendImage/${lineId}`, { message })
+                    .then(() => console.log("Notification sent"))
+                    .catch(error => console.log("Error sending notification:", error));
             };
 
-            // เช็คสถานะ
             if (updatedUser.status === 'อนุมัติ') {
-                // เช็คประเภทของการลาและอัปเดตจำนวนวันลา
                 switch (updatedUser.leaveType) {
                     case 'ลาป่วย':
-                        incrementLeave(updatedUser.lineId, 'totalSickLeave');
+                        await incrementLeave(updatedUser.lineId, 'totalSickLeave');
                         break;
                     case 'ลากิจ':
-                        incrementLeave(updatedUser.lineId, 'totalPersonalLeave');
+                        await incrementLeave(updatedUser.lineId, 'totalPersonalLeave');
                         break;
                     case 'ลาพักร้อน':
-                        incrementLeave(updatedUser.lineId, 'totalVacationLeave');
+                        await incrementLeave(updatedUser.lineId, 'totalVacationLeave');
                         break;
                     case 'ลากิจพิเศษ':
                     case 'อุปสมบท':
                     case 'ลาคลอด':
                     case 'ลาไม่รับค่าจ้าง':
-                        incrementLeave(updatedUser.lineId, 'totalUnpaidLeave');
+                        await incrementLeave(updatedUser.lineId, 'totalUnpaidLeave');
                         break;
                     default:
                         console.log('ไม่พบประเภทการลา');
                 }
             }
 
-            // เช็คประเภทการลา ถ้าเป็นการลาออกปฏิบัติงานนอกสถานที่ จะใช้ API อัพเดตใหม่
-            let apiUrl = updatedUser.leaveType === 'ออกปฏิบัติงานนอกสถานที่' 
+            const apiUrl = updatedUser.leaveType === 'ออกปฏิบัติงานนอกสถานที่' 
                 ? `${process.env.API_URL}/LeaveOutside/updateLeaveOutside/${updatedUser.id}` 
                 : `${process.env.API_URL}/leave/updateLeave/${updatedUser.id}`;
 
-            // เตรียมข้อมูลที่ต้องการอัปเดตสถานะการลา
-            let data = JSON.stringify({
-                "status": updatedUser.status,
-                "reasonText": updatedUser.reasonText || null
-            });
-
-            let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: apiUrl,
-                headers: { 'Content-Type': 'application/json' },
-                data: data
-            };
-
-            // อัปเดตสถานะการลา
-            axios.request(config)
-                .then((response) => {
-                    alert('บันทึกสำเร็จ');
-                    const status = response.data.status;
-
-                    // ส่งการแจ้งเตือนตามสถานะ
-                    if (status === 'อนุมัติ') {
-                        sendLineNotification(updatedUser.lineId, 'อนุมัติ');
-                    } else if (status === 'ไม่อนุมัติ') {
-                        sendLineNotification(updatedUser.lineId, 'ไม่อนุมัติ');
-                    }
-
-                    this.selectedUser = null; // ล้างข้อมูลผู้ใช้ที่เลือก
-                })
-                .catch((error) => {
-                    console.log(error);
+            try {
+                await axios.put(apiUrl, {
+                    status: updatedUser.status,
+                    reasonText: updatedUser.reasonText || null
                 });
-        },
 
-        filterTable() {
-            // ฟังก์ชันกรองข้อมูลตาราง
+                alert('บันทึกสำเร็จ');
+                sendLineNotification(updatedUser.lineId, updatedUser.status === 'อนุมัติ' ? 'อนุมัติ' : 'ไม่อนุมัติ');
+                this.selectedUser = null; // ล้างข้อมูลผู้ใช้ที่เลือก
+            } catch (error) {
+                console.log("Error updating leave status:", error);
+            }
         },
 
         changePage(page) {
@@ -359,6 +282,7 @@ export default {
     }
 };
 </script>
+
 
 <style scoped>
 .loading-container {

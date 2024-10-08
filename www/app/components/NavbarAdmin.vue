@@ -3,7 +3,7 @@
       <nav class="navbar">
         <!-- Left Logo -->
         <div class="navbar-left">
-          <span class="logo">ADDMIN</span>
+          <span class="logo">ADMIN</span>
         </div>
   
         <!-- Center Link -->
