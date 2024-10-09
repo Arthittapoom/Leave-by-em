@@ -8,8 +8,6 @@
       </div>
     </div>
 
-    <!-- <pre>userData: {{ userData }}</pre> -->
-
     <form class="leave-request-form" @submit.prevent="submitLeaveRequest">
       <label for="leave-type">ประเภทการลา</label>
       <select id="leave-type" v-model="selectedLeaveType">
@@ -34,19 +32,30 @@
       <label for="end-time">เวลาสิ้นสุด</label>
       <input type="time" id="end-time" v-model="endTime" />
 
+      <label for="upload-image">อัพโหลดรูปภาพ</label>
+      <input type="file" id="upload-image" @change="handleFileUpload" />
+
+      <!-- เพิ่มส่วนแสดงภาพที่อัพโหลด -->
+      <div class="uploaded-image" v-if="imageUrl">
+        <!-- <label>รูปภาพที่อัพโหลด:</label> -->
+        <img :src="imageUrl" alt="Uploaded image" width="200" />
+      </div>
+
       <button v-if="loading === false" type="submit">ส่งคำขอลาการลา</button>
 
-      <button v-if="loading === true" type="submit"><div class="spinner-border text-warning" role="status">
-        <span class="sr-only">Loading...</span>
-      </div></button>
-
+      <button v-if="loading === true" type="submit">
+        <div class="spinner-border text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
     </form>
   </div>
 </template>
 
 <script>
 const axios = require('axios');
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+
 export default {
   props: {
     userData: {
@@ -77,41 +86,65 @@ export default {
       endDate: '',
       startTime: '',
       endTime: '',
-      loading: false
+      loading: false,
+      selectedFile: null,
+      imageUrl: '',
+
     };
   },
-  // ดึง userData มาจากหน้า HomePages
-  props: ['userData'],
   methods: {
+    handleFileUpload(event) {
+      this.selectedFile = event.target.files[0];
+      this.uploadImage();  // อัพโหลดไฟล์ทันทีเมื่อมีการเลือกไฟล์
+    },
+    async uploadImage() {
+      if (!this.selectedFile) {
+        Swal.fire('กรุณาเลือกไฟล์ก่อนอัปโหลด');
+        return;
+      }
+      
+      let formData = new FormData();
+      formData.append('image', this.selectedFile);
 
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/master/upimg',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData
+      };
+
+      try {
+        const response = await axios.request(config);
+        this.imageUrl = process.env.API_URL + '/' + response.data.filePath;
+        Swal.fire('อัปโหลดรูปภาพสำเร็จ', response.data.message, 'success');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Swal.fire('เกิดข้อผิดพลาดในการอัปโหลด', '', 'error');
+      }
+    },
+    
     async submitLeaveRequest() {
-
       this.loading = true;
 
       if (!this.selectedLeaveType || !this.leaveReason || !this.startDate || !this.endDate || !this.startTime || !this.endTime) {
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-        }).then(() => {
-          this.loading = false
-        })
+        Swal.fire('กรุณากรอกข้อมูลให้ครบถ้วน', '', 'error').then(() => {
+          this.loading = false;
+        });
         return;
       }
 
       if (this.startDate > this.endDate) {
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: 'วันที่เริ่มลาต้องน้อยกว่าวันที่สิ้นสุด',
-        }).then(() => {
-          this.loading = false
-        })
+        Swal.fire('วันที่เริ่มลาต้องน้อยกว่าวันที่สิ้นสุด', '', 'error').then(() => {
+          this.loading = false;
+        });
         return;
       }
 
       try {
-        const data = JSON.stringify({
+        const data = {
           type: this.selectedLeaveType,
           reason: this.leaveReason,
           startDate: this.startDate,
@@ -123,92 +156,42 @@ export default {
           status: "รออนุมัติ",
           reasonText: " ",
           initialLeaveApprover: this.userData.initialLeaveApprover,
-          finalLeaveApprover: this.userData.finalLeaveApprover
-        });
+          finalLeaveApprover: this.userData.finalLeaveApprover,
+          imageUrl: this.imageUrl
+        };
 
         const config = {
           method: 'post',
           maxBodyLength: Infinity,
           url: `${process.env.API_URL}/leave/createLeave`,
           headers: { 'Content-Type': 'application/json' },
-          data: data
+          data: JSON.stringify(data)
         };
 
         const response = await axios.request(config);
+        Swal.fire('สำเร็จ', 'คำขอลาการลาของคุณถูกส่งเรียบร้อยแล้ว', 'success').then(() => {
+          this.loading = false;
+          this.$router.push('/');
+        });
 
-        // ส่งข้อความแจ้งเตือนการขออนุมัติ
-        await this.sendNotification(response.data.lineId, "รออนุมัติ");
-
-        // ส่งการแจ้งเตือนให้กับ initial และ final approver
-        const { initialLeaveApprover, finalLeaveApprover } = this.userData;
-
-        if (initialLeaveApprover) {
-          await this.notifyApprover(initialLeaveApprover, "มีคำขอใหม่");
-        }
-        if (finalLeaveApprover) {
-          await this.notifyApprover(finalLeaveApprover, "มีคำขอใหม่");
-        }
-
-        if (!initialLeaveApprover && !finalLeaveApprover) {
-          alert('ไม่พบข้อมูลผู้อนุมัติ');
-        } else {
-          Swal.fire({
-            icon: 'success',
-            title: 'สำเร็จ',
-            text: 'สำเร็จ',
-          }).then(() => {
-            this.loading = false;
-            this.$router.push('/');
-          })
-        }
       } catch (error) {
         console.error('Error submitting leave request:', error);
       }
-    },
-
-    async notifyApprover(approverName, message) {
-      try {
-        const config = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          url: `${process.env.API_URL}/users/getUserByName/${approverName}`,
-          headers: {}
-        };
-
-        const response = await axios.request(config);
-
-        if (response.data[0]?.lineId) {
-          await this.sendNotification(response.data[0].lineId, message);
-        }
-      } catch (error) {
-        console.error(`Error notifying ${approverName}:`, error);
-      }
-    },
-
-    async sendNotification(lineId, message) {
-      try {
-        const data = JSON.stringify({ message: message });
-
-        const config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: `${process.env.API_URL}/lineApi/sendImage/${lineId}`,
-          headers: { 'Content-Type': 'application/json' },
-          data: data
-        };
-
-        await axios.request(config);
-      } catch (error) {
-        console.error('Error sending notification:', error);
-      }
     }
-
-
   }
 };
 </script>
 
+
 <style scoped>
+.uploaded-image{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
 .leave-form {
   padding: 20px;
 }

@@ -24,6 +24,7 @@
                         <div v-if="leaveDetails.status === 'อนุมัติ'" class="col">{{ statusMessages.statusRequest }}
                             <br>
                             หมายเหตุ: {{ leaveDetails.reasonText }}
+
                         </div>
                         <div v-if="leaveDetails.status === 'ยกเลิกคำขอ'" class="col"> ยกเลิกคำขอ <br> หมายเหตุ: {{
                             leaveDetails.reasonText }}</div>
@@ -165,6 +166,7 @@
                             <p>ต้องการใบรับรอง: {{ selectedLeave.needsCertification ? 'ใช่' : 'ไม่ใช่' }}</p>
                             <p>ต้องการเงิน: {{ selectedLeave.hasFunding ? 'ใช่' : 'ไม่ใช่' }}</p>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -308,7 +310,7 @@ export default {
                 this.leaveItems = [...formattedLeaveItems, ...formattedLeaveOutsideItems, ...formattedLeaveResignItems]
                     .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
 
-                    this.loadingData = false;
+                this.loadingData = false;
             } catch (error) {
                 console.error("Error fetching leave data:", error);
             }

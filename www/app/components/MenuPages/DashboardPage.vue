@@ -4,7 +4,7 @@
       <div class="col box-left">
         <!-- Pie Chart Section -->
         <div class="chart-container" v-if="pieData">
-          <PieChart class="pie-chart" :chart-data="pieData" />
+          <PieChart class="pie-chart" :typeLeave="typeLeave" />
         </div>
         <!-- Loading Section -->
         <div class="chart-container" v-else>
@@ -15,6 +15,7 @@
           </div>
         </div>
 
+
         <!-- Approval Section -->
         <div class="approval-container">
           <div class="approval-item" v-for="(item, index) in approvalData" :key="index">
@@ -24,15 +25,22 @@
         </div>
       </div>
 
+
       <div class="col box-right">
+
+        <!-- Date filter inputs -->
+        <div class="date-filter-container">
+          <input class="date-input" type="date" v-model="startDate" />
+          <span class="date-separator">ถึง</span>
+          <input class="date-input" type="date" v-model="endDate" />
+          <button class="filter-btn-date" @click="getLeaves(startDate, endDate)">ตรวจสอบ</button>
+        </div>
+
+
         <div class="stats-container">
           <div class="row stats">
-            <div
-              class="stat-box col-4"
-              v-for="(stat, index) in stats"
-              :key="index"
-              :style="{ backgroundColor: stat.color }"
-            >
+            <div class="stat-box col-4" v-for="(stat, index) in stats" :key="index"
+              :style="{ backgroundColor: stat.color }">
               <span class="stat-value">{{ stat.value }}</span>
               <small>{{ stat.label }}</small>
             </div>
@@ -87,12 +95,17 @@ export default {
         { label: "ไม่อนุมัติ", value: 50 },
         { label: "รออนุมัติ", value: 150 },
       ],
-      stats: [],
+      stats: [
+
+      ],
+      startDate: "2023-09-26",
+      endDate: "2025-09-26",
+      Leaves: [],
     };
   },
 
   mounted() {
-    this.getLeaves();
+    this.getLeaves(this.startDate, this.endDate);
     this.getUsers();
   },
 
@@ -108,12 +121,40 @@ export default {
         });
     },
 
-    getLeaves() {
+    getLeaves(startDate, endDate) {
+      // console.log(startDate, endDate);
+
+      // รัน PieChart ใหม่
+      this.pieData = null;
+
       axios
         .get(`${process.env.API_URL}/leave/getLeaves`)
         .then((response) => {
-          const data = response.data;
+
+          this.Leaves = response.data;
+
+          // console.log(this.Leaves);
+
+          // ตรวจสอบว่ามีค่า startDate และ endDate หรือไม่
+          if (this.startDate && this.endDate) {
+            const start = new Date(this.startDate); // แปลง startDate ให้เป็น Date object
+            const end = new Date(this.endDate);     // แปลง endDate ให้เป็น Date object
+
+            // กรองข้อมูลใบลาตามช่วงวันที่ของ sendDate
+            this.Leaves = this.Leaves.filter((leave) => {
+              const sendDate = new Date(leave.sendDate); // แปลง sendDate ของใบลาให้เป็น Date object
+              // ตรวจสอบว่า sendDate อยู่ในช่วง startDate และ endDate
+              return sendDate >= start && sendDate <= end;
+            });
+          }
+
+          const data = this.Leaves;
+
+          // console.log(data); // แสดงผลข้อมูลใบลาหลังจากกรอง
+
+
           // จำนวน stats อนุมัติ ไม่อนุมัติ รออนุมัติ
+
           this.approvalData = [
             { label: "อนุมัติ", value: data.filter((leave) => leave.status === "อนุมัติ").length },
             { label: "ไม่อนุมัติ", value: data.filter((leave) => leave.status === "ไม่อนุมัติ").length },
@@ -138,7 +179,7 @@ export default {
             { label: "ลาหยุดประจำปี", value: this.typeLeave.annual, color: "#6666cc" },
             { label: "ลาป่วย", value: this.typeLeave.sick, color: "#66ccff" },
             { label: "ลากิจ", value: this.typeLeave.business, color: "#99cc99" },
-            { label: "ลาปสมบท", value: this.typeLeave.special, color: "#ffcc66" },
+            { label: "ลาอุปสมบท", value: this.typeLeave.special, color: "#ffcc66" },
             { label: "ลาคลอด", value: this.typeLeave.maternity, color: "#ffcc99" },
           ];
 
@@ -151,6 +192,8 @@ export default {
               },
             ],
           };
+
+
         })
         .catch((error) => {
           console.log(error);
@@ -166,6 +209,72 @@ export default {
 
 
 <style scoped>
+.date-filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* จัดกลางในแนวนอน */
+  margin-bottom: 20px;
+  /* ระยะห่างด้านล่าง */
+
+  margin-left: -180px;
+}
+
+.date-input {
+  border: 1px solid #e57373;
+  /* กรอบสีแดง */
+  border-radius: 5px;
+  /* มุมมน */
+  padding: 10px;
+  /* ระยะห่างภายใน */
+  font-size: 16px;
+  /* ขนาดฟอนต์ */
+  margin: 0 10px;
+  /* ระยะห่างระหว่าง input */
+  width: 135px;
+  /* กำหนดความกว้าง */
+  transition: border-color 0.3s;
+  /* เพิ่มความนุ่มนวลในระหว่างเปลี่ยนสีกรอบ */
+}
+
+.date-input:focus {
+  border-color: #ff6666;
+  /* สีกรอบเมื่อมีการโฟกัส */
+  outline: none;
+  /* เอา outline ออก */
+}
+
+.date-separator {
+  font-size: 16px;
+  /* ขนาดฟอนต์ */
+  margin: 0 10px;
+  /* ระยะห่างระหว่าง separator กับ input */
+}
+
+.filter-btn-date {
+  background-color: #e57373;
+  /* สีพื้นหลัง */
+  color: white;
+  /* สีข้อความ */
+  border: none;
+  /* เอากรอบออก */
+  padding: 10px 20px;
+  /* ระยะห่างภายใน */
+  border-radius: 5px;
+  /* มุมมน */
+  cursor: pointer;
+  /* เปลี่ยนเป็นรูปมือเมื่อชี้ */
+  font-size: 16px;
+  /* ขนาดฟอนต์ */
+  transition: background-color 0.3s;
+  /* เพิ่มความนุ่มนวลเมื่อเปลี่ยนสี */
+}
+
+.filter-btn-date:hover {
+  background-color: #ff6666;
+  /* เปลี่ยนสีพื้นหลังเมื่อวางเมาส์ */
+}
+
 .box-left {
   width: 100%;
   height: 80vh;
@@ -214,7 +323,7 @@ export default {
   color: white;
   font-size: 18px;
   width: 100px;
-  height: 93px;
+  height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -231,7 +340,7 @@ export default {
 .summary-container {
   padding: 10px;
 
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
 .summary-item {

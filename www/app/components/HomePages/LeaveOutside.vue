@@ -21,6 +21,15 @@
     <label for="end-time">เวลาเสร็จสิ้น</label>
     <input type="time" id="end-time" v-model="endTime" />
 
+    <label for="upload-image">อัพโหลดรูปภาพ</label>
+    <input type="file" id="upload-image" @change="handleFileUpload" />
+
+    <!-- เพิ่มส่วนแสดงภาพที่อัพโหลด -->
+    <div class="uploaded-image" v-if="imageUrl">
+      <!-- <label>รูปภาพที่อัพโหลด:</label> -->
+      <img :src="imageUrl" alt="Uploaded image" width="200" />
+    </div>
+
     <button v-if="loading === false" type="button" @click="submitForm">ส่งคำขอการปฏิบัติงานนอกสถานที่</button>
     <button v-if="loading === true" type="submit">
       <div class="spinner-border text-warning" role="status">
@@ -43,11 +52,45 @@ export default {
       endDate: '',
       startTime: '',
       endTime: '',
-      loading: false
+      loading: false,
+      selectedFile: null,
+      imageUrl: '',
     };
   },
   props: ['userData'],
   methods: {
+    handleFileUpload(event) {
+      this.selectedFile = event.target.files[0];
+      this.uploadImage();  // อัพโหลดไฟล์ทันทีเมื่อมีการเลือกไฟล์
+    },
+    async uploadImage() {
+      if (!this.selectedFile) {
+        Swal.fire('กรุณาเลือกไฟล์ก่อนอัปโหลด');
+        return;
+      }
+      
+      let formData = new FormData();
+      formData.append('image', this.selectedFile);
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/master/upimg',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData
+      };
+
+      try {
+        const response = await axios.request(config);
+        this.imageUrl = process.env.API_URL + '/' + response.data.filePath;
+        Swal.fire('อัปโหลดรูปภาพสำเร็จ', response.data.message, 'success');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Swal.fire('เกิดข้อผิดพลาดในการอัปโหลด', '', 'error');
+      }
+    },
     async submitForm() {
       this.loading = true;
       try {
@@ -101,7 +144,8 @@ export default {
           sendDate: new Date(),
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
-          type: 'ออกปฏิบัติงานนอกสถานที่'
+          type: 'ออกปฏิบัติงานนอกสถานที่',
+          imageUrl: this.imageUrl
         });
 
         const config = {
@@ -190,6 +234,14 @@ export default {
 </script>
 
 <style scoped>
+.uploaded-image{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
 .leave-outside-form {
   display: flex;
   flex-direction: column;

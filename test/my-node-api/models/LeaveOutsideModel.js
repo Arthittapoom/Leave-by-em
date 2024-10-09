@@ -16,6 +16,7 @@ const leaveSchema = new mongoose.Schema({
     initialLeaveApprover: { type: String , required: true },
     finalLeaveApprover: { type: String , required: true },
     type: { type: String, required: true },
+    imageUrl: { type: String, required: true },
   
 });
 
