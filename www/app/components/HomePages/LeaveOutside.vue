@@ -25,10 +25,9 @@
     <input type="file" id="upload-image" @change="handleFileUpload" />
 
     <!-- เพิ่มส่วนแสดงภาพที่อัพโหลด -->
-    <div class="uploaded-image" v-if="imageUrl">
-      <!-- <label>รูปภาพที่อัพโหลด:</label> -->
-      <img :src="imageUrl" alt="Uploaded image" width="200" />
-    </div>
+    <div class="uploaded-image" v-if="imageUrl || imageBase64">
+        <img :src="imageBase64" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
+      </div>
 
     <button v-if="loading === false" type="button" @click="submitForm">ส่งคำขอการปฏิบัติงานนอกสถานที่</button>
     <button v-if="loading === true" type="submit">
@@ -55,6 +54,7 @@ export default {
       loading: false,
       selectedFile: null,
       imageUrl: '',
+      imageBase64: '', // เก็บ Base64 string ของรูปภาพ
     };
   },
   props: ['userData'],
@@ -68,28 +68,23 @@ export default {
         Swal.fire('กรุณาเลือกไฟล์ก่อนอัปโหลด');
         return;
       }
-      
-      let formData = new FormData();
-      formData.append('image', this.selectedFile);
 
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: process.env.API_URL + '/master/upimg',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        data: formData
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64String = reader.result; // เก็บ Base64 string
+        this.imageBase64 = base64String; // ตั้งค่า imageBase64 สำหรับแสดงภาพ
+        this.imageUrl = base64String; // อัปเดต imageUrl ด้วย Base64 string
+        Swal.fire('แปลงรูปภาพเป็น Base64 สำเร็จ', '', 'success');
+        // console.log(base64String); // ใช้ base64String นี้เก็บหรือส่งไปยัง API
       };
 
-      try {
-        const response = await axios.request(config);
-        this.imageUrl = process.env.API_URL + '/' + response.data.filePath;
-        Swal.fire('อัปโหลดรูปภาพสำเร็จ', response.data.message, 'success');
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        Swal.fire('เกิดข้อผิดพลาดในการอัปโหลด', '', 'error');
-      }
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        Swal.fire('เกิดข้อผิดพลาดในการอ่านไฟล์', '', 'error');
+      };
+
+      reader.readAsDataURL(this.selectedFile); // แปลงไฟล์รูปเป็น Base64
     },
     async submitForm() {
       this.loading = true;
@@ -145,7 +140,7 @@ export default {
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
           type: 'ออกปฏิบัติงานนอกสถานที่',
-          imageUrl: this.imageUrl
+          imageUrl: this.imageBase64
         });
 
         const config = {

@@ -64,6 +64,12 @@
             <p><strong>เหตุผล:</strong> {{ selectedRequest.reasonText }}</p>
           </div>
 
+          <div class="uploaded-image" v-if="selectedRequest.imageUrl">
+            <a :href="selectedRequest.imageUrl" target="_blank" rel="noopener noreferrer">
+              <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
+            </a>
+          </div>
+
           <div class="approval">
             <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" />
               อนุมัติ</label>
@@ -74,11 +80,11 @@
           <label for="remark">หมายเหตุ:</label>
           <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
           <button v-if="loading === false" @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
-       
-            <div v-if="loading === true" class="spinner-border text-warning" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-          
+
+          <div v-if="loading === true" class="spinner-border text-warning" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+
 
           <div class="submit-button-b"> </div>
         </div>

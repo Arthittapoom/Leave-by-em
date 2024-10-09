@@ -36,10 +36,10 @@
       <input type="file" id="upload-image" @change="handleFileUpload" />
 
       <!-- เพิ่มส่วนแสดงภาพที่อัพโหลด -->
-      <div class="uploaded-image" v-if="imageUrl">
-        <!-- <label>รูปภาพที่อัพโหลด:</label> -->
-        <img :src="imageUrl" alt="Uploaded image" width="200" />
+      <div class="uploaded-image" v-if="imageUrl || imageBase64">
+        <img :src="imageBase64" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
       </div>
+
 
       <button v-if="loading === false" type="submit">ส่งคำขอลาการลา</button>
 
@@ -89,6 +89,7 @@ export default {
       loading: false,
       selectedFile: null,
       imageUrl: '',
+      imageBase64: '', // เก็บ Base64 string ของรูปภาพ
 
     };
   },
@@ -97,35 +98,34 @@ export default {
       this.selectedFile = event.target.files[0];
       this.uploadImage();  // อัพโหลดไฟล์ทันทีเมื่อมีการเลือกไฟล์
     },
+    showImage(base64String) {
+      this.imageBase64 = base64String; // ใช้ Base64 string ที่เก็บไว้เพื่อแสดงรูป
+    },
     async uploadImage() {
       if (!this.selectedFile) {
         Swal.fire('กรุณาเลือกไฟล์ก่อนอัปโหลด');
         return;
       }
-      
-      let formData = new FormData();
-      formData.append('image', this.selectedFile);
 
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: process.env.API_URL + '/master/upimg',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        data: formData
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64String = reader.result; // เก็บ Base64 string
+        this.imageBase64 = base64String; // ตั้งค่า imageBase64 สำหรับแสดงภาพ
+        this.imageUrl = base64String; // อัปเดต imageUrl ด้วย Base64 string
+        Swal.fire('แปลงรูปภาพเป็น Base64 สำเร็จ', '', 'success');
+        // console.log(base64String); // ใช้ base64String นี้เก็บหรือส่งไปยัง API
       };
 
-      try {
-        const response = await axios.request(config);
-        this.imageUrl = process.env.API_URL + '/' + response.data.filePath;
-        Swal.fire('อัปโหลดรูปภาพสำเร็จ', response.data.message, 'success');
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        Swal.fire('เกิดข้อผิดพลาดในการอัปโหลด', '', 'error');
-      }
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        Swal.fire('เกิดข้อผิดพลาดในการอ่านไฟล์', '', 'error');
+      };
+
+      reader.readAsDataURL(this.selectedFile); // แปลงไฟล์รูปเป็น Base64
     },
-    
+
+
     async submitLeaveRequest() {
       this.loading = true;
 
@@ -157,7 +157,7 @@ export default {
           reasonText: " ",
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
-          imageUrl: this.imageUrl
+          imageUrl: this.imageBase64
         };
 
         const config = {
@@ -169,22 +169,90 @@ export default {
         };
 
         const response = await axios.request(config);
-        Swal.fire('สำเร็จ', 'คำขอลาการลาของคุณถูกส่งเรียบร้อยแล้ว', 'success').then(() => {
-          this.loading = false;
-          this.$router.push('/');
-        });
 
+
+
+        // ส่งข้อมูลการขออนุมัติ
+
+        // console.log(response.data);
+
+        // ส่งข้อความแจ้งเตือนผู้อนุมัติ
+        await this.sendNotification(response.data.lineId, 'รออนุมัติ');
+
+        const { initialLeaveApprover, finalLeaveApprover } = this.userData;
+
+        // แจ้งเตือนผู้อนุมัติเริ่มต้น (initialLeaveApprover)
+        if (initialLeaveApprover) {
+          await this.notifyApprover(initialLeaveApprover, 'มีคำขอใหม่');
+        }
+
+        // แจ้งเตือนผู้อนุมัติสุดท้าย (finalLeaveApprover)
+        if (finalLeaveApprover) {
+          await this.notifyApprover(finalLeaveApprover, 'มีคำขอใหม่');
+        }
+
+        if (!initialLeaveApprover && !finalLeaveApprover) {
+          alert('ไม่พบข้อมูลผู้อนุมัติ');
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'ส่งคำขอสําเร็จ',
+            text: 'ส่งคำขอสําเร็จแล้ว'
+          }).then(() => {
+            this.loading = false
+            this.$router.push('/');
+          })
+        }
       } catch (error) {
-        console.error('Error submitting leave request:', error);
+        console.error('Error submitting form:', error);
+      }
+    },
+
+    async notifyApprover(approverName, message) {
+      try {
+        const config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: `${process.env.API_URL}/users/getUserByName/${approverName}`,
+          headers: {}
+        };
+
+        const response = await axios.request(config);
+
+        if (response.data[0]?.lineId) {
+          await this.sendNotification(response.data[0].lineId, message);
+        }
+      } catch (error) {
+        console.error(`Error notifying ${approverName}:`, error);
+      }
+    },
+
+    async sendNotification(lineId, message) {
+      try {
+        const data = JSON.stringify({ message: message });
+
+        const config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: `${process.env.API_URL}/lineApi/sendImage/${lineId}`,
+          headers: { 'Content-Type': 'application/json' },
+          data: data
+        };
+
+        await axios.request(config);
+      } catch (error) {
+        console.error('Error sending notification:', error);
       }
     }
+
+
   }
 };
 </script>
 
 
 <style scoped>
-.uploaded-image{
+.uploaded-image {
   display: flex;
   justify-content: center;
   align-items: center;

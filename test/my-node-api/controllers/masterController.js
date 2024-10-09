@@ -121,3 +121,5 @@ exports.migrateData = catchAsync(async (req, res, next) => {
         data: resbody
     });
 });
+
+// Route สำหรับอัปโหลดรูปภาพ แบบ Base64

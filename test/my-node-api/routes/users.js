@@ -24,6 +24,8 @@ router.put('/updateUser/:id', usersController.updateUser);
 // Route สำหรับ update ด้วย lineId
 router.put('/updateUserByLineId/:lineId', usersController.updateUserByLineId);
 
+
+
 // Route สำหรับดึงข้อมูลผู้ใช้ทั้งหมด
 // router.get('/users', authenticateToken, getAllUsers);
 
