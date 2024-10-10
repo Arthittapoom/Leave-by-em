@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const leaveSchema = new mongoose.Schema({
+const LeaveOutsideSchema = new mongoose.Schema({
 
     userId : { type: String, required: true },
     lineId : { type: String, required: true },
@@ -20,4 +20,4 @@ const leaveSchema = new mongoose.Schema({
   
 });
 
-module.exports = mongoose.model('LeaveOutside', leaveSchema, 'LeaveOutsidedb');
+module.exports = mongoose.model('LeaveOutside', LeaveOutsideSchema, 'LeaveOutsidedb');

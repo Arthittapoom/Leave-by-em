@@ -152,7 +152,7 @@ export default {
 .pagination button {
   padding: 5px 10px;
   margin: 0 5px;
-  background-color: #8B0000;
+  background-color: #8a6d9f;
   color: white;
   border: none;
   border-radius: 5px;
@@ -208,7 +208,7 @@ export default {
 .user-photo {
   width: 120px;
   height: 120px;
-  background-color: #8B0000;
+  background-color: #8a6d9f;
   border-radius: 50%;
   margin-bottom: 10px;
 }
@@ -264,7 +264,7 @@ td {
 }
 
 th {
-  color: #8B0000;
+  color: #8a6d9f;
 }
 
 .pending {
@@ -299,7 +299,7 @@ th {
 .back-btn {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #8B0000;
+  background-color: #8a6d9f;
   color: white;
   border: none;
   border-radius: 5px;

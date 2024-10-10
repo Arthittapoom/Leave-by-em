@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const leaveSchema = new mongoose.Schema({
+const LeaveResignSchema = new mongoose.Schema({
 
     firstWorkDay : { type: String, required: true },
     lastWorkDay : { type: String, required: true },
@@ -14,7 +14,7 @@ const leaveSchema = new mongoose.Schema({
     finalLeaveApprover : { type: String , required: true },
     lineId : { type: String, required: true },
     userId : { type: String, required: true },
-  
+
 });
 
-module.exports = mongoose.model('LeaveResign', leaveSchema, 'LeaveResigndb');
+module.exports = mongoose.model('LeaveResign', LeaveResignSchema, 'LeaveResigndb');

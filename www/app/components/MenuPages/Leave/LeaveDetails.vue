@@ -166,13 +166,13 @@ export default {
 .circle {
   width: 120px;
   height: 120px;
-  background-color: #a33331;
+  background-color: #8a6d9f;
   border-radius: 50%;
   margin-bottom: 10px;
 }
 
 .view-history {
-  background-color: #a33331;
+  background-color: #8a6d9f;
   color: white;
   padding: 10px;
   border: none;
@@ -251,7 +251,7 @@ textarea {
 }
 
 .save-btn {
-  background-color: #5cbc97;
+  background-color: #8a6d9f;
   color: white;
   padding: 10px 20px;
   border-radius: 5px;

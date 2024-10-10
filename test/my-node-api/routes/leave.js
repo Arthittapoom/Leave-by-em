@@ -20,4 +20,10 @@ router.get('/getLeavesByLineId/:lineId', leaveController.getLeavesByLineId);
 // Route สำหรับดึงข้อมูล ด้วย initialLeaveApprover หรือ finalLeaveApprover
 router.get('/getLeavesByApprover/:approver', leaveController.getLeavesByApprover);
 
+// Route สำหรับสร้างประเภทการลา
+router.post('/createLeaveType', leaveController.createLeaveType);
+
+// Route สำหรับอัพเดตข้อมูลประเภทการลา ด้วย label
+router.put('/updateLeaveTypeByLabel/:label', leaveController.updateLeaveTypeByLabel);
+
 module.exports = router;

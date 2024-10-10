@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const usersdbSchema = new mongoose.Schema({
+const UsersSchema = new mongoose.Schema({
     index: { type: String, required: true }, // ลำดับ
     code: { type: String, required: true }, // รหัส
     department: { type: String, required: true }, // สังกัด
@@ -43,4 +43,4 @@ const usersdbSchema = new mongoose.Schema({
     phone: { type: String , default: 'null'}, // โทรศัพท์
 });
 
-module.exports = mongoose.model('Users', usersdbSchema, 'usersdb');
+module.exports = mongoose.model('Users', UsersSchema, 'usersdb');

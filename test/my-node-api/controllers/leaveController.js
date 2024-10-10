@@ -7,6 +7,8 @@ const User = require('../models/AdminModel');
 const UsersdbModel = require('../models/UsersdbModel');
 const Leaves = require('../models/LeaveModel');
 
+const LeaveDataModel = require('../models/LeaveDataModel'); 
+
 // สำหรับสร้างข้อมูล
 exports.createLeave = async (req, res) => {
     try {
@@ -86,3 +88,35 @@ exports.getLeavesByApprover = async (req, res) => {
     }
 };
 
+// Route สำหรับสร้างประเภทการลา
+// router.post('/createLeaveType', leaveController.createLeaveType);
+
+exports.createLeaveType = async (req, res) => {
+    try {
+        const newLeaveType = new LeaveDataModel(req.body);
+        const savedLeaveType = await newLeaveType.save();
+        res.json(savedLeaveType);
+    } catch (err) {
+        res.status(500).send('Server error'+err);
+    }
+}
+
+
+// Route สำหรับอัพเดตข้อมูลประเภทการลา ด้วย label
+// router.put('/updateLeaveTypeByLabel/:label', leaveController.updateLeaveTypeByLabel);
+
+exports.updateLeaveTypeByLabel = async (req, res) => {
+    try {
+        const { label } = req.params;
+        const leaveType = await LeaveDataModel.findOne({ label: label });
+        if (!leaveType) {
+            return res.status(404).json({ msg: 'Leave type not found' });
+        }
+        const updatedLeaveType = await LeaveDataModel.findOneAndUpdate({ label: label }, req.body, {
+            new: true
+        });
+        res.json(updatedLeaveType);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+}
