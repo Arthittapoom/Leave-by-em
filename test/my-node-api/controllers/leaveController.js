@@ -135,3 +135,18 @@ exports.getLeaveTypeByLabel = async (req, res) => {
         res.status(500).send('Server error');
     }
 }
+
+// Route สำหรับดึงข้อมูลประเภทการลาทั้งหมด
+// router.get('/getLeaveTypes', leaveController.getLeaveTypes);
+
+exports.getLeaveTypes = async (req, res) => {
+    try {
+        const leaveTypes = await LeaveDataModel.find();
+        if (leaveTypes.length === 0) {
+            return res.status(404).json({ msg: 'Leave type not found' });
+        }
+        res.json(leaveTypes);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+}

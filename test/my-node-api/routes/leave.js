@@ -29,4 +29,7 @@ router.put('/updateLeaveTypeByLabel/:label', leaveController.updateLeaveTypeByLa
 // Route สำหรับดึงข้อมูลประเภทการลา ด้วย label
 router.get('/getLeaveTypeByLabel/:label', leaveController.getLeaveTypeByLabel);
 
+// Route สำหรับดึงข้อมูลประเภทการลาทั้งหมด
+router.get('/getLeaveTypes', leaveController.getLeaveTypes);
+
 module.exports = router;
