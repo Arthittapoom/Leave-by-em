@@ -10,12 +10,19 @@
 
     <form class="leave-request-form" @submit.prevent="submitLeaveRequest">
       <label for="leave-type">ประเภทการลา</label>
-      <select id="leave-type" v-model="selectedLeaveType">
+      <select id="leave-type" v-model="selectedLeaveType" @change="handleLeaveTypeChange">
         <option value="" disabled selected>เลือกประเภทการลา</option>
         <option v-for="(leave, index) in leaveTypes" :key="index" :value="leave.value">
           {{ leave.label }}
         </option>
       </select>
+
+
+      <label v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'"
+        for="leave-advanced">ต้องลาล่วงหน้า</label>
+      <input v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'" type="text" id="leave-advanced"
+        v-model="selectedLeaveTypeData.advanced" placeholder=" " disabled />
+
 
       <label for="leave-reason">เหตุผลการลา</label>
       <input type="text" id="leave-reason" v-model="leaveReason" placeholder="ระบุเหตุผลการลา" />
@@ -91,6 +98,8 @@ export default {
       imageUrl: '',
       imageBase64: '', // เก็บ Base64 string ของรูปภาพ
 
+      selectedLeaveTypeData: null,
+
     };
   },
   methods: {
@@ -123,6 +132,29 @@ export default {
       };
 
       reader.readAsDataURL(this.selectedFile); // แปลงไฟล์รูปเป็น Base64
+    },
+
+    handleLeaveTypeChange(event) {
+      // console.log(event.target.value); // แสดงค่าที่เลือก
+
+      const axios = require('axios');
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/Leave/getLeaveTypeByLabel/' + event.target.value,
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          this.selectedLeaveTypeData = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
     },
 
 

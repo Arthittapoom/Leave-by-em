@@ -26,4 +26,7 @@ router.post('/createLeaveType', leaveController.createLeaveType);
 // Route สำหรับอัพเดตข้อมูลประเภทการลา ด้วย label
 router.put('/updateLeaveTypeByLabel/:label', leaveController.updateLeaveTypeByLabel);
 
+// Route สำหรับดึงข้อมูลประเภทการลา ด้วย label
+router.get('/getLeaveTypeByLabel/:label', leaveController.getLeaveTypeByLabel);
+
 module.exports = router;
