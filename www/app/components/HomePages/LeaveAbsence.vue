@@ -18,10 +18,12 @@
       </select>
 
 
-      <label v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'"
+      <label
+        v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'"
         for="leave-advanced">ต้องลาล่วงหน้า</label>
-      <input v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'" type="text" id="leave-advanced"
-        v-model="selectedLeaveTypeData.advanced" placeholder=" " disabled />
+      <input
+        v-if="selectedLeaveTypeData && selectedLeaveTypeData.advanced !== '-' && selectedLeaveTypeData.status === 'true'"
+        type="text" id="leave-advanced" v-model="selectedLeaveTypeData.advanced" placeholder=" " disabled />
 
 
       <label for="leave-reason">เหตุผลการลา</label>
@@ -73,9 +75,24 @@ export default {
   data() {
     return {
       leaveCredits: [
-        { label: 'สิทธิ์ลาป่วย', remaining: this.userData.totalSickLeave, total: this.userData.remainingSickLeave, class: 'sick-leave' },
-        { label: 'สิทธิ์ลากิจ', remaining: this.userData.totalPersonalLeave, total: this.userData.remainingPersonalLeave, class: 'business-leave' },
-        { label: 'สิทธิ์ลาพักร้อน', remaining: this.userData.totalVacationLeave, total: this.userData.remainingVacationLeave, class: 'vacation-leave' },
+        {
+          label: 'สิทธิ์ลาป่วย',
+          remaining: this.userData.totalSickLeave,
+          total: this.LeaveTypesGet && this.LeaveTypesGet[0] ? this.LeaveTypesGet[0].days : 0,
+          class: 'sick-leave'
+        },
+        {
+          label: 'สิทธิ์ลากิจ',
+          remaining: this.userData.totalPersonalLeave,
+          total: this.userData.remainingPersonalLeave,
+          class: 'business-leave'
+        },
+        {
+          label: 'สิทธิ์ลาพักร้อน',
+          remaining: this.userData.totalVacationLeave,
+          total: this.userData.remainingVacationLeave,
+          class: 'vacation-leave'
+        },
       ],
       leaveTypes: [
         { value: 'ลาป่วย', label: 'ลาป่วย' },
@@ -100,7 +117,12 @@ export default {
 
       selectedLeaveTypeData: null,
 
+      LeaveTypesGet: null,
     };
+  },
+
+  mounted() {
+    this.getLeaveTypes();
   },
   methods: {
     handleFileUpload(event) {
@@ -157,7 +179,62 @@ export default {
 
     },
 
+    getLeaveTypes() {
+      const axios = require('axios');
 
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/Leave/getLeaveTypes',
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          this.LeaveTypesGet = response.data;
+
+          // Now update leaveCredits with the fetched data
+          this.leaveCredits = [
+            {
+              label: 'สิทธิ์ลาป่วย',
+              remaining: this.userData.totalSickLeave,
+              total: this.LeaveTypesGet[0].days,
+              class: 'sick-leave'
+            },
+            {
+              label: 'สิทธิ์ลากิจ',
+              remaining: this.userData.totalPersonalLeave,
+              total: this.LeaveTypesGet[3].days,
+              class: 'business-leave'
+            },
+            {
+              label: 'สิทธิ์ลาพักร้อน',
+              remaining: this.userData.totalVacationLeave,
+              total: this.LeaveTypesGet[2].days,
+              class: 'vacation-leave'
+            },
+          ];
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    subtractDays(advanced, startDate) {
+      const date = new Date(startDate); // แปลง startDate เป็น Date object
+
+      // ลบจำนวนวันที่กำหนด (advanced)
+      date.setDate(date.getDate() - advanced);
+
+      // จัดรูปแบบวันที่ใหม่เป็น YYYY-MM-DD
+      const resultYear = date.getFullYear();
+      const resultMonth = String(date.getMonth() + 1).padStart(2, '0'); // เดือนใน JavaScript เริ่มที่ 0
+      const resultDay = String(date.getDate()).padStart(2, '0');
+
+      // ส่งคืนวันที่ใหม่ในรูปแบบ YYYY-MM-DD
+      return `${resultYear}-${resultMonth}-${resultDay}`;
+    },
     async submitLeaveRequest() {
       this.loading = true;
 
@@ -174,6 +251,42 @@ export default {
         });
         return;
       }
+
+      const axios = require('axios');
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/Leave/getLeaveTypeByLabel/' + this.selectedLeaveType,
+        headers: {}
+      };
+
+      await axios.request(config)
+        .then((response) => {
+          // console.log(response.data);
+          this.selectedLeaveTypeData = response.data;
+
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      
+      if (this.selectedLeaveTypeData.advanced !== '-' && this.selectedLeaveTypeData.status === 'true') {
+
+        // console.log(this.selectedLeaveTypeData.advanced, this.startDate);
+        const result = await this.subtractDays(this.selectedLeaveTypeData.advanced, this.startDate);
+        const formattedDate = new Date(2024, 9, 6).toISOString().split('T')[0];
+        // console.log(result , formattedDate);
+
+        if (String(result) > String(formattedDate)) {
+          Swal.fire('ต้องลาก่อน ' + result + ' วัน', '', 'error').then(() => {
+            this.loading = false;
+          });
+          return;
+        }
+      }
+
+
 
       try {
         const data = {
@@ -276,8 +389,6 @@ export default {
         console.error('Error sending notification:', error);
       }
     }
-
-
   }
 };
 </script>
