@@ -24,8 +24,13 @@
                         <button @click="nextPage" :disabled="currentPage === totalPages">▶</button>
                     </div>
 
+
                     <!-- รายการ -->
                 </div>
+                <button class="btn-export" @click="exportData()">export</button>
+                <!-- eneratePDF -->
+                <!-- <button class="btn-export" @click="generatePDF()">PDF</button> -->
+
                 <div>
                     <!-- ตัวกรองตามสถานที่ปฏิบัติงาน -->
                     <select v-model="statusFilter" @change="filterTable">
@@ -98,6 +103,9 @@
 <script>
 import LeaveDetails from '../../components/MenuPages/User/UserDetails.vue';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable'; // ใช้สำหรับการจัดการตาราง (ถ้าต้องการ)
 export default {
     components: {
         LeaveDetails
@@ -116,6 +124,7 @@ export default {
         };
     },
     computed: {
+
         // กรองสถานที่ปฏิบัติงานที่ไม่ซ้ำกัน
         uniqueLocations() {
             const locations = this.paginatedUsers.map(user => user.lineId);
@@ -147,6 +156,80 @@ export default {
 
     },
     methods: {
+        generatePDF() {
+            const doc = new jsPDF();
+
+            // เพิ่มฟอนต์ภาษาไทย
+            const yourBase64FontData = process.env.BASE64FONT;
+        
+            doc.addFileToVFS("Prompt-Medium.ttf", yourBase64FontData);
+            doc.addFont("Prompt-Medium.ttf", "Prompt-Medium", "normal");
+            doc.setFont("Prompt-Medium");
+
+            // เพิ่มข้อความลงใน PDF
+            doc.setFontSize(12);
+            doc.text("สวัสดีโลก!", 10, 10);
+            doc.text("นี่คือตัวอย่าง PDF ที่สร้างจาก Vue.js", 10, 20);
+            doc.text("ข้อมูลเพิ่มเติมสามารถเพิ่มได้ตามต้องการ", 10, 30);
+
+            // บันทึก PDF
+            doc.save("example.pdf");
+        },
+
+        exportData() {
+            // ข้อมูลตัวอย่างที่ตรงกับรูปแบบที่คุณต้องการ
+            const data = [
+                {
+                    "ลำดับ": 1,
+                    "รหัส": "WM59001C",
+                    "สังกัด": "WM",
+                    "ชื่อ-สกุล": "นาย ณัฐเศรษฐ เทพพิบูล",
+                    "ชื่อเล่น": "แทค",
+                    "ตำแหน่ง": "Chief Executive Officer",
+                    "ประเภทพนักงาน": "พนักงานรายเดือน",
+                    "ฝ่าย": "Committee",
+                    "สถานที่ปฏิบัติงาน": "BKK",
+                    "วันที่เริ่มงาน": "1/11/2021",
+                    "วันที่ผ่านโปร": "28/2/2022",
+                    "อายุงาน": 0,
+                    "สิทธิ์ลาป่วย 30 วัน/ปี": 0,
+                    "ป่วย/วัน": 0,
+                    "ป่วย/ชม.": 0,
+                    "รวมวันลาป่วย": 0,
+                    "สิทธิ์คงเหลือวันลาป่วย": 30,
+                    "สิทธิ์ลากิจ 6 วัน/ปี": 0,
+                    "กิจ/วัน": 6,
+                    "กิจ/ชม.": 0,
+                    "รวมวันลากิจ": 0,
+                    "สิทธิ์คงเหลือวันลากิจ": 6,
+                    "สิทธิ์ลาพักร้อน 6 วัน/ปี": 0,
+                    "พักร้อน/วัน": 0,
+                    "พักร้อน/ชม.": 0,
+                    "รวมพักร้อน": 0,
+                    "สิทธิ์คงเหลือวันพักร้อน": 6,
+                    "สิทธิ์พักร้อนที่ได้": 6,
+                    "ไม่รับค่าจ้าง/วัน": 0,
+                    "ไม่รับค่าจ้าง/ชม": 0,
+                    "รวมไม่รับค่าจ้าง": 0,
+                    "ลากิจพิเศษ": 0,
+                    "ลาเพื่ออุปสมบท": 0,
+                    "ลาคลอด": 0,
+                    "ลาป่วย (เนื่องจากบาดเจ็บในงาน)/วัน": 0,
+                    "ผู้อนุมัติการลาขั้นต้น": "นาย ธีรวุฒิ จันทดิษฐ์",
+                    "ผู้อนุมัติสูงสุด": "นาย ธีรวุฒิ จันทดิษฐ์",
+                }
+            ];
+
+            // แปลงข้อมูลเป็น Worksheet
+            const ws = XLSX.utils.json_to_sheet(data);
+
+            // สร้าง Workbook และเพิ่ม Worksheet ลงไป
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            // สร้างไฟล์ Excel และดาวน์โหลด
+            XLSX.writeFile(wb, 'data.xlsx');
+        },
         changePage(page) {
             this.currentPage = page;
         },
@@ -175,7 +258,7 @@ export default {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url:  process.env.API_URL + '/users/updateUser/' + updatedUser.id,
+                url: process.env.API_URL + '/users/updateUser/' + updatedUser.id,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -276,6 +359,15 @@ export default {
 </script>
 
 <style scoped>
+.btn-export {
+    background-color: #6e69da;
+    color: white;
+    /* padding: 12px 20px; */
+    margin-left: 10px;
+    height: 40px;
+    border: none;
+}
+
 .loading-container {
     display: flex;
     justify-content: center;
