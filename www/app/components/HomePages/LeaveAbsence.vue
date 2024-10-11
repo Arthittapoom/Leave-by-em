@@ -2,11 +2,11 @@
   <div class="leave-form">
     <div class="leave-credits">
       <div v-for="(leave, index) in leaveCredits" :key="index" :class="['leave-credit', leave.class]">
-        <div>วัน</div>
-        <div>{{ leave.remaining }}/{{ leave.total }}</div>
-        <div>{{ leave.label }}</div>
+        <div :class="[leave.class2]">{{ leave.remaining }}/{{ leave.total }}</div>
+        <div class="leave-label">{{ leave.label }}</div>
       </div>
     </div>
+
 
     <form class="leave-request-form" @submit.prevent="submitLeaveRequest">
       <label for="leave-type">ประเภทการลา</label>
@@ -41,7 +41,10 @@
       <label for="end-time">เวลาสิ้นสุด</label>
       <input type="time" id="end-time" v-model="endTime" />
 
-      <label for="upload-image">อัพโหลดรูปภาพ</label>
+      <label v-if="selectedLeaveTypeData" for="upload-image">อัพโหลดรูปภาพ
+        ({{ selectedLeaveTypeData.evidenceRequired }})</label>
+      <label v-if="!selectedLeaveTypeData" for="upload-image">อัพโหลดรูปภาพ
+        (ไม่บังคับ)</label>
       <input type="file" id="upload-image" @change="handleFileUpload" />
 
       <!-- เพิ่มส่วนแสดงภาพที่อัพโหลด -->
@@ -79,19 +82,22 @@ export default {
           label: 'สิทธิ์ลาป่วย',
           remaining: this.userData.totalSickLeave,
           total: this.LeaveTypesGet && this.LeaveTypesGet[0] ? this.LeaveTypesGet[0].days : 0,
-          class: 'sick-leave'
+          class: 'sick-leave',
+          class2: 'leave-number1'
         },
         {
           label: 'สิทธิ์ลากิจ',
           remaining: this.userData.totalPersonalLeave,
           total: this.userData.remainingPersonalLeave,
-          class: 'business-leave'
+          class: 'personal-leave',
+          class2: 'leave-number2'
         },
         {
           label: 'สิทธิ์ลาพักร้อน',
           remaining: this.userData.totalVacationLeave,
           total: this.userData.remainingVacationLeave,
-          class: 'vacation-leave'
+          class: 'vacation-leave',
+          class2: 'leave-number3'
         },
       ],
       leaveTypes: [
@@ -200,19 +206,22 @@ export default {
               label: 'สิทธิ์ลาป่วย',
               remaining: this.userData.totalSickLeave,
               total: this.LeaveTypesGet[0].days,
-              class: 'sick-leave'
+              class: 'sick-leave',
+              class2: 'leave-number1'
             },
             {
               label: 'สิทธิ์ลากิจ',
               remaining: this.userData.totalPersonalLeave,
               total: this.LeaveTypesGet[3].days,
-              class: 'business-leave'
+              class: 'personal-leave',
+              class2: 'leave-number2'
             },
             {
               label: 'สิทธิ์ลาพักร้อน',
               remaining: this.userData.totalVacationLeave,
               total: this.LeaveTypesGet[2].days,
-              class: 'vacation-leave'
+              class: 'vacation-leave',
+              class2: 'leave-number3'
             },
           ];
         })
@@ -270,7 +279,7 @@ export default {
           console.log(error);
         });
 
-      
+
       if (this.selectedLeaveTypeData.advanced !== '-' && this.selectedLeaveTypeData.status === 'true') {
 
         // console.log(this.selectedLeaveTypeData.advanced, this.startDate);
@@ -409,33 +418,70 @@ export default {
 
 .leave-credits {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  gap: 5px;
+  justify-content: center;
+  margin-top: 0px;
 }
 
 .leave-credit {
-  text-align: center;
-  padding: 10px;
-  border-radius: 10px;
-  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 140px;
+  border-radius: 15px;
   color: white;
+  font-family: 'Arial', sans-serif;
 }
 
 .sick-leave {
-  background-color: #ff8a80;
+  background-color: #FF8A80; /* Light red */
 }
 
-.business-leave {
-  background-color: #ffeb3b;
+.personal-leave {
+  background-color: #FFD180; /* Light yellow-orange */
 }
 
 .vacation-leave {
-  background-color: #82b1ff;
+  background-color: #80D8FF; /* Light blue */
+}
+
+.leave-number1 {
+  background-color: #FF7070;
+  padding: 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.leave-number2 {
+  background-color: #BBC361;
+  padding: 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.leave-number3 {
+  background-color: #405CA3;
+  padding: 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.leave-label {
+  margin-top: 10px;
+  font-size: 16px;
 }
 
 .leave-request-form {
   display: flex;
   flex-direction: column;
+  width: 320px;
+  margin: 0 auto;
 }
 
 .leave-request-form label {
@@ -449,6 +495,7 @@ export default {
   border-radius: 5px;
   border: 1px solid #ccc;
   margin-bottom: 10px;
+  width: 100%;
 }
 
 button {

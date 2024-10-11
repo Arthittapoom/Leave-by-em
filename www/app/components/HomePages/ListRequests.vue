@@ -29,14 +29,14 @@
         <div class="modal-content">
           <span class="close" @click="closeModal">&times;</span>
           <h3>รายละเอียดคำขอ</h3>
-          <p><strong>ชื่อ-นามสกุล:</strong> {{ selectedRequest.name }}</p>
-          <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
-          <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
+          <div class="flex-container">
+            <p><strong>ชื่อ:</strong> {{ selectedRequest.name }}</p>
+            <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
+            <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
+          </div>
           <div class="flex-container">
             <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
             <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
-          </div>
-          <div class="flex-container">
             <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
             <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
           </div>
@@ -51,8 +51,11 @@
 
           <!-- เพิ่มรายละเอียดการออกปฏิบัติงานนอกสถานที่ -->
           <div v-if="selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'">
-            <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
-            <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
+            <div class="flex-container">
+              <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
+              <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
+            </div>
+
             <p><strong>หมายเลข:</strong> {{ selectedRequest.vehicleNumber }}</p>
           </div>
           <!-- เพิ่มรายละเอียดการลาออก -->
@@ -64,10 +67,19 @@
             <p><strong>เหตุผล:</strong> {{ selectedRequest.reasonText }}</p>
           </div>
 
-          <div class="uploaded-image" v-if="selectedRequest.imageUrl">
-            <a :href="selectedRequest.imageUrl" target="_blank" rel="noopener noreferrer">
-              <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
-            </a>
+          <div>
+            <div class="uploaded-image" v-if="selectedRequest.imageUrl">
+              <a @click.prevent="openModalimg">
+                <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
+              </a>
+            </div>
+
+            <div v-if="isModalOpen" class="modal">
+              <div class="modal-content">
+                <span class="close" @click="closeModalimg">&times;</span>
+                <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" class="modal-image" />
+              </div>
+            </div>
           </div>
 
           <div class="approval">
@@ -104,11 +116,18 @@ export default {
       requests: [],
       selectedRequest: null,
       loadingData: true,
-      loading: false
+      loading: false,
+      isModalOpen: false,
     };
   },
   props: ['userData'],
   methods: {
+    openModalimg() {
+      this.isModalOpen = true;
+    },
+    closeModalimg() {
+      this.isModalOpen = false;
+    },
     openModal(request) {
       const axios = require('axios');
 
@@ -380,7 +399,9 @@ export default {
 
 .modal-content {
   background-color: #fefefe;
-  padding: 20px;
+  /* padding: 20px; */
+  padding-left: 20px;
+  padding-right: 20px;
   border: 1px solid #888;
   width: 100%;
   /* ปรับให้กว้างเต็มจอ */

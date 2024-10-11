@@ -21,7 +21,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // index
 app.get('/', (req, res) => {
-    res.send('version 1.0.7');
+    res.send('version 1.0.8');
 });
 
 // นำเข้าเส้นทางทั้งหมดจาก routes/index.js

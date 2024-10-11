@@ -489,8 +489,10 @@ export default {
 .leave-actions a {
     margin-right: 10px;
     font-size: 14px;
-    color: #007BFF;
+    color: #000000;
     text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .leave-actions a:hover {
