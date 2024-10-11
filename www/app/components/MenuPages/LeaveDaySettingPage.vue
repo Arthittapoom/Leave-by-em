@@ -41,6 +41,7 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 export default {
+
   data() {
     return {
       leaveData: [
@@ -56,6 +57,9 @@ export default {
       selectedFile: null,
       uploadStatus: '',
     };
+  },
+  mounted() {
+    this.getLeaveTypes();
   },
   methods: {
     handleFileUpload(event) {
@@ -101,6 +105,35 @@ export default {
         });
 
     },
+    getLeaveTypes() {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: process.env.API_URL + '/Leave/getLeaveTypes',
+        headers: {}
+      };
+
+      axios.request(config)
+        .then((response) => {
+          // ตรวจสอบว่า response.data มีข้อมูลและเป็น array หรือไม่
+          if (Array.isArray(response.data)) {
+            this.leaveData = response.data.map(item => ({
+              _id: item._id, // เก็บ _id ถ้าจำเป็น
+              label: item.label,
+              days: Number(item.days), // แปลง days เป็น number
+              advanced: item.advanced, // ถ้าเป็น string เช่น "-" ก็อาจไม่ต้องแปลง
+              evidenceRequired: item.evidenceRequired,
+              status: item.status === 'true' ? true : false // แปลง status เป็น boolean
+            }));
+          } else {
+            console.error('รูปแบบข้อมูลไม่ถูกต้อง:', response.data);
+          }
+        })
+        .catch((error) => {
+          console.log('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
+        });
+    },
+
     saveSettings() {
       this.leaveData.forEach(element => {
 
@@ -126,7 +159,7 @@ export default {
         let config = {
           method: 'put',
           maxBodyLength: Infinity,
-          url:  process.env.API_URL + '/Leave/updateLeaveTypeByLabel/' + dataNew.label,
+          url: process.env.API_URL + '/Leave/updateLeaveTypeByLabel/' + dataNew.label,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -135,6 +168,7 @@ export default {
 
         axios.request(config)
           .then((response) => {
+            // console.log(response.data);
             Swal.fire({
               icon: 'success',
               title: 'บันทึกสำเร็จ',

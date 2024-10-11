@@ -26,38 +26,42 @@
       <!-- Modal -->
 
       <div v-if="selectedRequest" class="modal">
-        <div class="modal-content">
+        <div class="modal-content scrollable-content">
           <span class="close" @click="closeModal">&times;</span>
           <h3>รายละเอียดคำขอ</h3>
-          <div class="flex-container">
+
+          
             <p><strong>ชื่อ:</strong> {{ selectedRequest.name }}</p>
             <p><strong>รหัสพนักงาน:</strong> {{ selectedRequest.code }}</p>
+         
+
+     
             <p><strong>ตำแหน่ง:</strong> {{ selectedRequest.position }}</p>
-          </div>
-          <div class="flex-container">
             <p><strong>สังกัด:</strong> {{ selectedRequest.department }}</p>
             <p><strong>สถานที่ปฏิบัติงาน:</strong> {{ selectedRequest.workplace }}</p>
+         
+
+     
             <p><strong>อายุงาน:</strong> {{ selectedRequest.diffDays_days }}</p>
             <p><strong>เบอร์โทรศัพท์:</strong> {{ selectedRequest.phone }}</p>
-          </div>
+      
+
           <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>ประเภทการลา/เหตุผลการลา:</strong> {{ selectedRequest.reason
             }}</p>
           <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>วัน/เดือน/ปี ที่ต้องการลา:</strong> {{
-            selectedRequest.startDate }} - {{ selectedRequest.endDate }}
-          </p>
+            selectedRequest.startDate }} - {{ selectedRequest.endDate }}</p>
           <p v-if="selectedRequest.Type !== 'ลาออก'"><strong>เวลา ที่ต้องการลา:</strong> {{ selectedRequest.startTime }}
-            -
-            {{ selectedRequest.endTime }}</p>
+            - {{ selectedRequest.endTime }}</p>
 
           <!-- เพิ่มรายละเอียดการออกปฏิบัติงานนอกสถานที่ -->
           <div v-if="selectedRequest.type === 'ออกปฏิบัติงานนอกสถานที่'">
-            <div class="flex-container">
+        
               <p><strong>สถานที่:</strong> {{ selectedRequest.workLocation }}</p>
               <p><strong>ยานพาหนะ:</strong> {{ selectedRequest.vehicle }}</p>
-            </div>
-
+        
             <p><strong>หมายเลข:</strong> {{ selectedRequest.vehicleNumber }}</p>
           </div>
+
           <!-- เพิ่มรายละเอียดการลาออก -->
           <div v-if="selectedRequest.Type === 'ลาออก'">
             <p><strong>วันที่เริ่มงาน:</strong> {{ selectedRequest.firstWorkDay }}</p>
@@ -67,21 +71,22 @@
             <p><strong>เหตุผล:</strong> {{ selectedRequest.reasonText }}</p>
           </div>
 
-          <div>
-            <div class="uploaded-image" v-if="selectedRequest.imageUrl">
-              <a @click.prevent="openModalimg">
-                <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
-              </a>
-            </div>
+          <!-- รูปภาพแนบ -->
+          <div class="uploaded-image" v-if="selectedRequest.imageUrl">
+            <a @click.prevent="openModalimg">
+              <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
+            </a>
+          </div>
 
-            <div v-if="isModalOpen" class="modal">
-              <div class="modal-content">
-                <span class="close" @click="closeModalimg">&times;</span>
-                <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" class="modal-image" />
-              </div>
+          <!-- Modal สำหรับแสดงรูปภาพ -->
+          <div v-if="isModalOpen" class="modal">
+            <div class="modal-content">
+              <span class="close" @click="closeModalimg">&times;</span>
+              <img :src="selectedRequest.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" class="modal-image" />
             </div>
           </div>
 
+          <!-- การอนุมัติ -->
           <div class="approval">
             <label><input type="radio" name="approval" value="อนุมัติ" v-model="selectedRequest.status" />
               อนุมัติ</label>
@@ -89,16 +94,15 @@
               ไม่อนุมัติ</label>
           </div>
 
+          <!-- หมายเหตุ -->
           <label for="remark">หมายเหตุ:</label>
-          <textarea id="remark" rows="4" v-model="selectedRequest.reasonText"></textarea>
+          <textarea id="remark" rows="10" v-model="selectedRequest.reasonText"></textarea>
           <button v-if="loading === false" @click="updateLeave(selectedRequest)" class="submit-button">ยืนยัน</button>
 
+          <!-- แสดง Loading -->
           <div v-if="loading === true" class="spinner-border text-warning" role="status">
             <span class="sr-only">Loading...</span>
           </div>
-
-
-          <div class="submit-button-b"> </div>
         </div>
       </div>
 
@@ -381,35 +385,79 @@ export default {
   background-color: #fdd835;
 }
 
-/* Modal Styles */
-/* Modal Styles */
+/* Modal overlay */
 .modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: fixed;
-  z-index: 1;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* สีพื้นหลังโปร่งใส */
+  z-index: 1000; /* เลเยอร์สูงสุด */
 }
 
+/* Content ของ Modal */
 .modal-content {
-  background-color: #fefefe;
-  /* padding: 20px; */
-  padding-left: 20px;
-  padding-right: 20px;
-  border: 1px solid #888;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px; /* กำหนดความกว้างของ modal */
   width: 100%;
-  /* ปรับให้กว้างเต็มจอ */
-  height: 100%;
-  /* ปรับให้สูงเต็มจอ */
-  border-radius: 0;
-  /* ลบขอบมุมโค้ง */
+  position: relative;
 }
+
+/* Scrollable content */
+.scrollable-content {
+  max-height: 80vh; /* ความสูงสูงสุดของ modal */
+  overflow-y: auto; /* เปิดการเลื่อนเมื่อเนื้อหาเกิน */
+}
+
+/* ปุ่มปิด Modal */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+/* ปุ่มยืนยัน */
+.submit-button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* การจัดการการอนุมัติ */
+.approval {
+  margin-top: 20px;
+}
+
+.approval label {
+  margin-right: 10px;
+}
+
+/* Spinner loading */
+.spinner-border {
+  margin-top: 10px;
+}
+
+.modal-image {
+  max-width: 100%;
+  height: auto;
+}
+
 
 
 .close {
@@ -437,7 +485,7 @@ export default {
 
 textarea {
   width: 100%;
-  padding: 10px;
+  padding: 40px;
   margin-top: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;

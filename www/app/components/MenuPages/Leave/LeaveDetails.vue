@@ -97,8 +97,33 @@
             <label class="radio-option">
               <input type="radio" value="ไม่อนุมัติ" v-model="user.status" /> ไม่อนุมัติ
             </label>
+
+            
+
+
           </div>
+
+         
+
         </div>
+
+        <!-- <pre>user: {{ user.dataLeave.imageUrl }}</pre> -->
+
+        <!-- รูปภาพแนบ -->
+        <div class="uploaded-image" v-if="user.dataLeave.imageUrl">
+        <a @click.prevent="openModalimg">
+          <img :src="user.dataLeave.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" width="200" />
+        </a>
+        </div>
+
+        <!-- Modal สำหรับแสดงรูปภาพ -->
+        <div v-if="isModalOpen" class="modal">
+        <div class="modal-content">
+          <span class="close" @click="closeModalimg">&times;</span>
+          <img :src="user.dataLeave.imageUrl" alt="รูปภาพที่แปลงกลับจาก Base64" class="modal-image" />
+        </div>
+        </div>
+
         <div class="form-row">
           <label>เหตุผล *</label>
           <textarea v-model="user.reasonText"></textarea>
@@ -123,6 +148,7 @@ export default {
     return {
       history: false,
       leaveItems: [],
+      isModalOpen: false
     };
   },
   props: ['user'], // รับข้อมูลผู้ใช้ที่ถูกเลือกจาก parent
@@ -131,7 +157,12 @@ export default {
 
   },
   methods: {
-
+    openModalimg() {
+      this.isModalOpen = true;
+    },
+    closeModalimg() {
+      this.isModalOpen = false;
+    },
     viewHistory() {
       this.history = true;
     },
@@ -150,6 +181,30 @@ export default {
 </script>
 
 <style scoped>
+/* Modal overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* สีพื้นหลังโปร่งใส */
+  z-index: 1000; /* เลเยอร์สูงสุด */
+}
+
+/* Content ของ Modal */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px; /* กำหนดความกว้างของ modal */
+  width: 100%;
+  position: relative;
+}
+
 .profile-container {
   display: flex;
   justify-content: center;

@@ -171,6 +171,7 @@ export default {
                         endTime: leave.endTime,
                         status: leave.status || 'รออนุมัติ',
                         lineId: leave.lineId,
+                        dataLeave: leave,
                         dataUser: userData,
                         sendDate: leave.sendDate || leave.createdAt, // ใช้ createdAt ในกรณีที่ไม่มี sendDate
                         workLocation: isOutsideLeave ? leave.workLocation : null,

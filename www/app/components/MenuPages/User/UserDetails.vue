@@ -50,11 +50,13 @@
         <div class="form-row">
           <div class="input-group">
             <label>วันที่เริ่มทำงานวันแรก</label>
-            <input type="text" :value="formattedStartDate(form.startDate)" @input="updateStartDate($event.target.value, 'startDate')" />
+            <input type="text" :value="formattedStartDate(form.startDate)"
+              @input="updateStartDate($event.target.value, 'startDate')" />
           </div>
           <div class="input-group">
             <label>วันที่ผ่านโปร</label>
-            <input type="text" :value="formattedStartDate(form.passedDate)" @input="updateStartDate($event.target.value, 'passedDate')" />
+            <input type="text" :value="formattedStartDate(form.passedDate)"
+              @input="updateStartDate($event.target.value, 'passedDate')" />
           </div>
         </div>
 
@@ -71,17 +73,18 @@
 
         <div class="form-row">
           <div class="input-group">
-            <label>อายุงาน (วัน)</label>
-            <input type="text" v-model="form.diffDays_days" />
+            <label>อายุงาน</label>
+            <!-- คำนวณอายุงานในวันจากวันที่ผ่านโปร -->
+            <input type="text" v-model="ageInDays" readonly />
           </div>
-          <div class="input-group">
+          <!-- <div class="input-group">
             <label>อายุงาน (เดือน)</label>
             <input type="text" v-model="form.diffDays_months" />
           </div>
           <div class="input-group">
             <label>อายุงาน (ปี)</label>
             <input type="text" v-model="form.diffDays_years" />
-          </div>
+          </div> -->
         </div>
 
         <div class="form-row">
@@ -115,54 +118,55 @@
         <tbody>
           <tr>
             <td>ลาป่วย (วัน)</td>
-            <td><input type="number" v-model="form.sickLeave_days" /></td>
+            <td><input type="number" v-model="form.totalSickLeave" disabled /></td>
             <td>{{ form.remainingSickLeave }}</td>
             <td>วัน/ปี</td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>ลาป่วย (ชั่วโมง)</td>
             <td><input type="number" v-model="form.sickLeave_hours" /></td>
             <td>{{ form.remainingSickLeave }}</td>
             <td>ชม./ปี</td>
-          </tr>
+          </tr> -->
           <tr>
             <td>ลากิจ (วัน)</td>
-            <td><input type="number" v-model="form.personalLeave_days" /></td>
+            <td><input type="number" v-model="form.totalPersonalLeave" disabled /></td>
             <td>{{ form.remainingPersonalLeave }}</td>
             <td>วัน/ปี</td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>ลากิจ (ชั่วโมง)</td>
             <td><input type="number" v-model="form.personalLeave_hours" /></td>
             <td>{{ form.remainingPersonalLeave }}</td>
             <td>ชม./ปี</td>
-          </tr>
+          </tr> -->
           <tr>
             <td>พักร้อน (วัน)</td>
-            <td><input type="number" v-model="form.vacationLeave_days" /></td>
+            <td><input type="number" v-model="form.totalVacationLeave" disabled /></td>
             <td>{{ form.remainingVacationLeave }}</td>
             <td>วัน/ปี</td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>พักร้อน (ชั่วโมง)</td>
             <td><input type="number" v-model="form.vacationLeave_hours" /></td>
             <td>{{ form.remainingVacationLeave }}</td>
             <td>ชม./ปี</td>
-          </tr>
+          </tr> -->
           <tr>
             <td>ลาไม่รับค่าจ้าง (วัน)</td>
-            <td><input type="number" v-model="form.unpaidLeave_days" /></td>
+            <td><input type="number" v-model="form.totalUnpaidLeave" disabled /></td>
             <td>{{ form.totalUnpaidLeave }}</td>
             <td>วัน/ปี</td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>ลาไม่รับค่าจ้าง (ชั่วโมง)</td>
             <td><input type="number" v-model="form.unpaidLeave_hours" /></td>
             <td>{{ form.totalUnpaidLeave }}</td>
             <td>ชม./ปี</td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
+      <!-- <pre>form: {{ form }}</pre> -->
     </div>
 
     <div class="form-actions">
@@ -178,7 +182,7 @@ export default {
   data() {
     return {
       form: {
-        id : this.user.id,
+        id: this.user.id,
         code: this.user.username,
         department: this.user.department,
         fullName: this.user.fullName,
@@ -219,6 +223,31 @@ export default {
         phone: this.user.phone || 'null',
       }
     };
+  },
+  
+  computed: {
+    ageInDays() {
+  if (!this.form.passedDate) return '';
+
+  // แปลงวันที่ผ่านโปรเป็น Timestamp
+  const passedDate = new Date(this.form.passedDate).getTime();
+  // วันที่ปัจจุบันเป็น Timestamp
+  const currentDate = Date.now();
+
+  // คำนวณความแตกต่าง
+  const timeDiff = currentDate - passedDate;
+
+  // แปลงมิลลิวินาทีเป็นวัน
+  const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+
+  // คำนวณจำนวนปี, เดือน และวัน
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  const days = diffDays % 30;
+
+  return `${diffDays} วัน ${months} เดือน ${years} ปี`;
+}
+
   },
   methods: {
     formattedStartDate(date) {
