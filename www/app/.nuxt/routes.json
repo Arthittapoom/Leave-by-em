@@ -3,70 +3,60 @@
     "name": "admin",
     "path": "/admin",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\admin\\\\index.vue",
-    "chunkName": "pages/admin/index",
-    "_name": "_9cfce9e6"
+    "chunkName": "pages/admin/index"
   },
   {
     "name": "leaveabsence",
     "path": "/leaveabsence",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveabsence\\\\index.vue",
-    "chunkName": "pages/leaveabsence/index",
-    "_name": "_770de71c"
+    "chunkName": "pages/leaveabsence/index"
   },
   {
     "name": "leaveoutside",
     "path": "/leaveoutside",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\leaveoutside\\\\index.vue",
-    "chunkName": "pages/leaveoutside/index",
-    "_name": "_5c62afec"
+    "chunkName": "pages/leaveoutside/index"
   },
   {
     "name": "listrequests",
     "path": "/listrequests",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\listrequests\\\\index.vue",
-    "chunkName": "pages/listrequests/index",
-    "_name": "_c2599794"
+    "chunkName": "pages/listrequests/index"
   },
   {
     "name": "login",
     "path": "/login",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login\\\\index.vue",
-    "chunkName": "pages/login/index",
-    "_name": "_17fe2a9a"
+    "chunkName": "pages/login/index"
   },
   {
     "name": "login-admin",
     "path": "/login-admin",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\login-admin\\\\index.vue",
-    "chunkName": "pages/login-admin/index",
-    "_name": "_02275b71"
+    "chunkName": "pages/login-admin/index"
   },
   {
     "name": "profile",
     "path": "/profile",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\profile\\\\index.vue",
-    "chunkName": "pages/profile/index",
-    "_name": "_6bbe081a"
+    "chunkName": "pages/profile/index"
   },
   {
     "name": "resignfromwork",
     "path": "/resignfromwork",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\resignfromwork\\\\index.vue",
-    "chunkName": "pages/resignfromwork/index",
-    "_name": "_6f9b574d"
+    "chunkName": "pages/resignfromwork/index"
   },
   {
     "name": "index",
     "path": "/",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_b1f22850"
+    "chunkName": "pages/index"
   },
   {
     "name": "home-id",
     "path": "/home/:id?",
     "component": "P:\\\\Leave-by-em\\\\www\\\\app\\\\pages\\\\home\\\\_id.vue",
-    "chunkName": "pages/home/_id",
-    "_name": "_bae1977e"
+    "chunkName": "pages/home/_id"
   }
 ]

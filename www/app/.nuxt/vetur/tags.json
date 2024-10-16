@@ -50,6 +50,12 @@
   "MenuPagesUsersManagementPage": {
     "description": "Auto imported from components/MenuPages/UsersManagementPage.vue"
   },
+  "MenuPagesAdminCreate": {
+    "description": "Auto imported from components/MenuPages/Admin/create.vue"
+  },
+  "MenuPagesAdminViewUserAdmin": {
+    "description": "Auto imported from components/MenuPages/Admin/viewUserAdmin.vue"
+  },
   "MenuPagesLeaveDetails": {
     "description": "Auto imported from components/MenuPages/Leave/LeaveDetails.vue"
   },
@@ -58,12 +64,6 @@
   },
   "MenuPagesLeaveResignDetails": {
     "description": "Auto imported from components/MenuPages/Leave/ResignDetails.vue"
-  },
-  "MenuPagesAdminCreate": {
-    "description": "Auto imported from components/MenuPages/Admin/create.vue"
-  },
-  "MenuPagesAdminViewUserAdmin": {
-    "description": "Auto imported from components/MenuPages/Admin/viewUserAdmin.vue"
   },
   "MenuPagesUserDetails": {
     "description": "Auto imported from components/MenuPages/User/UserDetails.vue"
