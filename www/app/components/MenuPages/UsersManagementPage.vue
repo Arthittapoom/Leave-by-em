@@ -27,7 +27,7 @@
 
                     <!-- รายการ -->
                 </div>
-                <button class="btn-export" @click="exportData()">export</button>
+                <!-- <button class="btn-export" @click="exportData()">export</button> -->
                 <!-- eneratePDF -->
                 <!-- <button class="btn-export" @click="generatePDF()">PDF</button> -->
 
