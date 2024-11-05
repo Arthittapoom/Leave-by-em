@@ -311,7 +311,7 @@ export default {
           reasonText: " ",
           initialLeaveApprover: this.userData.initialLeaveApprover,
           finalLeaveApprover: this.userData.finalLeaveApprover,
-          imageUrl: this.imageBase64
+          imageUrl: this.imageBase64 || 'null',
         };
 
         const config = {
